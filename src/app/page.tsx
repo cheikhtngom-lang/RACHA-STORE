@@ -1,69 +1,116 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Hero } from "@/components/home/hero";
+import { ValueProps } from "@/components/home/value-props";
+import { CategoryShowcase } from "@/components/home/category-showcase";
+import { EditorialBanner } from "@/components/home/editorial-banner";
+import { Testimonials } from "@/components/home/testimonials";
+import { InstagramGallery } from "@/components/home/instagram-gallery";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { ProductCarousel } from "@/components/product/product-carousel";
+import { Button } from "@/components/ui/button";
+import { getNewArrivals, getBestSellers } from "@/data/products";
+import { img, pools } from "@/data/images";
 
 export default function Home() {
+  const newArrivals = getNewArrivals();
+  const bestSellers = getBestSellers();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <>
+      <Hero />
+
+      <section className="border-b border-line py-12 sm:py-14">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+          <ValueProps />
+        </div>
+      </section>
+
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+          <SectionHeading
+            eyebrow="Nos univers"
+            title="Explorez la collection"
+            cta={{ label: "Toute la boutique", href: "/boutique" }}
+            className="mb-10 sm:mb-14"
+          />
+          <CategoryShowcase />
+        </div>
+      </section>
+
+      <section className="py-20 sm:py-28 bg-sand">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+          <SectionHeading
+            eyebrow="Fraîchement arrivé"
+            title="Nouveautés"
+            cta={{ label: "Voir tout", href: "/boutique?filter=nouveautes" }}
+            className="mb-10 sm:mb-14"
+          />
+          <ProductCarousel products={newArrivals} />
+        </div>
+      </section>
+
+      <section>
+        <EditorialBanner />
+      </section>
+
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+          <SectionHeading
+            eyebrow="Coup de cœur"
+            title="Les meilleures ventes"
+            cta={{ label: "Voir tout", href: "/boutique?filter=bestsellers" }}
+            className="mb-10 sm:mb-14"
+          />
+          <ProductCarousel products={bestSellers} />
+        </div>
+      </section>
+
+      <section className="relative py-24 sm:py-32 bg-ink-dark overflow-hidden">
         <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+          src={img(pools.apparel[10], 2000, 1200)}
+          alt="Édition limitée Racha Store"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-30"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+        <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8 flex flex-col items-center text-center">
+          <p className="eyebrow text-gold-light mb-5">Édition limitée</p>
+          <h2 className="font-display text-3xl sm:text-5xl text-cream max-w-2xl leading-tight mb-6">
+            Des pièces rares, produites en quantité limitée
+          </h2>
+          <p className="text-cream/70 text-sm max-w-md mb-9">
+            Une fois épuisées, elles ne reviendront pas. Découvrez notre sélection exclusive avant qu&apos;il ne soit trop tard.
           </p>
+          <Button asChild variant="gold" size="lg">
+            <Link href="/boutique?filter=edition-limitee">Découvrir l&apos;édition limitée</Link>
+          </Button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+          <SectionHeading
+            eyebrow="Avis clients"
+            title="Ce que l'on dit de nous"
+            align="center"
+            className="mb-10 sm:mb-14 mx-auto"
+          />
+          <Testimonials />
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="pb-20 sm:pb-28">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+          <SectionHeading
+            eyebrow="@rachastore"
+            title="Suivez-nous sur Instagram"
+            align="center"
+            className="mb-10 sm:mb-14 mx-auto"
+          />
+          <InstagramGallery />
+        </div>
+      </section>
+    </>
   );
 }
