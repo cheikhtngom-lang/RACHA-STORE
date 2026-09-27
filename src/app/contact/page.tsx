@@ -9,7 +9,7 @@ import { address } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
 
 const infos: { title: string; value: string; href?: string }[] = [
-  { title: "E-mail", value: "contact@racha-store.com" },
+  { title: "E-mail", value: "contact@rachamarket.com" },
   { title: "Adresse", value: address.full, href: address.mapsUrl },
   { title: "Horaires", value: "Du lundi au samedi, de 10h à 19h" },
 ];

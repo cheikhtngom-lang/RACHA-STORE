@@ -1,4 +1,4 @@
-// Domaine personnalisé (ex. https://www.rachastore.com). Tant qu'il n'est pas
+// Domaine personnalisé (https://rachamarket.com). Tant qu'il n'est pas
 // défini, le site est servi en noindex : on ne lance pas sur une URL par défaut.
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 

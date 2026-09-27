@@ -23,7 +23,7 @@ const sections = [
   },
   {
     title: "5. Données personnelles",
-    body: `Les informations recueillies via le site font l'objet d'un traitement destiné à la gestion des commandes et de la relation client. Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition aux données vous concernant, exerçable à l'adresse contact@racha-store.com. Vous pouvez également saisir la Commission de Protection des Données Personnelles (CDP).`,
+    body: `Les informations recueillies via le site font l'objet d'un traitement destiné à la gestion des commandes et de la relation client. Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition aux données vous concernant, exerçable à l'adresse contact@rachamarket.com. Vous pouvez également saisir la Commission de Protection des Données Personnelles (CDP).`,
   },
   {
     title: "6. Cookies",
