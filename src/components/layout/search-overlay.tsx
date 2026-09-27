@@ -7,7 +7,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Search, X } from "lucide-react";
 import { useUiStore } from "@/store/ui-store";
-import { products } from "@/data/products";
+import { useCatalog } from "@/components/catalog-provider";
 import { Price } from "@/components/shared/price";
 
 const popularSearches = ["Manteau", "Sac cabas", "Sneakers", "Parfum", "Cachemire"];
@@ -16,6 +16,7 @@ export function SearchOverlay() {
   const isSearchOpen = useUiStore((s) => s.isSearchOpen);
   const closeSearch = useUiStore((s) => s.closeSearch);
   const [query, setQuery] = useState("");
+  const { products } = useCatalog();
 
   const results = useMemo(() => {
     if (query.trim().length < 2) return [];
@@ -28,7 +29,7 @@ export function SearchOverlay() {
           p.subcategory?.toLowerCase().includes(q)
       )
       .slice(0, 6);
-  }, [query]);
+  }, [products, query]);
 
   return (
     <Dialog.Root open={isSearchOpen} onOpenChange={(open) => !open && closeSearch()}>
@@ -62,7 +63,7 @@ export function SearchOverlay() {
 
             {query.trim().length < 2 ? (
               <div className="pt-8">
-                <p className="eyebrow text-stone-light mb-4">Recherches populaires</p>
+                <p className="eyebrow text-stone-light mb-4">Suggestions</p>
                 <div className="flex flex-wrap gap-2">
                   {popularSearches.map((s) => (
                     <button

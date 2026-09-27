@@ -24,7 +24,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
                 active === i ? "border-ink" : "border-transparent opacity-70 hover:opacity-100"
               )}
             >
-              <Image src={src} alt={`${name} — vue ${i + 1}`} fill sizes="80px" className="object-cover" />
+              <Image src={src} alt={`${name}, vue ${i + 1}`} fill sizes="80px" className="object-cover" />
             </button>
           ))}
         </div>

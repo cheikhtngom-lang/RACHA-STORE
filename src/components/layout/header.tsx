@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, User, Heart, ShoppingBag, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
-import { categories } from "@/data/categories";
+import { useCatalog } from "@/components/catalog-provider";
 import { useUiStore } from "@/store/ui-store";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
@@ -20,6 +20,7 @@ const navLinks = [
 
 export function Header() {
   const pathname = usePathname();
+  const { categories } = useCatalog();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
@@ -81,7 +82,7 @@ export function Header() {
           <button aria-label="Rechercher" onClick={openSearch} className="hidden sm:flex cursor-pointer hover:text-gold transition-colors">
             <Search size={19} strokeWidth={1.5} />
           </button>
-          <Link href="/compte/connexion" aria-label="Mon compte" className="hidden sm:flex cursor-pointer hover:text-gold transition-colors">
+          <Link href="/compte" aria-label="Mon compte" className="hidden sm:flex cursor-pointer hover:text-gold transition-colors">
             <User size={19} strokeWidth={1.5} />
           </Link>
           <Link href="/liste-de-souhaits" aria-label="Liste de souhaits" className="relative cursor-pointer hover:text-gold transition-colors">
@@ -135,7 +136,7 @@ export function Header() {
           <div className="col-span-3 grid grid-cols-3 gap-5">
             {categories.slice(0, 3).map((c) => (
               <Link key={c.id} href={`/boutique/${c.slug}`} onClick={() => setMegaOpen(false)} className="group relative aspect-[4/5] overflow-hidden bg-sand block">
-                <Image src={c.image} alt={c.name} fill sizes="300px" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                {c.image && <Image src={c.image} alt={c.name} fill sizes="300px" className="object-cover transition-transform duration-700 group-hover:scale-105" />}
                 <div className="absolute inset-0 bg-gradient-to-t from-ink-dark/60 via-transparent to-transparent" />
                 <span className="absolute bottom-4 left-4 font-display text-xl text-cream">{c.name}</span>
               </Link>

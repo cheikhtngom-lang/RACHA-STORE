@@ -52,7 +52,7 @@ export function AddToCartForm({
       {product.colors && product.colors.length > 0 && (
         <div>
           <p className="font-sans-wide text-[0.65rem] uppercase text-stone mb-2.5">
-            Couleur {color && <span className="text-stone-light normal-case tracking-normal">— {color}</span>}
+            Couleur {color && <span className="text-stone-light normal-case tracking-normal">: {color}</span>}
           </p>
           <div className="flex flex-wrap gap-2.5">
             {product.colors.map((c) => (
@@ -81,7 +81,7 @@ export function AddToCartForm({
         <div>
           <div className="flex items-center justify-between mb-2.5">
             <p className="font-sans-wide text-[0.65rem] uppercase text-stone">
-              Taille {size && <span className="text-stone-light normal-case tracking-normal">— {size}</span>}
+              Taille {size && <span className="text-stone-light normal-case tracking-normal">: {size}</span>}
             </p>
             {!compact && (
               <button type="button" className="text-xs text-stone-light underline underline-offset-2 cursor-pointer hover:text-ink">

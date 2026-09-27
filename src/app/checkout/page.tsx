@@ -1,93 +1,159 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/auth-store";
 import { Stepper } from "@/components/checkout/stepper";
 import { OrderSummary } from "@/components/checkout/order-summary";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatPrice } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { discountAmount, shippingCost, SHIPPING_COSTS, type ShippingMethod } from "@/lib/pricing";
+import { LAST_ORDER_KEY, type LastOrder } from "@/lib/last-order";
 
 const STEPS = ["Informations", "Livraison", "Paiement"];
-const FREE_SHIPPING_THRESHOLD = 100000;
 
-type ContactForm = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  address: string;
-  addressComplement: string;
-  postalCode: string;
-  city: string;
-  country: string;
-  phone: string;
-};
+// Messages levés par la fonction create_order : on peut les montrer tels quels.
+const KNOWN_ORDER_ERRORS =
+  /^(Stock insuffisant|Taille invalide|Couleur invalide|Produit introuvable|Code promo invalide|Coordonnées|Le panier est vide|Quantité invalide)/;
+
+type ContactForm = LastOrder["contact"];
 
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal());
+  const promo = useCartStore((s) => s.promo);
+  const setPromo = useCartStore((s) => s.setPromo);
   const clear = useCartStore((s) => s.clear);
+  const authStatus = useAuthStore((s) => s.status);
+  const user = useAuthStore((s) => s.user);
 
   const [step, setStep] = useState(1);
-  const [shippingMethod, setShippingMethod] = useState<"standard" | "express">("standard");
-  const [processing, setProcessing] = useState(false);
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
+  const [submitting, setSubmitting] = useState(false);
+  const [placed, setPlaced] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [contact, setContact] = useState<ContactForm>({
     email: "",
     firstName: "",
     lastName: "",
+    phone: "",
     address: "",
     addressComplement: "",
     postalCode: "",
     city: "",
-    country: "France",
-    phone: "",
+    country: "Sénégal",
   });
 
-  const shippingCost =
-    subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : shippingMethod === "express" ? 10000 : 5000;
-  const total = subtotal + shippingCost;
+  // Client connecté : on préremplit avec son compte et son adresse par défaut.
+  useEffect(() => {
+    if (authStatus !== "authenticated" || !user) return;
+    let cancelled = false;
+    createClient()
+      .from("addresses")
+      .select("full_name, phone, address, address_complement, postal_code, city, country")
+      .eq("is_default", true)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setContact((c) => ({
+          ...c,
+          email: c.email || user.email,
+          firstName: c.firstName || user.firstName,
+          lastName: c.lastName || user.lastName,
+          phone: c.phone || data?.phone || "",
+          address: c.address || data?.address || "",
+          addressComplement: c.addressComplement || data?.address_complement || "",
+          postalCode: c.postalCode || data?.postal_code || "",
+          city: c.city || data?.city || "",
+          country: data?.country || c.country,
+        }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [authStatus, user]);
+
+  const discount = discountAmount(subtotal, promo?.percentOff);
+  const shipping = shippingCost(subtotal, shippingMethod);
+  const total = subtotal - discount + shipping;
 
   function update<K extends keyof ContactForm>(key: K, value: ContactForm[K]) {
     setContact((c) => ({ ...c, [key]: value }));
   }
 
-  function handleStep1(e: React.FormEvent) {
-    e.preventDefault();
-    setStep(2);
+  function goToStep(next: number) {
+    setStep(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function handleStep2(e: React.FormEvent) {
+  async function placeOrder(e: React.FormEvent) {
     e.preventDefault();
-    setStep(3);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+    setError(null);
+    setSubmitting(true);
 
-  function handlePayment(e: React.FormEvent) {
-    e.preventDefault();
-    setProcessing(true);
-    const orderNumber = `RS-${Math.floor(100000 + Math.random() * 900000)}`;
-    const order = {
-      orderNumber,
+    const { data, error } = await createClient().rpc("create_order", {
+      p_customer: {
+        email: contact.email,
+        first_name: contact.firstName,
+        last_name: contact.lastName,
+        phone: contact.phone,
+        address: contact.address,
+        address_complement: contact.addressComplement,
+        postal_code: contact.postalCode,
+        city: contact.city,
+        country: contact.country,
+      },
+      p_items: items.map((i) => ({
+        product_id: i.productId,
+        quantity: i.quantity,
+        color: i.color ?? null,
+        size: i.size ?? null,
+      })),
+      p_shipping_method: shippingMethod,
+      p_promo_code: promo?.code ?? null,
+    });
+
+    const created = (data as { order_number: string; total: number }[] | null)?.[0];
+    if (error || !created) {
+      const message = error?.message ?? "";
+      if (message.startsWith("Code promo invalide")) setPromo(null);
+      setError(
+        KNOWN_ORDER_ERRORS.test(message)
+          ? message
+          : "La commande n'a pas pu être enregistrée. Réessayez dans un instant."
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    const order: LastOrder = {
+      orderNumber: created.order_number,
+      date: new Date().toISOString(),
       items,
       subtotal,
-      shipping: shippingCost,
-      total,
+      discount,
+      promoCode: promo?.code,
+      shipping,
+      total: created.total,
       contact,
-      date: new Date().toISOString(),
     };
-    setTimeout(() => {
-      try {
-        sessionStorage.setItem("racha-store-last-order", JSON.stringify(order));
-      } catch {}
-      clear();
-      router.push("/checkout/confirmation");
-    }, 1200);
+    try {
+      sessionStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order));
+    } catch {}
+    setPlaced(true);
+    clear();
+    router.push("/checkout/confirmation");
+  }
+
+  if (placed) {
+    return <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-28" />;
   }
 
   if (items.length === 0) {
@@ -119,24 +185,46 @@ export default function CheckoutPage() {
       <div className="grid lg:grid-cols-[1fr_400px] gap-12 items-start">
         <div>
           {step === 1 && (
-            <form onSubmit={handleStep1} className="flex flex-col gap-6 max-w-xl">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                goToStep(2);
+              }}
+              className="flex flex-col gap-6 max-w-xl"
+            >
+              {authStatus === "anonymous" && (
+                <p className="text-sm text-stone">
+                  Déjà client·e ?{" "}
+                  <Link href="/compte/connexion?next=/checkout" className="text-ink underline underline-offset-2">
+                    Connectez-vous
+                  </Link>{" "}
+                  pour retrouver vos adresses et suivre cette commande.
+                </p>
+              )}
               <div>
                 <Label htmlFor="email">Adresse e-mail</Label>
-                <Input id="email" type="email" required value={contact.email} onChange={(e) => update("email", e.target.value)} />
+                <Input id="email" type="email" autoComplete="email" required value={contact.email} onChange={(e) => update("email", e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">Prénom</Label>
-                  <Input id="firstName" required value={contact.firstName} onChange={(e) => update("firstName", e.target.value)} />
+                  <Input id="firstName" autoComplete="given-name" required value={contact.firstName} onChange={(e) => update("firstName", e.target.value)} />
                 </div>
                 <div>
                   <Label htmlFor="lastName">Nom</Label>
-                  <Input id="lastName" required value={contact.lastName} onChange={(e) => update("lastName", e.target.value)} />
+                  <Input id="lastName" autoComplete="family-name" required value={contact.lastName} onChange={(e) => update("lastName", e.target.value)} />
                 </div>
               </div>
               <div>
                 <Label htmlFor="address">Adresse</Label>
-                <Input id="address" required value={contact.address} onChange={(e) => update("address", e.target.value)} />
+                <Input
+                  id="address"
+                  autoComplete="street-address"
+                  required
+                  placeholder="Quartier, rue, numéro de villa"
+                  value={contact.address}
+                  onChange={(e) => update("address", e.target.value)}
+                />
               </div>
               <div>
                 <Label htmlFor="addressComplement">Complément d&apos;adresse (facultatif)</Label>
@@ -144,22 +232,30 @@ export default function CheckoutPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="postalCode">Code postal</Label>
-                  <Input id="postalCode" required value={contact.postalCode} onChange={(e) => update("postalCode", e.target.value)} />
+                  <Label htmlFor="postalCode">Code postal (facultatif)</Label>
+                  <Input id="postalCode" autoComplete="postal-code" value={contact.postalCode} onChange={(e) => update("postalCode", e.target.value)} />
                 </div>
                 <div>
                   <Label htmlFor="city">Ville</Label>
-                  <Input id="city" required value={contact.city} onChange={(e) => update("city", e.target.value)} />
+                  <Input id="city" autoComplete="address-level2" required placeholder="Dakar" value={contact.city} onChange={(e) => update("city", e.target.value)} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="country">Pays</Label>
-                  <Input id="country" required value={contact.country} onChange={(e) => update("country", e.target.value)} />
+                  <Input id="country" autoComplete="country-name" required value={contact.country} onChange={(e) => update("country", e.target.value)} />
                 </div>
                 <div>
                   <Label htmlFor="phone">Téléphone</Label>
-                  <Input id="phone" type="tel" required value={contact.phone} onChange={(e) => update("phone", e.target.value)} />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    required
+                    placeholder="+221 77 000 00 00"
+                    value={contact.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                  />
                 </div>
               </div>
               <Button type="submit" variant="primary" size="lg" className="mt-2 self-start">
@@ -169,8 +265,14 @@ export default function CheckoutPage() {
           )}
 
           {step === 2 && (
-            <form onSubmit={handleStep2} className="flex flex-col gap-6 max-w-xl">
-              <RadioGroup value={shippingMethod} onValueChange={(v) => setShippingMethod(v as "standard" | "express")} className="flex flex-col gap-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                goToStep(3);
+              }}
+              className="flex flex-col gap-6 max-w-xl"
+            >
+              <RadioGroup value={shippingMethod} onValueChange={(v) => setShippingMethod(v as ShippingMethod)} className="flex flex-col gap-4">
                 <label className="flex items-center justify-between gap-4 border border-line p-5 cursor-pointer has-[[data-state=checked]]:border-ink">
                   <div className="flex items-center gap-4">
                     <RadioGroupItem value="standard" />
@@ -180,7 +282,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <span className="text-sm tabular-nums">
-                    {subtotal >= FREE_SHIPPING_THRESHOLD ? "Offerte" : formatPrice(5000)}
+                    {shippingCost(subtotal, "standard") === 0 ? "Offerte" : formatPrice(SHIPPING_COSTS.standard)}
                   </span>
                 </label>
                 <label className="flex items-center justify-between gap-4 border border-line p-5 cursor-pointer has-[[data-state=checked]]:border-ink">
@@ -192,12 +294,12 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <span className="text-sm tabular-nums">
-                    {subtotal >= FREE_SHIPPING_THRESHOLD ? "Offerte" : formatPrice(10000)}
+                    {shippingCost(subtotal, "express") === 0 ? "Offerte" : formatPrice(SHIPPING_COSTS.express)}
                   </span>
                 </label>
               </RadioGroup>
               <div className="flex gap-4 mt-2">
-                <Button type="button" variant="outline" size="lg" onClick={() => setStep(1)}>
+                <Button type="button" variant="outline" size="lg" onClick={() => goToStep(1)}>
                   Retour
                 </Button>
                 <Button type="submit" variant="primary" size="lg">
@@ -208,34 +310,32 @@ export default function CheckoutPage() {
           )}
 
           {step === 3 && (
-            <form onSubmit={handlePayment} className="flex flex-col gap-6 max-w-xl">
-              <div>
-                <Label htmlFor="cardName">Nom sur la carte</Label>
-                <Input id="cardName" required placeholder="J. Dupont" />
+            <form onSubmit={placeOrder} className="flex flex-col gap-6 max-w-xl">
+              <div className="border border-line p-5">
+                <p className="text-sm text-ink mb-1">Wave, Orange Money ou carte bancaire</p>
+                <p className="text-xs text-stone-light leading-relaxed">
+                  Le paiement en ligne est en cours de mise en place. Votre commande est enregistrée et reste en
+                  attente de paiement.
+                </p>
               </div>
-              <div>
-                <Label htmlFor="cardNumber">Numéro de carte</Label>
-                <Input id="cardNumber" required placeholder="1234 5678 9012 3456" inputMode="numeric" maxLength={19} />
+              <div className="text-sm text-stone leading-relaxed">
+                <p className="text-xs font-sans-wide uppercase text-stone-light mb-2">Livraison à</p>
+                <p>
+                  {contact.firstName} {contact.lastName}, {contact.phone}
+                  <br />
+                  {contact.address}
+                  {contact.addressComplement ? `, ${contact.addressComplement}` : ""}
+                  <br />
+                  {[contact.postalCode, contact.city].filter(Boolean).join(" ")}, {contact.country}
+                </p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="cardExpiry">Date d&apos;expiration</Label>
-                  <Input id="cardExpiry" required placeholder="MM / AA" maxLength={7} />
-                </div>
-                <div>
-                  <Label htmlFor="cardCvc">CVC</Label>
-                  <Input id="cardCvc" required placeholder="123" inputMode="numeric" maxLength={4} />
-                </div>
-              </div>
-              <p className="text-xs text-stone-light -mt-2">
-                Environnement de démonstration — aucun paiement réel ne sera effectué.
-              </p>
+              {error && <p className="text-sm text-[#6E2A32] border border-[#6E2A32]/30 p-4">{error}</p>}
               <div className="flex gap-4 mt-2">
-                <Button type="button" variant="outline" size="lg" onClick={() => setStep(2)} disabled={processing}>
+                <Button type="button" variant="outline" size="lg" onClick={() => goToStep(2)} disabled={submitting}>
                   Retour
                 </Button>
-                <Button type="submit" variant="primary" size="lg" disabled={processing}>
-                  {processing ? "Traitement en cours…" : `Payer ${formatPrice(total)}`}
+                <Button type="submit" variant="primary" size="lg" disabled={submitting}>
+                  {submitting ? "Enregistrement…" : `Valider la commande (${formatPrice(total)})`}
                 </Button>
               </div>
             </form>
@@ -243,7 +343,14 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:sticky lg:top-28">
-          <OrderSummary items={items} subtotal={subtotal} shipping={shippingCost} total={total} />
+          <OrderSummary
+            items={items}
+            subtotal={subtotal}
+            discount={discount}
+            promoCode={promo?.code}
+            shipping={shipping}
+            total={total}
+          />
         </div>
       </div>
     </div>

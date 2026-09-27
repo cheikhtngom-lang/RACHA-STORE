@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function Boutique() {
   return (
     <Suspense>
-      <ShopPage title="Toute la boutique" description="Des pièces intemporelles, sélectionnées avec exigence." />
+      <ShopPage title="Toute la boutique" description="Prêt-à-porter, sacs, chaussures, bijoux et beauté." />
     </Suspense>
   );
 }

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 const sections = [
   {
     title: "1. Éditeur du site",
-    body: `Le site Racha Store est édité par [Raison sociale à compléter], [forme juridique], au capital de [montant] F CFA, immatriculée au Registre du Commerce et du Crédit Mobilier (RCCM) sous le numéro [numéro RCCM à compléter], dont le siège social est situé [adresse à compléter]. Numéro d'Identification Fiscale : [à compléter].`,
+    body: `Le site Racha Store est édité par [Raison sociale à compléter], [forme juridique], au capital de [montant] F CFA, immatriculée au Registre du Commerce et du Crédit Mobilier (RCCM) sous le numéro [numéro RCCM à compléter], dont le siège social est situé à Scat Urbain, Dakar, Sénégal. Numéro d'Identification Fiscale : [à compléter].`,
   },
   {
     title: "2. Directeur de la publication",
@@ -23,7 +23,7 @@ const sections = [
   },
   {
     title: "5. Données personnelles",
-    body: `Les informations recueillies via le site font l'objet d'un traitement destiné à la gestion des commandes et de la relation client. Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition aux données vous concernant, exerçable à l'adresse contact@racha-store.com.`,
+    body: `Les informations recueillies via le site font l'objet d'un traitement destiné à la gestion des commandes et de la relation client. Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition aux données vous concernant, exerçable à l'adresse contact@racha-store.com. Vous pouvez également saisir la Commission de Protection des Données Personnelles (CDP).`,
   },
   {
     title: "6. Cookies",

@@ -9,7 +9,7 @@ export function Logo({ className, light }: { className?: string; light?: boolean
         "group inline-flex flex-col items-center leading-none select-none",
         className
       )}
-      aria-label="Racha Store — Accueil"
+      aria-label="Racha Store, accueil"
     >
       <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-current mb-1">
         <svg viewBox="0 0 24 24" className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5" fill="currentColor">

@@ -1,62 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
-import { CartItem } from "@/lib/types";
+import { LAST_ORDER_KEY, type LastOrder } from "@/lib/last-order";
+import { useAuthStore } from "@/store/auth-store";
 
-type Order = {
-  orderNumber: string;
-  items: CartItem[];
-  subtotal: number;
-  shipping: number;
-  total: number;
-  contact: { email: string; firstName: string; lastName: string; address: string; city: string; postalCode: string; country: string };
-  date: string;
-};
+function readLastOrder() {
+  try {
+    return sessionStorage.getItem(LAST_ORDER_KEY);
+  } catch {
+    return null;
+  }
+}
 
 export default function ConfirmationPage() {
-  const [order, setOrder] = useState<Order | null>(null);
-
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("racha-store-last-order");
-      if (raw) setOrder(JSON.parse(raw));
-    } catch {}
-  }, []);
-
-  const estimatedDelivery = new Date();
-  estimatedDelivery.setDate(estimatedDelivery.getDate() + 4);
+  const raw = useSyncExternalStore(
+    () => () => {},
+    readLastOrder,
+    () => null
+  );
+  const order = useMemo<LastOrder | null>(() => (raw ? JSON.parse(raw) : null), [raw]);
+  const isAuthenticated = useAuthStore((s) => s.status === "authenticated");
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-20 sm:py-28 text-center">
-      <div className="mx-auto h-16 w-16 rounded-full bg-gold flex items-center justify-center mb-8">
-        <Check size={28} strokeWidth={2} className="text-ink-dark" />
-      </div>
-      <p className="eyebrow text-gold mb-4">Commande confirmée</p>
+      <p className="eyebrow text-gold mb-4">Commande enregistrée</p>
       <h1 className="font-display text-3xl sm:text-5xl text-ink leading-tight mb-4">
-        Merci{order?.contact.firstName ? ` ${order.contact.firstName}` : ""} pour votre confiance
+        Merci{order?.contact.firstName ? ` ${order.contact.firstName}` : ""}
       </h1>
       <p className="text-sm text-stone-light max-w-md mx-auto mb-10">
         {order
-          ? `Votre commande n° ${order.orderNumber} a bien été enregistrée. Un e-mail de confirmation vous a été envoyé à ${order.contact.email}.`
-          : "Votre commande a bien été enregistrée."}
+          ? `Votre commande n° ${order.orderNumber} est enregistrée et en attente de paiement. Gardez ce numéro : il vous sera demandé si vous nous contactez.`
+          : "Votre commande est enregistrée."}
       </p>
 
       {order && (
         <div className="text-left border border-line divide-y divide-line mb-10">
-          <div className="p-6 flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <Package size={18} strokeWidth={1.5} className="text-gold" />
-              <span className="text-sm text-ink">Livraison estimée</span>
-            </div>
-            <span className="text-sm text-stone">
-              {estimatedDelivery.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
-            </span>
-          </div>
           <ul className="divide-y divide-line">
             {order.items.map((item) => (
               <li key={`${item.sku}-${item.color}-${item.size}`} className="flex gap-4 p-6">
@@ -78,6 +60,12 @@ export default function ConfirmationPage() {
               <span>Sous-total</span>
               <span className="tabular-nums">{formatPrice(order.subtotal)}</span>
             </div>
+            {order.discount > 0 && (
+              <div className="flex justify-between text-gold">
+                <span>Réduction{order.promoCode ? ` (${order.promoCode})` : ""}</span>
+                <span className="tabular-nums">-{formatPrice(order.discount)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-stone">
               <span>Livraison</span>
               <span className="tabular-nums">{order.shipping === 0 ? "Offerte" : formatPrice(order.shipping)}</span>
@@ -90,11 +78,12 @@ export default function ConfirmationPage() {
           <div className="p-6 text-sm text-stone-light">
             <p className="text-ink text-xs font-sans-wide uppercase mb-2">Adresse de livraison</p>
             <p>
-              {order.contact.firstName} {order.contact.lastName}
+              {order.contact.firstName} {order.contact.lastName}, {order.contact.phone}
               <br />
               {order.contact.address}
+              {order.contact.addressComplement ? `, ${order.contact.addressComplement}` : ""}
               <br />
-              {order.contact.postalCode} {order.contact.city}, {order.contact.country}
+              {[order.contact.postalCode, order.contact.city].filter(Boolean).join(" ")}, {order.contact.country}
             </p>
           </div>
         </div>
@@ -104,9 +93,11 @@ export default function ConfirmationPage() {
         <Button asChild variant="primary" size="lg">
           <Link href="/boutique">Poursuivre mes achats</Link>
         </Button>
-        <Button asChild variant="outline" size="lg">
-          <Link href="/compte/commandes">Suivre ma commande</Link>
-        </Button>
+        {isAuthenticated && (
+          <Button asChild variant="outline" size="lg">
+            <Link href="/compte/commandes">Voir mes commandes</Link>
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -7,7 +7,6 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Product } from "@/lib/types";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Price } from "@/components/shared/price";
-import { Rating } from "@/components/shared/rating";
 import { AddToCartForm } from "./add-to-cart-form";
 
 export function QuickViewModal({
@@ -34,9 +33,8 @@ export function QuickViewModal({
                   {product.subcategory ?? product.category.replace(/-/g, " ")}
                 </p>
                 <h3 className="font-display text-2xl text-ink pr-8">{product.name}</h3>
-                <div className="mt-2 flex items-center gap-3">
+                <div className="mt-2">
                   <Price amount={product.price} compareAt={product.compareAtPrice} />
-                  <Rating value={product.rating} count={product.reviewCount} />
                 </div>
               </div>
               <p className="text-sm text-stone leading-relaxed clamp-3">{product.shortDescription}</p>

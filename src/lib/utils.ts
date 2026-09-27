@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(amount: number) {
-  return new Intl.NumberFormat("fr-FR", {
+  return new Intl.NumberFormat("fr-SN", {
     style: "currency",
     currency: "XOF",
     maximumFractionDigits: 0,

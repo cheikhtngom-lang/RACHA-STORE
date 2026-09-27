@@ -4,30 +4,28 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, X } from "lucide-react";
 import { Product } from "@/lib/types";
-import { products as allProducts } from "@/data/products";
-import { categories } from "@/data/categories";
+import { useCatalog } from "@/components/catalog-provider";
 import { FiltersPanel, ShopFilters } from "./filters-panel";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Sheet } from "@/components/ui/sheet";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-type SortKey = "featured" | "price-asc" | "price-desc" | "rating" | "newest";
+type SortKey = "featured" | "price-asc" | "price-desc" | "newest";
 
 const sortLabels: Record<SortKey, string> = {
   featured: "En vedette",
   newest: "Nouveautés",
   "price-asc": "Prix croissant",
   "price-desc": "Prix décroissant",
-  rating: "Mieux notés",
 };
 
-function buildInitialFilters(categorySlug?: string, flag?: string | null): ShopFilters {
+function buildInitialFilters(priceCeiling: number, categorySlug?: string, flag?: string | null): ShopFilters {
   return {
     categories: categorySlug ? [categorySlug] : [],
     colors: [],
     sizes: [],
-    maxPrice: 500000,
+    maxPrice: priceCeiling,
     onlyNew: flag === "nouveautes",
     onlyBestSeller: flag === "bestsellers",
     onlyLimited: flag === "edition-limitee",
@@ -37,27 +35,28 @@ function buildInitialFilters(categorySlug?: string, flag?: string | null): ShopF
 export function ShopPage({ categorySlug, title, description }: { categorySlug?: string; title: string; description?: string }) {
   const searchParams = useSearchParams();
   const flag = searchParams.get("filter");
-
-  const [filters, setFilters] = useState<ShopFilters>(() => buildInitialFilters(categorySlug, flag));
-  const [sort, setSort] = useState<SortKey>(flag === "nouveautes" ? "newest" : "featured");
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const { products: allProducts, categories } = useCatalog();
 
   const priceCeiling = useMemo(
-    () => Math.ceil(Math.max(...allProducts.map((p) => p.price)) / 10000) * 10000,
-    []
+    () => Math.ceil(Math.max(0, ...allProducts.map((p) => p.price)) / 10000) * 10000,
+    [allProducts]
   );
+
+  const [filters, setFilters] = useState<ShopFilters>(() => buildInitialFilters(priceCeiling, categorySlug, flag));
+  const [sort, setSort] = useState<SortKey>(flag === "nouveautes" ? "newest" : "featured");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const availableColors = useMemo(() => {
     const map = new Map<string, { name: string; hex: string }>();
     allProducts.forEach((p) => p.colors?.forEach((c) => map.set(c.name, c)));
     return Array.from(map.values());
-  }, []);
+  }, [allProducts]);
 
   const availableSizes = useMemo(() => {
     const set = new Set<string>();
     allProducts.forEach((p) => p.sizes?.forEach((s) => set.add(s)));
     return Array.from(set).sort((a, b) => (isNaN(+a) || isNaN(+b) ? a.localeCompare(b) : +a - +b));
-  }, []);
+  }, [allProducts]);
 
   const filtered = useMemo(() => {
     let list: Product[] = allProducts.filter((p) => {
@@ -78,15 +77,12 @@ export function ShopPage({ categorySlug, title, description }: { categorySlug?: 
       case "price-desc":
         list = [...list].sort((a, b) => b.price - a.price);
         break;
-      case "rating":
-        list = [...list].sort((a, b) => b.rating - a.rating);
-        break;
       case "newest":
         list = [...list].sort((a, b) => Number(b.isNew) - Number(a.isNew));
         break;
     }
     return list;
-  }, [filters, sort]);
+  }, [allProducts, filters, sort]);
 
   const activeCount =
     filters.categories.length +
@@ -98,13 +94,13 @@ export function ShopPage({ categorySlug, title, description }: { categorySlug?: 
     Number(filters.maxPrice < priceCeiling);
 
   function resetFilters() {
-    setFilters(buildInitialFilters());
+    setFilters(buildInitialFilters(priceCeiling));
   }
 
   return (
     <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-10 sm:py-14">
       <div className="mb-10">
-        <h1 className="font-display text-4xl sm:text-5xl text-ink capitalize">{title}</h1>
+        <h1 className="font-display text-4xl sm:text-5xl text-ink">{title}</h1>
         {description && <p className="text-stone text-sm mt-3 max-w-xl">{description}</p>}
       </div>
 

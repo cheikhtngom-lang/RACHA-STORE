@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
-import { InstagramIcon, FacebookIcon, XIcon, TikTokIcon } from "@/components/shared/social-icons";
+import { InstagramIcon, TikTokIcon } from "@/components/shared/social-icons";
 import { PhoneLink } from "@/components/shared/phone-link";
+import { address, social } from "@/lib/site";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 const columns = [
   {
@@ -54,11 +56,16 @@ export function Footer() {
               Recevez en avant-première nos nouvelles collections, nos éditions limitées et des offres exclusives.
             </p>
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (!email) return;
+                const { error } = await createClient().rpc("subscribe_newsletter", { p_email: email });
+                if (error) {
+                  toast.error("Inscription impossible", { description: "Vérifiez votre adresse e-mail." });
+                  return;
+                }
                 toast.success("Merci pour votre inscription", {
-                  description: "Vous recevrez bientôt nos actualités.",
+                  description: "Vous recevrez nos prochaines nouveautés.",
                 });
                 setEmail("");
               }}
@@ -77,6 +84,14 @@ export function Footer() {
               </button>
             </form>
             <PhoneLink className="text-sm text-cream/70 hover:text-cream transition-colors mt-6" />
+            <a
+              href={address.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-sm text-cream/70 hover:text-cream transition-colors mt-2"
+            >
+              {address.full}
+            </a>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
@@ -101,7 +116,7 @@ export function Footer() {
           <Logo light className="items-start sm:items-center" />
           <div className="flex items-center gap-5">
             <a
-              href="https://www.instagram.com/racha_store_221?stkn=MXV6YWh6a2Y5cm5tcw=="
+              href={social.instagram.url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -110,19 +125,13 @@ export function Footer() {
               <InstagramIcon size={18} />
             </a>
             <a
-              href="https://www.tiktok.com/@racha2200?_r=1&_t=ZS-99hUf0HvITw"
+              href={social.tiktok.url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="TikTok"
               className="text-cream/70 hover:text-gold-light transition-colors"
             >
               <TikTokIcon size={18} />
-            </a>
-            <a href="#" aria-label="Facebook" className="text-cream/70 hover:text-gold-light transition-colors">
-              <FacebookIcon size={18} />
-            </a>
-            <a href="#" aria-label="X" className="text-cream/70 hover:text-gold-light transition-colors">
-              <XIcon size={18} />
             </a>
           </div>
           <p className="text-xs text-cream/50 text-center sm:text-right">

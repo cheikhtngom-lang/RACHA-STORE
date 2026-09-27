@@ -1,35 +1,32 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import type { User } from "@supabase/supabase-js";
 
-/**
- * Client-only demo session so the account UI (dashboard, orders, addresses)
- * can be fully previewed before real authentication is wired to Supabase.
- */
-type AuthState = {
-  isAuthenticated: boolean;
-  user: { firstName: string; lastName: string; email: string } | null;
-  hasHydrated: boolean;
-  signIn: (user: { firstName: string; lastName: string; email: string }) => void;
-  signOut: () => void;
+export type AccountUser = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 };
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      isAuthenticated: false,
-      user: null,
-      hasHydrated: false,
-      signIn: (user) => set({ isAuthenticated: true, user }),
-      signOut: () => set({ isAuthenticated: false, user: null }),
-    }),
-    {
-      name: "racha-store-demo-auth",
-      skipHydration: true,
-      onRehydrateStorage: () => () => {
-        useAuthStore.setState({ hasHydrated: true });
-      },
-    }
-  )
-);
+type AuthState = {
+  // « loading » tant que la session Supabase n'a pas encore été lue.
+  status: "loading" | "authenticated" | "anonymous";
+  user: AccountUser | null;
+};
+
+// Alimenté par <AuthListener /> à partir de la session Supabase.
+export const useAuthStore = create<AuthState>()(() => ({
+  status: "loading",
+  user: null,
+}));
+
+export function toAccountUser(user: User): AccountUser {
+  return {
+    id: user.id,
+    email: user.email ?? "",
+    firstName: user.user_metadata?.first_name ?? "",
+    lastName: user.user_metadata?.last_name ?? "",
+  };
+}

@@ -26,22 +26,6 @@ export function InstagramIcon(props: IconProps) {
   );
 }
 
-export function FacebookIcon(props: IconProps) {
-  return (
-    <svg {...base(props)}>
-      <path d="M14 9.5V7.2c0-.9.5-1.4 1.4-1.4H17V3h-2.6C11.9 3 10.5 4.6 10.5 7v2.5H8V12h2.5v9h3v-9H16l.5-2.5h-2.5z" />
-    </svg>
-  );
-}
-
-export function XIcon(props: IconProps) {
-  return (
-    <svg {...base(props)}>
-      <path d="M4 4l7.2 8.6L4.4 20H6.9l5.7-6.3L17 20h3l-7.5-9 6.5-7h-2.5l-5.2 5.8L7 4z" />
-    </svg>
-  );
-}
-
 export function TikTokIcon(props: IconProps) {
   return (
     <svg {...base(props)} strokeWidth={1.3}>

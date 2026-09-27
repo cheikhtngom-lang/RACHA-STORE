@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Truck, RotateCcw, ShieldCheck } from "lucide-react";
-import { products, getProductBySlug, getRelatedProducts } from "@/data/products";
+import { getCatalog } from "@/lib/catalog";
+import { getRelatedProducts } from "@/lib/catalog-selectors";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
-import { Rating } from "@/components/shared/rating";
 import { Price } from "@/components/shared/price";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { AddToCartForm } from "@/components/product/add-to-cart-form";
-import { ReviewsSection } from "@/components/product/reviews-section";
 import { RecentlyViewed } from "@/components/product/recently-viewed";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { ProductCarousel } from "@/components/product/product-carousel";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { categories } from "@/data/categories";
 
-export function generateStaticParams() {
+async function getProductBySlug(slug: string) {
+  const { products } = await getCatalog();
+  return products.find((p) => p.slug === slug);
+}
+
+export async function generateStaticParams() {
+  const { products } = await getCatalog();
   return products.map((p) => ({ slug: p.slug }));
 }
 
@@ -24,7 +27,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) return {};
   return {
     title: product.name,
@@ -39,11 +42,12 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const { products, categories } = await getCatalog();
+  const product = products.find((p) => p.slug === slug);
   if (!product) notFound();
 
   const category = categories.find((c) => c.slug === product.category);
-  const related = getRelatedProducts(product);
+  const related = getRelatedProducts(products, product);
 
   return (
     <div>
@@ -65,11 +69,8 @@ export default async function ProductPage({
           </p>
           <h1 className="font-display text-3xl sm:text-4xl text-ink leading-tight">{product.name}</h1>
 
-          <div className="flex items-center gap-4 mt-3">
+          <div className="mt-3">
             <Price amount={product.price} compareAt={product.compareAtPrice} size="lg" />
-            <a href="#avis" className="flex items-center gap-1.5">
-              <Rating value={product.rating} count={product.reviewCount} />
-            </a>
           </div>
 
           <p className="text-sm text-stone leading-relaxed mt-6">{product.shortDescription}</p>
@@ -78,20 +79,9 @@ export default async function ProductPage({
             <AddToCartForm product={product} />
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mt-8 pt-8 border-t border-line">
-            <div className="flex flex-col items-center text-center gap-2">
-              <Truck size={20} strokeWidth={1.2} className="text-gold" />
-              <p className="text-[0.65rem] text-stone-light leading-tight">Livraison 2-4 jours</p>
-            </div>
-            <div className="flex flex-col items-center text-center gap-2">
-              <RotateCcw size={20} strokeWidth={1.2} className="text-gold" />
-              <p className="text-[0.65rem] text-stone-light leading-tight">Retours sous 30 jours</p>
-            </div>
-            <div className="flex flex-col items-center text-center gap-2">
-              <ShieldCheck size={20} strokeWidth={1.2} className="text-gold" />
-              <p className="text-[0.65rem] text-stone-light leading-tight">Paiement sécurisé</p>
-            </div>
-          </div>
+          <p className="mt-8 pt-6 border-t border-line text-xs text-stone-light">
+            Retours gratuits sous 30 jours. Paiement sécurisé.
+          </p>
 
           <div className="mt-8">
             <Accordion type="multiple" defaultValue={["description"]}>
@@ -118,7 +108,7 @@ export default async function ProductPage({
               <AccordionItem value="shipping" className="border-b-0">
                 <AccordionTrigger>Livraison & retours</AccordionTrigger>
                 <AccordionContent>
-                  Livraison estimée sous 2 à 4 jours ouvrés en France métropolitaine, 5 à 8 jours ouvrés en Europe.
+                  Livraison standard sous 2 à 4 jours ouvrés, express sous 1 à 2 jours ouvrés.
                   Retours gratuits sous 30 jours à compter de la réception de votre commande, article non porté et
                   dans son emballage d&apos;origine.
                 </AccordionContent>
@@ -136,13 +126,6 @@ export default async function ProductPage({
           </div>
         </section>
       )}
-
-      <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
-          <SectionHeading eyebrow="Témoignages" title="Avis clients" className="mb-10 sm:mb-14" />
-          <ReviewsSection product={product} />
-        </div>
-      </section>
 
       <RecentlyViewed currentProductId={product.id} />
     </div>

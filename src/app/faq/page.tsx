@@ -29,7 +29,7 @@ const groups = [
     items: [
       {
         q: "Quels sont les délais de livraison ?",
-        a: "Comptez 2 à 4 jours ouvrés pour la France métropolitaine en livraison standard, et 1 à 2 jours ouvrés en express. Pour l'international, comptez 5 à 8 jours ouvrés.",
+        a: "Comptez 2 à 4 jours ouvrés au Sénégal en livraison standard, et 1 à 2 jours ouvrés en express. Pour l'international, comptez 5 à 8 jours ouvrés.",
       },
       {
         q: "La livraison est-elle offerte ?",
@@ -37,7 +37,7 @@ const groups = [
       },
       {
         q: "Livrez-vous à l'international ?",
-        a: "Oui, nous livrons dans plus de 22 pays en Europe, au Maghreb et au Moyen-Orient.",
+        a: "Oui. Comptez 5 à 8 jours ouvrés, avec des frais à partir de 12 000 F CFA. Contactez-nous pour vérifier que nous livrons dans votre pays.",
       },
     ],
   },
@@ -50,7 +50,7 @@ const groups = [
       },
       {
         q: "Comment initier un retour ?",
-        a: "Rendez-vous dans votre espace « Mon compte » > « Commandes », sélectionnez l'article concerné et suivez les instructions. Une étiquette de retour prépayée vous sera fournie.",
+        a: "Contactez-nous par téléphone ou WhatsApp au +221 77 344 59 51, ou depuis « Mon compte » > « Commandes ». Nous vous indiquons ensuite comment nous remettre l'article.",
       },
       {
         q: "Sous quel délai suis-je remboursé·e ?",

@@ -9,8 +9,7 @@ import { Price } from "@/components/shared/price";
 import { useCartStore } from "@/store/cart-store";
 import { useUiStore } from "@/store/ui-store";
 import { formatPrice } from "@/lib/utils";
-
-const FREE_SHIPPING_THRESHOLD = 100000;
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/pricing";
 
 export function CartDrawer() {
   const isCartOpen = useUiStore((s) => s.isCartOpen);
@@ -52,7 +51,7 @@ export function CartDrawer() {
             Plus que <span className="text-ink font-medium">{formatPrice(remaining)}</span> pour la livraison offerte
           </p>
         ) : (
-          <p className="text-xs text-ink mb-2">✦ Vous bénéficiez de la livraison offerte</p>
+          <p className="text-xs text-ink mb-2">Vous bénéficiez de la livraison offerte</p>
         )}
         <div className="h-1 w-full bg-line overflow-hidden">
           <div className="h-full bg-gold transition-all duration-500" style={{ width: `${progress}%` }} />

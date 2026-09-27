@@ -10,13 +10,6 @@ export const metadata: Metadata = {
   description: "Découvrez l'histoire, les valeurs et le savoir-faire de la maison Racha Store.",
 };
 
-const stats = [
-  { value: "2018", label: "Année de création" },
-  { value: "40+", label: "Artisans partenaires" },
-  { value: "22", label: "Pays livrés" },
-  { value: "98%", label: "Clientes satisfaites" },
-];
-
 const values = [
   {
     title: "Matières nobles",
@@ -39,7 +32,7 @@ export default function AboutPage() {
         <Image src={img(pools.apparel[6], 2000, 1400)} alt="Atelier Racha Store" fill sizes="100vw" className="object-cover opacity-70" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-dark via-ink-dark/30 to-transparent" />
         <div className="relative h-full flex flex-col items-center justify-end text-center px-6 pb-16">
-          <p className="eyebrow text-gold-light mb-4">Depuis 2018</p>
+          <p className="eyebrow text-gold-light mb-4">Racha Store</p>
           <h1 className="font-display text-4xl sm:text-6xl text-cream max-w-2xl">Notre histoire</h1>
         </div>
       </section>
@@ -50,23 +43,10 @@ export default function AboutPage() {
             Racha Store est née d&apos;une conviction simple : l&apos;élégance ne devrait jamais être éphémère.
           </p>
           <p className="text-stone leading-relaxed mt-6">
-            Fondée à Paris, la maison Racha Store puise son inspiration dans l&apos;artisanat traditionnel et le
-            design contemporain. Chaque collection est pensée comme une collaboration entre nos créateurs et un
-            réseau d&apos;ateliers partenaires triés sur le volet, en France et en Europe. Notre exigence : des
-            pièces intemporelles, taillées dans des matières nobles, conçues pour traverser les saisons — et les
-            années — avec la même élégance.
+            Racha Store est une boutique basée à Dakar, dans le quartier de Scat Urbain. Nous sélectionnons des
+            vêtements, sacs, chaussures, bijoux et parfums, et chaque fiche produit indique la composition exacte
+            et les conseils d&apos;entretien.
           </p>
-        </div>
-      </section>
-
-      <section className="py-16 border-y border-line bg-sand">
-        <div className="mx-auto max-w-[1200px] px-5 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="font-display text-4xl sm:text-5xl text-ink mb-2">{s.value}</p>
-              <p className="text-xs font-sans-wide uppercase text-stone-light">{s.label}</p>
-            </div>
-          ))}
         </div>
       </section>
 

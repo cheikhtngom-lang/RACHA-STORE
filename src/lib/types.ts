@@ -3,16 +3,6 @@ export type ProductColor = {
   hex: string;
 };
 
-export type ProductReview = {
-  id: string;
-  author: string;
-  rating: number;
-  date: string;
-  title: string;
-  body: string;
-  verified?: boolean;
-};
-
 export type Product = {
   id: string;
   slug: string;
@@ -30,9 +20,6 @@ export type Product = {
   details: string[];
   materials?: string;
   care?: string;
-  rating: number;
-  reviewCount: number;
-  reviews?: ProductReview[];
   isNew?: boolean;
   isBestSeller?: boolean;
   isLimited?: boolean;
@@ -45,7 +32,7 @@ export type Category = {
   slug: string;
   name: string;
   description: string;
-  image: string;
+  image?: string;
 };
 
 export type CartItem = {
@@ -58,13 +45,4 @@ export type CartItem = {
   size?: string;
   quantity: number;
   sku: string;
-};
-
-export type Testimonial = {
-  id: string;
-  author: string;
-  role: string;
-  avatar: string;
-  rating: number;
-  quote: string;
 };

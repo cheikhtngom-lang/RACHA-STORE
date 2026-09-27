@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useWishlistStore } from "@/store/wishlist-store";
-import { products } from "@/data/products";
+import { useCatalog } from "@/components/catalog-provider";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Button } from "@/components/ui/button";
 
 export default function WishlistPage() {
   const ids = useWishlistStore((s) => s.ids);
+  const { products } = useCatalog();
   const items = products.filter((p) => ids.includes(p.id));
 
   return (

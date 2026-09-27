@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 const sections = [
   {
     title: "1. Objet",
-    body: `Les présentes conditions générales de vente régissent les relations contractuelles entre Racha Store et toute personne effectuant un achat via le site racha-store.com, ci-après « le Client ».`,
+    body: `Les présentes conditions générales de vente régissent les relations contractuelles entre Racha Store et toute personne effectuant un achat via le site Racha Store, ci-après « le Client ».`,
   },
   {
     title: "2. Commandes",
@@ -15,7 +15,7 @@ const sections = [
   },
   {
     title: "3. Prix",
-    body: `Les prix sont indiqués en euros, toutes taxes comprises. Racha Store se réserve le droit de modifier ses prix à tout moment, étant entendu que le prix figurant sur la fiche produit au moment de la commande sera le seul applicable au Client.`,
+    body: `Les prix sont indiqués en francs CFA (XOF), toutes taxes comprises. Racha Store se réserve le droit de modifier ses prix à tout moment, étant entendu que le prix figurant sur la fiche produit au moment de la commande sera le seul applicable au Client.`,
   },
   {
     title: "4. Paiement",
@@ -27,15 +27,15 @@ const sections = [
   },
   {
     title: "6. Droit de rétractation & retours",
-    body: `Conformément à la législation en vigueur, le Client dispose d'un délai de 30 jours à compter de la réception de sa commande pour exercer son droit de rétractation, sans avoir à justifier de motif. Les articles doivent être retournés non portés, dans leur emballage d'origine avec les étiquettes.`,
+    body: `Le Client dispose d'un délai de 30 jours à compter de la réception de sa commande pour exercer son droit de rétractation, sans avoir à justifier de motif. Les articles doivent être retournés non portés, dans leur emballage d'origine avec les étiquettes.`,
   },
   {
     title: "7. Garanties",
-    body: `Tous les produits vendus par Racha Store bénéficient de la garantie légale de conformité et de la garantie contre les vices cachés, dans les conditions prévues par le Code de la consommation et le Code civil.`,
+    body: `Tous les produits vendus par Racha Store bénéficient de la garantie légale de conformité et de la garantie contre les vices cachés, dans les conditions prévues par la législation sénégalaise en vigueur.`,
   },
   {
     title: "8. Litiges",
-    body: `Les présentes conditions générales de vente sont soumises au droit français. En cas de litige, une solution amiable sera recherchée avant toute action judiciaire. À défaut, les tribunaux compétents seront ceux désignés par le Code de procédure civile.`,
+    body: `Les présentes conditions générales de vente sont soumises au droit sénégalais. En cas de litige, une solution amiable sera recherchée avant toute action judiciaire. À défaut, les juridictions compétentes de Dakar seront saisies.`,
   },
 ];
 

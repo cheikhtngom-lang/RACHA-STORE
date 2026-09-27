@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, Package, MapPin, Heart, LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 
@@ -17,18 +19,22 @@ const navItems = [
 export function AccountShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const status = useAuthStore((s) => s.status);
   const user = useAuthStore((s) => s.user);
-  const signOut = useAuthStore((s) => s.signOut);
-  const hasHydrated = useAuthStore((s) => s.hasHydrated);
 
   useEffect(() => {
-    if (hasHydrated && !isAuthenticated) {
-      router.replace("/compte/connexion");
+    if (status === "anonymous") {
+      router.replace(`/compte/connexion?next=${encodeURIComponent(pathname)}`);
     }
-  }, [hasHydrated, isAuthenticated, router]);
+  }, [status, pathname, router]);
 
-  if (!hasHydrated || !isAuthenticated) {
+  async function signOut() {
+    await createClient().auth.signOut();
+    toast("Vous êtes déconnecté·e");
+    router.push("/");
+  }
+
+  if (status !== "authenticated" || !user) {
     return <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-28" />;
   }
 
@@ -36,7 +42,10 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
     <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-10 sm:py-14">
       <div className="mb-10">
         <p className="eyebrow text-gold mb-2">Mon compte</p>
-        <h1 className="font-display text-4xl sm:text-5xl text-ink">Bonjour {user?.firstName}</h1>
+        <h1 className="font-display text-4xl sm:text-5xl text-ink">
+          Bonjour{user.firstName ? ` ${user.firstName}` : ""}
+        </h1>
+        <p className="text-sm text-stone-light mt-2">{user.email}</p>
       </div>
 
       <div className="grid lg:grid-cols-[240px_1fr] gap-12">
@@ -59,10 +68,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
               );
             })}
             <button
-              onClick={() => {
-                signOut();
-                router.push("/");
-              }}
+              onClick={signOut}
               className="flex items-center gap-3 px-4 py-3 text-sm text-stone hover:bg-sand transition-colors cursor-pointer whitespace-nowrap"
             >
               <LogOut size={16} strokeWidth={1.5} />

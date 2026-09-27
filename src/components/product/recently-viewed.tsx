@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Product } from "@/lib/types";
-import { products } from "@/data/products";
+import { useCatalog } from "@/components/catalog-provider";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { ProductCarousel } from "./product-carousel";
 
@@ -11,6 +11,7 @@ const MAX_ITEMS = 8;
 
 export function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
   const [ids, setIds] = useState<string[]>([]);
+  const { products } = useCatalog();
 
   useEffect(() => {
     let stored: string[] = [];

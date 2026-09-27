@@ -6,9 +6,9 @@ import { useState } from "react";
 import { Heart, Eye } from "lucide-react";
 import { Product } from "@/lib/types";
 import { Price } from "@/components/shared/price";
-import { Rating } from "@/components/shared/rating";
 import { Badge } from "@/components/ui/badge";
 import { useWishlistStore } from "@/store/wishlist-store";
+import { saveWishlistChange } from "@/lib/wishlist-sync";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -37,7 +37,7 @@ export function ProductCard({
       onMouseLeave={() => setHovered(false)}
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-sand">
-        <Link href={`/produit/${product.slug}`} className="block h-full w-full">
+        <Link href={`/produit/${product.slug}`} className="relative block h-full w-full">
           <Image
             src={product.images[0]}
             alt={product.name}
@@ -81,6 +81,7 @@ export function ProductCard({
             onClick={(e) => {
               e.preventDefault();
               toggleWishlist(product.id);
+              saveWishlistChange(product.id, !isWishlisted);
               toast(isWishlisted ? "Retiré de vos favoris" : "Ajouté à vos favoris", {
                 description: product.name,
               });
@@ -116,9 +117,8 @@ export function ProductCard({
           {product.subcategory ?? product.category.replace(/-/g, " ")}
         </p>
         <h3 className="text-sm text-ink group-hover:text-gold transition-colors">{product.name}</h3>
-        <div className="mt-1.5 flex items-center justify-between">
+        <div className="mt-1.5">
           <Price amount={product.price} compareAt={product.compareAtPrice} size="sm" />
-          <Rating value={product.rating} size={11} />
         </div>
       </Link>
     </div>

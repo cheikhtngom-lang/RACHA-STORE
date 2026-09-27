@@ -12,32 +12,41 @@ import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { ProductCarousel } from "@/components/product/product-carousel";
-import { getBestSellers } from "@/data/products";
-
-const FREE_SHIPPING_THRESHOLD = 100000;
-const SHIPPING_COST = 5000;
+import { useCatalog } from "@/components/catalog-provider";
+import { getBestSellers } from "@/lib/catalog-selectors";
+import { discountAmount, shippingCost } from "@/lib/pricing";
+import { createClient } from "@/lib/supabase/client";
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
   const subtotal = useCartStore((s) => s.subtotal());
-  const [promo, setPromo] = useState("");
-  const [promoApplied, setPromoApplied] = useState(false);
+  const promo = useCartStore((s) => s.promo);
+  const setPromo = useCartStore((s) => s.setPromo);
+  const [promoInput, setPromoInput] = useState("");
+  const [checkingPromo, setCheckingPromo] = useState(false);
 
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
-  const discount = promoApplied ? Math.round(subtotal * 0.1 * 100) / 100 : 0;
+  const shipping = shippingCost(subtotal);
+  const discount = discountAmount(subtotal, promo?.percentOff);
   const total = subtotal - discount + shipping;
-  const suggestions = getBestSellers(4);
+  const { products } = useCatalog();
+  const suggestions = getBestSellers(products, 4);
 
-  function applyPromo(e: React.FormEvent) {
+  async function applyPromo(e: React.FormEvent) {
     e.preventDefault();
-    if (promo.trim().toUpperCase() === "RACHA10") {
-      setPromoApplied(true);
-      toast.success("Code promo appliqué", { description: "-10% sur votre commande" });
-    } else {
-      toast.error("Code promo invalide", { description: "Essayez « RACHA10 »" });
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    setCheckingPromo(true);
+    const { data: percentOff, error } = await createClient().rpc("check_promo_code", { p_code: code });
+    setCheckingPromo(false);
+    if (error || !percentOff) {
+      toast.error("Code promo invalide ou expiré");
+      return;
     }
+    setPromo({ code, percentOff });
+    setPromoInput("");
+    toast.success("Code promo appliqué", { description: `-${percentOff} % sur votre commande` });
   }
 
   if (items.length === 0) {
@@ -112,30 +121,45 @@ export default function CartPage() {
         <div className="border border-line p-6 sm:p-8 lg:sticky lg:top-28">
           <h2 className="font-display text-2xl text-ink mb-6">Récapitulatif</h2>
 
-          <form onSubmit={applyPromo} className="flex gap-2 mb-6">
-            <div className="relative flex-1">
-              <Tag size={15} strokeWidth={1.5} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-light" />
-              <Input
-                value={promo}
-                onChange={(e) => setPromo(e.target.value)}
-                placeholder="Code promo"
-                className="pl-10"
-                disabled={promoApplied}
-              />
+          {promo ? (
+            <div className="flex items-center justify-between gap-2 mb-6 border border-line px-4 py-3 text-sm">
+              <span className="flex items-center gap-2 text-ink">
+                <Tag size={15} strokeWidth={1.5} className="text-stone-light" />
+                {promo.code}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPromo(null)}
+                className="text-xs text-stone-light underline underline-offset-2 hover:text-ink cursor-pointer"
+              >
+                Retirer
+              </button>
             </div>
-            <Button type="submit" variant="outline" disabled={promoApplied}>
-              Appliquer
-            </Button>
-          </form>
+          ) : (
+            <form onSubmit={applyPromo} className="flex gap-2 mb-6">
+              <div className="relative flex-1">
+                <Tag size={15} strokeWidth={1.5} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-light" />
+                <Input
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  placeholder="Code promo"
+                  className="pl-10"
+                />
+              </div>
+              <Button type="submit" variant="outline" disabled={checkingPromo}>
+                Appliquer
+              </Button>
+            </form>
+          )}
 
           <div className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between text-stone">
               <span>Sous-total</span>
               <span className="tabular-nums">{formatPrice(subtotal)}</span>
             </div>
-            {promoApplied && (
+            {promo && (
               <div className="flex justify-between text-gold">
-                <span>Réduction (RACHA10)</span>
+                <span>Réduction ({promo.code})</span>
                 <span className="tabular-nums">-{formatPrice(discount)}</span>
               </div>
             )}

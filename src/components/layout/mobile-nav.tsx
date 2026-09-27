@@ -6,11 +6,13 @@ import { Sheet } from "@/components/ui/sheet";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { PhoneLink } from "@/components/shared/phone-link";
 import { useUiStore } from "@/store/ui-store";
-import { categories } from "@/data/categories";
+import { useCatalog } from "@/components/catalog-provider";
+import { address } from "@/lib/site";
 
 export function MobileNav() {
   const isOpen = useUiStore((s) => s.isMobileNavOpen);
   const close = useUiStore((s) => s.closeMobileNav);
+  const { categories } = useCatalog();
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && close()} side="left" title="Menu" widthClassName="w-full sm:w-[380px]">
@@ -53,7 +55,7 @@ export function MobileNav() {
         </div>
 
         <div className="flex flex-col px-6 py-6 gap-5 border-t border-line">
-          <Link href="/compte/connexion" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+          <Link href="/compte" onClick={close} className="flex items-center gap-3 text-sm text-stone">
             <User size={17} strokeWidth={1.5} /> Mon compte
           </Link>
           <Link href="/liste-de-souhaits" onClick={close} className="flex items-center gap-3 text-sm text-stone">
@@ -63,7 +65,7 @@ export function MobileNav() {
 
         <div className="flex flex-col px-6 py-6 gap-3 border-t border-line text-xs text-stone-light">
           <p className="flex items-center gap-2">
-            <MapPin size={14} strokeWidth={1.5} /> Paris · Dakar
+            <MapPin size={14} strokeWidth={1.5} /> {address.district}, {address.city}
           </p>
           <PhoneLink className="text-xs text-stone-light" iconSize={14} />
         </div>

@@ -9,11 +9,15 @@ import { formatPrice, cn } from "@/lib/utils";
 export function OrderSummary({
   items,
   subtotal,
+  discount = 0,
+  promoCode,
   shipping,
   total,
 }: {
   items: CartItem[];
   subtotal: number;
+  discount?: number;
+  promoCode?: string;
   shipping: number;
   total: number;
 }) {
@@ -26,9 +30,12 @@ export function OrderSummary({
         className="flex lg:hidden items-center justify-between w-full p-5 cursor-pointer"
       >
         <span className="font-sans-wide text-xs uppercase">
-          Récapitulatif ({items.reduce((s, i) => s + i.quantity, 0)} articles) — {formatPrice(total)}
+          Récapitulatif ({items.reduce((s, i) => s + i.quantity, 0)} articles)
         </span>
-        <ChevronDown size={16} className={cn("transition-transform", open && "rotate-180")} />
+        <span className="flex items-center gap-3">
+          <span className="text-sm tabular-nums">{formatPrice(total)}</span>
+          <ChevronDown size={16} className={cn("transition-transform", open && "rotate-180")} />
+        </span>
       </button>
 
       <div className={cn("lg:block", open ? "block" : "hidden")}>
@@ -57,6 +64,12 @@ export function OrderSummary({
             <span>Sous-total</span>
             <span className="tabular-nums">{formatPrice(subtotal)}</span>
           </div>
+          {discount > 0 && (
+            <div className="flex justify-between text-gold">
+              <span>Réduction{promoCode ? ` (${promoCode})` : ""}</span>
+              <span className="tabular-nums">-{formatPrice(discount)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-stone">
             <span>Livraison</span>
             <span className="tabular-nums">{shipping === 0 ? "Offerte" : formatPrice(shipping)}</span>

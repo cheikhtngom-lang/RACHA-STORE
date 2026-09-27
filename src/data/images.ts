@@ -1,5 +1,5 @@
 export function img(id: string, w = 1200, h?: number) {
-  // Local files (downloaded stock photos) are referenced directly —
+  // Local files (downloaded stock photos) are referenced directly:
   // Next/Image optimizes them on the fly, no query params needed.
   if (id.startsWith("/")) return id;
 
