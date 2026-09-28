@@ -14,12 +14,15 @@ type AuthState = {
   // « loading » tant que la session Supabase n'a pas encore été lue.
   status: "loading" | "authenticated" | "anonymous";
   user: AccountUser | null;
+  // Pour afficher le lien vers l'administration ; les droits réels sont vérifiés par la base.
+  isAdmin: boolean;
 };
 
 // Alimenté par <AuthListener /> à partir de la session Supabase.
 export const useAuthStore = create<AuthState>()(() => ({
   status: "loading",
   user: null,
+  isAdmin: false,
 }));
 
 export function toAccountUser(user: User): AccountUser {

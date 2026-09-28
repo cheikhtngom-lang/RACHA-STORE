@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,17 +16,29 @@ import { img, pools } from "@/data/images";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = safeNextPath(searchParams.get("next"));
+  const requestedNext = searchParams.get("next");
+  const next = safeNextPath(requestedNext);
   const linkError = searchParams.get("erreur") === "lien";
   const status = useAuthStore((s) => s.status);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const redirected = useRef(false);
 
+  // Une fois connecté : la page demandée (ex. retour au paiement), sinon
+  // l'administration pour un compte administrateur, sinon « Mon compte ».
   useEffect(() => {
-    if (status === "authenticated") router.replace(next);
-  }, [status, next, router]);
+    if (status !== "authenticated" || redirected.current) return;
+    redirected.current = true;
+    if (requestedNext) {
+      router.replace(next);
+      return;
+    }
+    createClient()
+      .rpc("is_admin")
+      .then(({ data }) => router.replace(data === true ? "/admin" : next));
+  }, [status, requestedNext, next, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,9 +50,9 @@ function LoginForm() {
       setSubmitting(false);
       return;
     }
+    // La redirection est faite par l'effet ci-dessus, qui réagit à ce changement.
     useAuthStore.setState({ status: "authenticated", user: toAccountUser(data.user) });
     toast.success("Connexion réussie");
-    router.push(next);
   }
 
   return (

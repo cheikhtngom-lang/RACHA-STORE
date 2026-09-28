@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, Package, MapPin, Heart, LogOut, Settings } from "lucide-react";
@@ -21,20 +21,13 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const status = useAuthStore((s) => s.status);
   const user = useAuthStore((s) => s.user);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isAdmin = useAuthStore((s) => s.isAdmin);
 
   useEffect(() => {
     if (status === "anonymous") {
       router.replace(`/compte/connexion?next=${encodeURIComponent(pathname)}`);
     }
   }, [status, pathname, router]);
-
-  useEffect(() => {
-    if (status !== "authenticated") return;
-    createClient()
-      .rpc("is_admin")
-      .then(({ data }) => setIsAdmin(data === true));
-  }, [status, user?.id]);
 
   async function signOut() {
     await createClient().auth.signOut();

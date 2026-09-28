@@ -32,6 +32,12 @@ export function Header() {
   const cartCount = useCartStore((s) => s.totalItems());
   const wishlistCount = useWishlistStore((s) => s.ids.length);
   const isLoggedIn = useAuthStore((s) => s.status === "authenticated");
+  const isAdmin = useAuthStore((s) => s.isAdmin);
+  const account = isAdmin
+    ? { href: "/admin", label: "Administration" }
+    : isLoggedIn
+      ? { href: "/compte", label: "Mon compte" }
+      : { href: "/compte/connexion", label: "Connexion" };
 
   useEffect(() => {
     if (!isHome) return;
@@ -85,14 +91,12 @@ export function Header() {
             <Search size={19} strokeWidth={1.5} />
           </button>
           <Link
-            href={isLoggedIn ? "/compte" : "/compte/connexion"}
-            aria-label={isLoggedIn ? "Mon compte" : "Connexion"}
+            href={account.href}
+            aria-label={account.label}
             className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors"
           >
             <User size={19} strokeWidth={1.5} />
-            <span className="hidden sm:inline font-sans-wide text-[0.72rem] uppercase">
-              {isLoggedIn ? "Mon compte" : "Connexion"}
-            </span>
+            <span className="hidden sm:inline font-sans-wide text-[0.72rem] uppercase">{account.label}</span>
           </Link>
           <Link href="/liste-de-souhaits" aria-label="Liste de souhaits" className="relative cursor-pointer hover:text-gold transition-colors">
             <Heart size={19} strokeWidth={1.5} />

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { User, UserPlus, Heart, MapPin } from "lucide-react";
+import { User, UserPlus, Heart, MapPin, Settings } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { PhoneLink } from "@/components/shared/phone-link";
@@ -15,6 +15,7 @@ export function MobileNav() {
   const close = useUiStore((s) => s.closeMobileNav);
   const { categories } = useCatalog();
   const isLoggedIn = useAuthStore((s) => s.status === "authenticated");
+  const isAdmin = useAuthStore((s) => s.isAdmin);
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && close()} side="left" title="Menu" widthClassName="w-full sm:w-[380px]">
@@ -58,9 +59,16 @@ export function MobileNav() {
 
         <div className="flex flex-col px-6 py-6 gap-5 border-t border-line">
           {isLoggedIn ? (
-            <Link href="/compte" onClick={close} className="flex items-center gap-3 text-sm text-stone">
-              <User size={17} strokeWidth={1.5} /> Mon compte
-            </Link>
+            <>
+              {isAdmin && (
+                <Link href="/admin" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+                  <Settings size={17} strokeWidth={1.5} /> Administration
+                </Link>
+              )}
+              <Link href="/compte" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+                <User size={17} strokeWidth={1.5} /> Mon compte
+              </Link>
+            </>
           ) : (
             <>
               <Link href="/compte/connexion" onClick={close} className="flex items-center gap-3 text-sm text-stone">

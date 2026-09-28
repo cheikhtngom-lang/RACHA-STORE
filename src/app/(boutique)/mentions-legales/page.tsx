@@ -7,15 +7,15 @@ export const metadata: Metadata = {
 const sections = [
   {
     title: "1. Éditeur du site",
-    body: `Le site Racha Store est édité par [Raison sociale à compléter], [forme juridique], au capital de [montant] F CFA, immatriculée au Registre du Commerce et du Crédit Mobilier (RCCM) sous le numéro [numéro RCCM à compléter], dont le siège social est situé à Scat Urbain, Dakar, Sénégal. Numéro d'Identification Fiscale : [à compléter].`,
+    body: `Le site Racha Store (www.rachamarket.com) est édité et exploité techniquement par Bustane Holding, entreprise individuelle immatriculée au Registre du Commerce et du Crédit Mobilier (RCCM) sous le numéro SN.DKR.2022.A.296, NINEA 009100554, dont le siège est situé à Rufisque, ZAC Mbao, Sénégal, pour le compte de la boutique Racha Store, Scat Urbain, Dakar. Contact de l'éditeur : bustaneimmo2021@gmail.com, 77 715 65 45.`,
   },
   {
     title: "2. Directeur de la publication",
-    body: `Le directeur de la publication du site est [Nom à compléter], en sa qualité de représentant légal de la société éditrice.`,
+    body: `Le directeur de la publication du site est le gérant de Bustane Holding.`,
   },
   {
     title: "3. Hébergement",
-    body: `Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis. Les comptes clients et les commandes sont stockés chez Supabase Inc.`,
+    body: `Le site est hébergé par Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis. Les comptes clients, les commandes et les photos des produits sont stockés chez Supabase Inc.`,
   },
   {
     title: "4. Propriété intellectuelle",

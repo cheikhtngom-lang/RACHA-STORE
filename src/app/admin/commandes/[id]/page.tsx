@@ -11,8 +11,8 @@ import { WhatsAppIcon } from "@/components/shared/social-icons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { orderStatusLabels, type OrderStatus } from "@/lib/order-status";
-import { dbErrorMessage, formatDateTime, whatsappNumber } from "@/lib/admin/utils";
-import { formatPrice, cn } from "@/lib/utils";
+import { dbErrorMessage, formatDateTime } from "@/lib/admin/utils";
+import { formatPrice, cn, whatsappNumber } from "@/lib/utils";
 
 type Order = {
   id: string;

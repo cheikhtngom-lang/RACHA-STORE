@@ -26,7 +26,7 @@ export function AuthListener() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session?.user) {
-        useAuthStore.setState({ status: "anonymous", user: null });
+        useAuthStore.setState({ status: "anonymous", user: null, isAdmin: false });
         // Les favoris du compte ne doivent pas rester visibles après la déconnexion.
         if (event === "SIGNED_OUT") useWishlistStore.setState({ ids: [] });
         return;
@@ -37,7 +37,12 @@ export function AuthListener() {
       // Supabase déconseille d'attendre un autre appel dans ce callback : on le diffère.
       setTimeout(() => {
         loadProfile(user.id);
-        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") mergeWishlistWithAccount(user.id);
+        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+          mergeWishlistWithAccount(user.id);
+          supabase.rpc("is_admin").then(({ data }) => {
+            if (useAuthStore.getState().user?.id === user.id) useAuthStore.setState({ isAdmin: data === true });
+          });
+        }
       }, 0);
     });
 
