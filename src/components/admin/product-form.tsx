@@ -16,6 +16,25 @@ import type { ProductColor } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
 // Ligne de la table products (supabase/migrations), telle que lue par l'administration.
+// Suggestions du champ « Matières » : tissus africains d'abord, puis les plus courants.
+const MATERIAL_SUGGESTIONS = [
+  "Wax",
+  "Wax hollandais",
+  "Bazin riche",
+  "Bazin brodé",
+  "Kente",
+  "Bogolan",
+  "Thioup (teinture artisanale)",
+  "Pagne tissé",
+  "Coton",
+  "Lin",
+  "Soie",
+  "Satin",
+  "Mousseline",
+  "Cuir",
+  "Daim",
+];
+
 export type ProductRecord = {
   id: string;
   slug: string;
@@ -311,8 +330,19 @@ export function ProductForm({ product }: { product?: ProductRecord }) {
               <Field label="Points clés" htmlFor="details" hint="Un point par ligne.">
                 <Textarea id="details" rows={4} value={form.details} onChange={(e) => update("details", e.target.value)} />
               </Field>
-              <Field label="Matières" htmlFor="materials">
-                <Input id="materials" value={form.materials} onChange={(e) => update("materials", e.target.value)} placeholder="100 % coton" />
+              <Field label="Matières" htmlFor="materials" hint="Choisissez dans la liste (wax, bazin riche, kente…) ou écrivez librement.">
+                <Input
+                  id="materials"
+                  list="materials-options"
+                  value={form.materials}
+                  onChange={(e) => update("materials", e.target.value)}
+                  placeholder="Wax, bazin riche, 100 % coton…"
+                />
+                <datalist id="materials-options">
+                  {MATERIAL_SUGGESTIONS.map((m) => (
+                    <option key={m} value={m} />
+                  ))}
+                </datalist>
               </Field>
               <Field label="Entretien" htmlFor="care">
                 <Input id="care" value={form.care} onChange={(e) => update("care", e.target.value)} placeholder="Lavage à 30 °C" />

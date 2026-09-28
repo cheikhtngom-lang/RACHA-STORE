@@ -1,15 +1,15 @@
 const props = [
   {
-    title: "Livraison offerte",
-    description: "Dès 100 000 F CFA d'achat, en 2 à 4 jours ouvrés.",
+    title: "Livraison 7j/7",
+    description: "Au Sénégal et partout dans le monde, offerte dès 100 000 F CFA d'achat.",
   },
   {
-    title: "Retours sous 30 jours",
-    description: "Article non porté, dans son emballage d'origine.",
+    title: "Article défectueux",
+    description: "Échangé ou remboursé après vérification.",
   },
   {
     title: "Paiement sécurisé",
-    description: "Visa, Mastercard, American Express et PayPal.",
+    description: "Wave, Orange Money, Visa et Mastercard.",
   },
   {
     title: "Service client",

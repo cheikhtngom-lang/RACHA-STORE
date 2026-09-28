@@ -32,11 +32,11 @@ export const metadata: Metadata = {
     template: "%s | Racha Store",
   },
   description:
-    "Prêt-à-porter, sacs, chaussures, bijoux et parfums. Livraison en 2 à 4 jours ouvrés, offerte dès 100 000 F CFA.",
+    "Prêt-à-porter, sacs, chaussures, bijoux et parfums. Livraison 7j/7 au Sénégal et partout dans le monde, offerte dès 100 000 F CFA.",
   openGraph: {
     title: "Racha Store | Vêtements, sacs, chaussures et bijoux",
     description:
-      "Prêt-à-porter, sacs, chaussures, bijoux et parfums. Livraison en 2 à 4 jours ouvrés, offerte dès 100 000 F CFA.",
+      "Prêt-à-porter, sacs, chaussures, bijoux et parfums. Livraison 7j/7 au Sénégal et partout dans le monde, offerte dès 100 000 F CFA.",
     images: ["/brand/og-image.jpg"],
     locale: "fr_SN",
     type: "website",

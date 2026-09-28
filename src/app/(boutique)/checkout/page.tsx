@@ -278,7 +278,7 @@ export default function CheckoutPage() {
                     <RadioGroupItem value="standard" />
                     <div>
                       <p className="text-sm text-ink">Livraison standard</p>
-                      <p className="text-xs text-stone-light">2 à 4 jours ouvrés</p>
+                      <p className="text-xs text-stone-light">7j/7, au Sénégal et partout dans le monde</p>
                     </div>
                   </div>
                   <span className="text-sm tabular-nums">
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                     <RadioGroupItem value="express" />
                     <div>
                       <p className="text-sm text-ink">Livraison express</p>
-                      <p className="text-xs text-stone-light">1 à 2 jours ouvrés</p>
+                      <p className="text-xs text-stone-light">En priorité, 7j/7</p>
                     </div>
                   </div>
                   <span className="text-sm tabular-nums">

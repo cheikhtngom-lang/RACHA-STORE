@@ -54,8 +54,8 @@ type Order = {
 const STEPS: OrderStatus[] = ["pending", "paid", "shipped", "delivered"];
 
 const shippingLabels = {
-  standard: "Livraison standard, 2 à 4 jours ouvrés",
-  express: "Livraison express, 1 à 2 jours ouvrés",
+  standard: "Livraison standard",
+  express: "Livraison express (en priorité)",
 };
 
 export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[id]">) {

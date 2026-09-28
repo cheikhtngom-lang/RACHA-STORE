@@ -7,7 +7,7 @@ export type Announcement = { id: string; message: string; link_url: string | nul
 // exécutée, le bandeau garde son texte d'origine.
 const FALLBACK: Announcement[] = [
   { id: "livraison", message: "Livraison offerte dès 100 000 F CFA", link_url: null },
-  { id: "retours", message: "Retours gratuits sous 30 jours", link_url: null },
+  { id: "livraison-monde", message: "Livraison 7j/7, au Sénégal et partout dans le monde", link_url: null },
 ];
 
 // Annonces du bandeau, écrites dans /admin/annonces. La base ne renvoie que

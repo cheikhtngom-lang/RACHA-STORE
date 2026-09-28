@@ -3,20 +3,20 @@ import { getShopInfo } from "@/lib/get-shop-info";
 
 export const metadata: Metadata = {
   title: "Livraison & retours",
-  description: "Toutes les informations sur nos délais de livraison, frais de port et politique de retour.",
+  description: "Livraison 7j/7 au Sénégal et partout dans le monde, frais de port et article défectueux.",
 };
 
-const shippingOptions = [
-  { title: "Livraison standard", delay: "2 à 4 jours ouvrés", price: "Offerte dès 100 000 F CFA, sinon 5 000 F CFA" },
-  { title: "Livraison express", delay: "1 à 2 jours ouvrés", price: "10 000 F CFA" },
-  { title: "Livraison internationale", delay: "5 à 8 jours ouvrés", price: "À partir de 12 000 F CFA" },
+const shippingOptions: { title: string; delay: string; price?: string }[] = [
+  { title: "Livraison standard", delay: "Au Sénégal, 7j/7", price: "Offerte dès 100 000 F CFA, sinon 5 000 F CFA" },
+  { title: "Livraison express", delay: "En priorité, 7j/7", price: "10 000 F CFA" },
+  { title: "Livraison internationale", delay: "Partout dans le monde, 7j/7" },
 ];
 
 const returnSteps = [
-  { step: "1", title: "Demandez votre retour", description: "Par téléphone ou WhatsApp, ou depuis « Mon compte » > « Commandes »." },
-  { step: "2", title: "Préparez le colis", description: "Article non porté, dans son emballage d'origine, avec ses étiquettes." },
-  { step: "3", title: "Remettez-nous l'article", description: "Nous vous indiquons où le déposer, sous 30 jours après réception." },
-  { step: "4", title: "Recevez votre remboursement", description: "Sous 5 à 10 jours ouvrés après réception et contrôle de l'article." },
+  { step: "1", title: "Contactez-nous dès réception", description: "Par téléphone ou WhatsApp, ou depuis « Mon compte » > « Commandes », avec une photo de l'article." },
+  { step: "2", title: "Vérification", description: "Nous examinons l'article et vous confirmons l'échange ou le remboursement." },
+  { step: "3", title: "Remettez-nous l'article", description: "Non lavé, avec ses étiquettes d'origine. Nous vous indiquons où le déposer." },
+  { step: "4", title: "Échange ou remboursement", description: "Un remboursement éventuel est effectué sous 5 à 10 jours ouvrés après vérification." },
 ];
 
 export default async function ShippingReturnsPage() {
@@ -36,14 +36,18 @@ export default async function ShippingReturnsPage() {
             <div key={o.title} className="border border-line p-6">
               <h3 className="text-sm text-ink mb-2">{o.title}</h3>
               <p className="text-xs text-stone-light mb-1">{o.delay}</p>
-              <p className="text-xs text-stone-light">{o.price}</p>
+              {o.price && <p className="text-xs text-stone-light">{o.price}</p>}
             </div>
           ))}
         </div>
       </section>
 
       <section className="mb-20">
-        <h2 className="font-display text-2xl text-ink mb-8">Comment retourner un article</h2>
+        <h2 className="font-display text-2xl text-ink mb-3">Article défectueux ou non conforme</h2>
+        <p className="text-sm text-stone-light leading-relaxed mb-8 max-w-2xl">
+          Les articles ne sont pas repris pour un changement d&apos;avis. Un article défectueux ou qui ne correspond pas à
+          votre commande est échangé ou remboursé après vérification.
+        </p>
         <div className="grid sm:grid-cols-2 gap-8">
           {returnSteps.map((s) => (
             <div key={s.step} className="flex gap-4">
@@ -60,9 +64,9 @@ export default async function ShippingReturnsPage() {
       <section className="bg-sand p-8 sm:p-10">
         <h2 className="font-display text-xl text-ink mb-4">Bon à savoir</h2>
         <ul className="text-sm text-stone leading-relaxed space-y-2 list-disc list-inside">
-          <li>Les articles doivent être retournés non portés, non lavés, avec toutes leurs étiquettes d&apos;origine.</li>
-          <li>Les articles soldés ou en édition limitée peuvent faire l&apos;objet d&apos;une politique de retour spécifique, précisée sur la fiche produit.</li>
-          <li>Les frais de retour sont pris en charge par nos soins pour tout retour effectué au Sénégal.</li>
+          <li>Nous livrons 7j/7, au Sénégal et partout dans le monde.</li>
+          <li>Signalez un article défectueux dès réception : il doit nous être remis non lavé, avec ses étiquettes d&apos;origine.</li>
+          <li>Pour un article défectueux, les frais de retour sont à notre charge au Sénégal.</li>
           <li>Pour toute question, notre service client reste disponible{hours}.</li>
         </ul>
       </section>

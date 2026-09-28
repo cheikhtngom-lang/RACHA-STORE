@@ -82,7 +82,7 @@ export default async function ProductPage({
           </div>
 
           <p className="mt-8 pt-6 border-t border-line text-xs text-stone-light">
-            Retours gratuits sous 30 jours. Paiement sécurisé.
+            Livraison 7j/7, au Sénégal et partout dans le monde. Paiement sécurisé par Wave, Orange Money ou carte bancaire.
           </p>
 
           <div className="mt-8">
@@ -110,9 +110,8 @@ export default async function ProductPage({
               <AccordionItem value="shipping" className="border-b-0">
                 <AccordionTrigger>Livraison & retours</AccordionTrigger>
                 <AccordionContent>
-                  Livraison standard sous 2 à 4 jours ouvrés, express sous 1 à 2 jours ouvrés.
-                  Retours gratuits sous 30 jours à compter de la réception de votre commande, article non porté et
-                  dans son emballage d&apos;origine.
+                  Livraison 7j/7, au Sénégal et partout dans le monde, offerte dès 100 000 F CFA d&apos;achat. Article défectueux ou non conforme :
+                  contactez-nous dès réception, il est échangé ou remboursé après vérification.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

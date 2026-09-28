@@ -4,7 +4,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Toutes les réponses à vos questions sur les commandes, livraisons, retours et tailles.",
+  description: "Toutes les réponses à vos questions sur les commandes, la livraison, les articles défectueux et les tailles.",
 };
 
 const groups = (phone: string) => [
@@ -21,7 +21,7 @@ const groups = (phone: string) => [
       },
       {
         q: "Quels moyens de paiement acceptez-vous ?",
-        a: "Nous acceptons les cartes Visa, Mastercard et American Express, ainsi que PayPal.",
+        a: "Nous acceptons Wave, Orange Money et les cartes bancaires Visa et Mastercard.",
       },
     ],
   },
@@ -30,7 +30,7 @@ const groups = (phone: string) => [
     items: [
       {
         q: "Quels sont les délais de livraison ?",
-        a: "Comptez 2 à 4 jours ouvrés au Sénégal en livraison standard, et 1 à 2 jours ouvrés en express. Pour l'international, comptez 5 à 8 jours ouvrés.",
+        a: "Nous livrons 7j/7, au Sénégal et partout dans le monde. Le délai dépend de votre adresse et du mode choisi (standard ou express) : contactez-nous pour une estimation.",
       },
       {
         q: "La livraison est-elle offerte ?",
@@ -38,24 +38,24 @@ const groups = (phone: string) => [
       },
       {
         q: "Livrez-vous à l'international ?",
-        a: "Oui. Comptez 5 à 8 jours ouvrés, avec des frais à partir de 12 000 F CFA. Contactez-nous pour vérifier que nous livrons dans votre pays.",
+        a: "Oui, partout dans le monde, 7j/7. Contactez-nous pour connaître le délai vers votre pays.",
       },
     ],
   },
   {
-    title: "Retours & remboursements",
+    title: "Article défectueux",
     items: [
       {
-        q: "Quelle est votre politique de retour ?",
-        a: "Vous disposez de 30 jours à compter de la réception pour nous retourner un article non porté, dans son emballage d'origine avec les étiquettes.",
+        q: "Puis-je retourner un article ?",
+        a: "Les articles ne sont pas repris pour un changement d'avis. Un article défectueux ou qui ne correspond pas à votre commande est échangé ou remboursé après vérification.",
       },
       {
-        q: "Comment initier un retour ?",
-        a: `Contactez-nous par téléphone ou WhatsApp${phone ? ` au ${phone}` : ""}, ou depuis « Mon compte » > « Commandes ». Nous vous indiquons ensuite comment nous remettre l'article.`,
+        q: "Que faire si mon article est défectueux ?",
+        a: `Contactez-nous dès réception par téléphone ou WhatsApp${phone ? ` au ${phone}` : ""}, ou depuis « Mon compte » > « Commandes », avec une photo de l'article. Nous vous indiquons ensuite comment nous le remettre.`,
       },
       {
         q: "Sous quel délai suis-je remboursé·e ?",
-        a: "Le remboursement est effectué sous 5 à 10 jours ouvrés après réception et contrôle de l'article retourné.",
+        a: "Si un remboursement est convenu, il est effectué sous 5 à 10 jours ouvrés après vérification de l'article.",
       },
     ],
   },

@@ -19,15 +19,15 @@ const sections = [
   },
   {
     title: "4. Paiement",
-    body: `Le paiement est exigible immédiatement à la commande. Le site utilise un système de paiement sécurisé. Les cartes bancaires Visa, Mastercard, American Express ainsi que PayPal sont acceptées.`,
+    body: `Le paiement est exigible immédiatement à la commande. Le site utilise un système de paiement sécurisé. Le paiement s'effectue par Wave, Orange Money ou carte bancaire (Visa, Mastercard).`,
   },
   {
     title: "5. Livraison",
-    body: `Les délais de livraison sont indiqués à titre indicatif lors de la commande. Racha Store ne saurait être tenue responsable des conséquences dues à un retard de livraison imputable au transporteur.`,
+    body: `Racha Store livre 7j/7, au Sénégal et à l'international. Les délais communiqués au Client sont donnés à titre indicatif. Racha Store ne saurait être tenue responsable des conséquences dues à un retard de livraison imputable au transporteur.`,
   },
   {
-    title: "6. Droit de rétractation & retours",
-    body: `Le Client dispose d'un délai de 30 jours à compter de la réception de sa commande pour exercer son droit de rétractation, sans avoir à justifier de motif. Les articles doivent être retournés non portés, dans leur emballage d'origine avec les étiquettes.`,
+    title: "6. Retours",
+    body: `Les articles ne sont ni repris ni remboursés pour un changement d'avis. Un article défectueux ou non conforme à la commande est échangé ou remboursé après vérification, à condition que le Client contacte Racha Store dès réception et remette l'article non lavé, avec ses étiquettes d'origine.`,
   },
   {
     title: "7. Garanties",

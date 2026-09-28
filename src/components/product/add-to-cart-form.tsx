@@ -146,7 +146,7 @@ export function AddToCartForm({
         <p className="text-xs text-stone-light">
           {outOfStock
             ? "Cette pièce reviendra bientôt en stock. Inscrivez-vous pour être averti·e."
-            : `Livraison estimée sous 2 à 4 jours ouvrés · ${product.stock} en stock`}
+            : `Livraison 7j/7 · ${product.stock} en stock`}
         </p>
       )}
 
