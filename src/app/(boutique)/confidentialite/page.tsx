@@ -11,7 +11,7 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
   {
     title: "1. Responsable du traitement",
     paragraphs: [
-      `Racha Store, ${shop.address}. Pour toute question sur vos données : ${shop.contactEmail}${shop.phones[0] ? ` ou ${shop.phones[0].display}` : ""}.`,
+      `Racha Store, ${shop.address}. Pour toute question sur vos données, écrivez-nous depuis la page Contact${shop.contactEmail ? ` ou à ${shop.contactEmail}` : ""}${shop.phones[0] ? `, ou appelez le ${shop.phones[0].display}` : ""}.`,
     ],
   },
   {
@@ -50,7 +50,6 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
     title: "6. Cookies et stockage dans le navigateur",
     paragraphs: [
       "Le site n'utilise que les cookies nécessaires à son fonctionnement : ceux qui gardent votre session ouverte quand vous êtes connecté·e. Votre panier, votre liste de souhaits et les produits consultés récemment sont gardés dans votre navigateur. Aucun cookie publicitaire n'est déposé.",
-      "La carte de la page Contact est fournie par Google Maps, qui peut déposer ses propres cookies lorsque vous l'affichez.",
     ],
   },
   {
@@ -62,7 +61,7 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
   {
     title: "8. Vos droits",
     paragraphs: [
-      `Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous pouvez accéder à vos données, les faire rectifier ou supprimer, et vous opposer à leur utilisation. Écrivez à ${shop.contactEmail}. Pour vous désinscrire de la newsletter, la même adresse suffit.`,
+      `Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous pouvez accéder à vos données, les faire rectifier ou supprimer, et vous opposer à leur utilisation. Écrivez-nous depuis la page Contact${shop.contactEmail ? ` ou à ${shop.contactEmail}` : ""}, y compris pour vous désinscrire de la newsletter.`,
       "Vous pouvez également saisir la Commission de Protection des Données Personnelles (CDP).",
     ],
   },

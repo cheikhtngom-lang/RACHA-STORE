@@ -118,7 +118,7 @@ function ListField({
 }
 
 function ContactForm({ initial }: { initial: ShopSettingsRow }) {
-  const [email, setEmail] = useState(initial.contact_email);
+  const [email, setEmail] = useState(initial.contact_email ?? "");
   const [phones, setPhones] = useState(initial.phones.length ? initial.phones : [""]);
   const [address, setAddress] = useState(initial.address);
   const [hours, setHours] = useState(initial.opening_hours);
@@ -131,7 +131,7 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
     e.preventDefault();
     setError(null);
     const values = {
-      contact_email: email.trim().toLowerCase(),
+      contact_email: email.trim().toLowerCase() || null,
       phones: phones.map((p) => p.trim()).filter(Boolean),
       address: address.trim(),
       opening_hours: hours.trim(),
@@ -139,7 +139,7 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
       tiktok_url: tiktok.trim() || null,
     };
 
-    if (!EMAIL_PATTERN.test(values.contact_email)) return setError("L'e-mail de contact est invalide.");
+    if (values.contact_email && !EMAIL_PATTERN.test(values.contact_email)) return setError("L'e-mail de contact est invalide.");
     const badPhone = values.phones.find((p) => whatsappNumber(p).length < 8);
     if (badPhone) return setError(`Numéro incomplet : ${badPhone}. Indiquez l'indicatif pour un numéro étranger (+33…).`);
     if (values.address.length < 3) return setError("Indiquez l'adresse de la boutique.");
@@ -166,8 +166,12 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
     <Panel title="Coordonnées affichées sur le site">
       <form onSubmit={handleSubmit} className="p-5 sm:p-6 flex flex-col gap-5">
         <p className="text-xs text-stone-light -mt-1">Pied de page, page Contact, menu mobile et politique de confidentialité.</p>
-        <Field label="E-mail de contact" htmlFor="shop-email">
-          <Input id="shop-email" type="email" required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Field
+          label="E-mail de contact (facultatif)"
+          htmlFor="shop-email"
+          hint="Laissé vide, aucun e-mail n'est affiché : les clients écrivent depuis la page Contact et leurs messages arrivent dans « Messages »."
+        >
+          <Input id="shop-email" type="email" maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
         </Field>
         <ListField
           label="Téléphones"
@@ -178,7 +182,7 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
           addLabel="Ajouter un numéro"
           firstNote="Principal"
         />
-        <Field label="Adresse" htmlFor="shop-address" hint="Sert aussi à la carte et à l'itinéraire Google Maps de la page Contact.">
+        <Field label="Adresse" htmlFor="shop-address" hint="Affichée telle quelle. Indiquez seulement la ville pour ne pas montrer le quartier.">
           <Input id="shop-address" required maxLength={200} value={address} onChange={(e) => setAddress(e.target.value)} />
         </Field>
         <Field label="Horaires (facultatif)" htmlFor="shop-hours">

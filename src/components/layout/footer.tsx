@@ -7,7 +7,6 @@ import { Logo } from "@/components/shared/logo";
 import { InstagramIcon, TikTokIcon } from "@/components/shared/social-icons";
 import { PhoneLink } from "@/components/shared/phone-link";
 import { useShopInfo } from "@/components/shop-info-provider";
-import { mapsLinks } from "@/lib/shop-info";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useCatalog } from "@/components/catalog-provider";
@@ -120,30 +119,25 @@ export function Footer() {
             <div className="mt-12">
               <p className="font-sans-wide text-[0.68rem] uppercase text-gold-light mb-5">Nous contacter</p>
               <ul className="flex flex-col gap-3 text-sm">
-                <li>
-                  <a
-                    href={`mailto:${shop.contactEmail}`}
-                    className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors [overflow-wrap:anywhere]"
-                  >
-                    <Mail size={14} strokeWidth={1.5} className="shrink-0" />
-                    {shop.contactEmail}
-                  </a>
-                </li>
+                {shop.contactEmail && (
+                  <li>
+                    <a
+                      href={`mailto:${shop.contactEmail}`}
+                      className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors [overflow-wrap:anywhere]"
+                    >
+                      <Mail size={14} strokeWidth={1.5} className="shrink-0" />
+                      {shop.contactEmail}
+                    </a>
+                  </li>
+                )}
                 {shop.phones.map((number) => (
                   <li key={number.tel}>
                     <PhoneLink number={number} className="text-cream/70 hover:text-cream transition-colors" />
                   </li>
                 ))}
-                <li>
-                  <a
-                    href={mapsLinks(shop.address).search}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors"
-                  >
-                    <MapPin size={14} strokeWidth={1.5} className="shrink-0" />
-                    {shop.address}
-                  </a>
+                <li className="flex items-center gap-2 text-cream/70">
+                  <MapPin size={14} strokeWidth={1.5} className="shrink-0" />
+                  {shop.address}
                 </li>
               </ul>
               {shop.phones.length > 0 && (

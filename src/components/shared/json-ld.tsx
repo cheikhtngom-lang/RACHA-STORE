@@ -27,7 +27,7 @@ export function StoreJsonLd({ shop }: { shop: ShopInfo }) {
         logo: absolute("/brand/logo.jpeg"),
         image: absolute("/brand/og-image.jpg"),
         telephone: shop.phones[0]?.tel,
-        email: shop.contactEmail,
+        email: shop.contactEmail ?? undefined,
         address: {
           "@type": "PostalAddress",
           streetAddress: shop.address,

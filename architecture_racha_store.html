@@ -111,7 +111,7 @@
   <div class="cover">
     <p class="eyebrow">Document d'architecture</p>
     <h1>Racha Store</h1>
-    <p>Boutique en ligne de mode (prêt-à-porter, maroquinerie, chaussures, bijoux, beauté) basée à Scat Urbain, Dakar.
+    <p>Boutique en ligne de mode (prêt-à-porter, maroquinerie, chaussures, bijoux, beauté) basée à Dakar.
       Ce document décrit comment le site est construit, où vivent les données, comment il est protégé et déployé,
       et tout ce qui a été réalisé depuis le début du projet.</p>
     <div class="meta">
@@ -257,7 +257,7 @@
     <tr><td><code>/produit/[slug]</code></td><td>Fiche produit : photos, couleurs, tailles, stock, ajout au panier.</td></tr>
     <tr><td><code>/panier</code>, <code>/checkout</code>, <code>/checkout/confirmation</code></td><td>Panier, informations de livraison, code promo, confirmation.</td></tr>
     <tr><td><code>/liste-de-souhaits</code></td><td>Articles gardés de côté (synchronisés avec le compte une fois connecté).</td></tr>
-    <tr><td><code>/contact</code>, <code>/faq</code>, <code>/a-propos</code>, <code>/livraison-retours</code></td><td>Formulaire de contact avec carte, questions fréquentes, histoire, livraison.</td></tr>
+    <tr><td><code>/contact</code>, <code>/faq</code>, <code>/a-propos</code>, <code>/livraison-retours</code></td><td>Formulaire de contact (messages lus dans l'administration), questions fréquentes, histoire, livraison.</td></tr>
     <tr><td><code>/cgv</code>, <code>/mentions-legales</code>, <code>/confidentialite</code></td><td>Pages légales.</td></tr>
   </table>
   <h3>Compte client</h3>
@@ -389,7 +389,7 @@
     <thead><tr><th>Protection</th><th>Détail</th></tr></thead>
     <tr><td>Règles RLS</td><td>Chaque table est fermée par défaut. Un client ne lit que ses commandes, adresses et liste de souhaits ; seuls les comptes de la table <code>admins</code> gèrent le catalogue et les commandes.</td></tr>
     <tr><td>Prix côté base</td><td>Le navigateur n'envoie jamais de montant : un prix modifié dans la page n'a aucun effet.</td></tr>
-    <tr><td>En-têtes HTTP</td><td>Content-Security-Policy (sources autorisées : le site, Supabase, Google Maps), HSTS 2 ans, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy.</td></tr>
+    <tr><td>En-têtes HTTP</td><td>Content-Security-Policy (sources autorisées : le site et Supabase), HSTS 2 ans, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy.</td></tr>
     <tr><td>Anti-spam</td><td>Contact : 3 messages par adresse en 10 minutes, 50 par heure au total. Newsletter : 100 inscriptions par heure. Commandes : 5 par e-mail ou téléphone par heure, 60 en 10 minutes. Champs piège invisibles pour les robots, longueurs maximales sur tous les champs.</td></tr>
     <tr><td>Clés</td><td>Seule la clé publique Supabase est dans le navigateur. La clé secrète, la clé Resend et le secret du webhook ne sont que dans les variables serveur de Vercel.</td></tr>
     <tr><td>Mots de passe</td><td>Gérés par Supabase Auth, chiffrés de façon irréversible.</td></tr>
@@ -447,6 +447,7 @@
     <tr><td>28 sept. 2026</td><td>Nouveau design sombre des tableaux de bord administrateur et client.</td></tr>
     <tr><td>28 sept. 2026</td><td>Bandeau d'annonces défilant, géré depuis l'administration (page Annonces).</td></tr>
     <tr><td>29 sept. 2026</td><td>Page Paramètres : compte de la gérante (nom, e-mail, mot de passe, sessions) et coordonnées de la boutique modifiables sans développeur.</td></tr>
+    <tr><td>29 sept. 2026</td><td>Coordonnées publiques réduites à la demande de la propriétaire : ni e-mail ni quartier sur le site, plus de carte ; contact par téléphone, WhatsApp ou formulaire.</td></tr>
   </table>
 
   <!-- 11 -->

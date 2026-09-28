@@ -7,7 +7,8 @@ import { whatsappNumber } from "@/lib/utils";
 export type PhoneNumber = { display: string; tel: string };
 
 export type ShopInfo = {
-  contactEmail: string;
+  // Null : aucun e-mail affiché sur le site.
+  contactEmail: string | null;
   // Le premier est le numéro principal (en-tête, page Contact, Google).
   phones: PhoneNumber[];
   address: string;
@@ -17,7 +18,7 @@ export type ShopInfo = {
 };
 
 export type ShopSettingsRow = {
-  contact_email: string;
+  contact_email: string | null;
   phones: string[];
   address: string;
   opening_hours: string;
@@ -28,15 +29,15 @@ export type ShopSettingsRow = {
 // Valeurs affichées tant que la migration 20260929090000_settings.sql n'a
 // pas été exécutée (et sur les pages hors boutique).
 export const DEFAULT_SHOP_SETTINGS: ShopSettingsRow = {
-  contact_email: "sy.ndeyetacko@gmail.com",
-  phones: ["+221 77 344 59 51", "+221 76 630 52 62", "+33 7 51 22 66 11"],
-  address: "Scat Urbain, Dakar, Sénégal",
+  contact_email: null,
+  phones: ["+221 76 630 52 62", "+33 7 51 22 66 11"],
+  address: "Dakar, Sénégal",
   opening_hours: "Du lundi au samedi, de 10h à 19h",
   instagram_url: "https://www.instagram.com/racha_store_221",
   tiktok_url: "https://www.tiktok.com/@racha2200",
 };
 
-// Numéro saisi tel quel (« 77 344 59 51 », « +33 7 51… ») → lien tel: et WhatsApp.
+// Numéro saisi tel quel (« 76 630 52 62 », « +33 7 51… ») → lien tel: et WhatsApp.
 export function toPhoneNumber(display: string): PhoneNumber {
   return { display, tel: `+${whatsappNumber(display)}` };
 }
@@ -53,16 +54,6 @@ export function toShopInfo(row: ShopSettingsRow): ShopInfo {
 }
 
 export const DEFAULT_SHOP_INFO = toShopInfo(DEFAULT_SHOP_SETTINGS);
-
-// Liens Google Maps construits à partir de l'adresse (sans clé d'API).
-export function mapsLinks(address: string) {
-  const q = encodeURIComponent(address);
-  return {
-    search: `https://www.google.com/maps/search/?api=1&query=${q}`,
-    directions: `https://www.google.com/maps/dir/?api=1&destination=${q}`,
-    embed: `https://www.google.com/maps?q=${q}&output=embed`,
-  };
-}
 
 // « https://www.instagram.com/racha_store_221 » → « @racha_store_221 ».
 export function socialHandle(url: string | null) {

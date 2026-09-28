@@ -14,8 +14,6 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co",
   "font-src 'self'",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
-  // Carte de la page Contact.
-  "frame-src https://www.google.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

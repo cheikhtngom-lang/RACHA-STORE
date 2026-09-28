@@ -6,15 +6,13 @@ import { Input, Textarea, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PhoneLink } from "@/components/shared/phone-link";
 import { useShopInfo } from "@/components/shop-info-provider";
-import { mapsLinks } from "@/lib/shop-info";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ContactPage() {
   const shop = useShopInfo();
-  const maps = mapsLinks(shop.address);
   const infos: { title: string; value: string; href?: string }[] = [
-    { title: "E-mail", value: shop.contactEmail, href: `mailto:${shop.contactEmail}` },
-    { title: "Adresse", value: shop.address, href: maps.search },
+    ...(shop.contactEmail ? [{ title: "E-mail", value: shop.contactEmail, href: `mailto:${shop.contactEmail}` }] : []),
+    { title: "Adresse", value: shop.address },
     ...(shop.openingHours ? [{ title: "Horaires", value: shop.openingHours }] : []),
   ];
   const [sent, setSent] = useState(false);
@@ -90,27 +88,6 @@ export default function ContactPage() {
                 )}
               </div>
             ))}
-          </div>
-
-          <div className="mt-6 border border-line">
-            <iframe
-              src={maps.embed}
-              title={`Carte : ${shop.address}`}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="block w-full h-72 border-0 bg-sand"
-            />
-            <div className="flex items-center justify-between gap-4 p-4 border-t border-line">
-              <p className="text-sm text-ink">{shop.address}</p>
-              <a
-                href={maps.directions}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 font-sans-wide text-[0.65rem] uppercase text-ink underline underline-offset-4"
-              >
-                Itinéraire
-              </a>
-            </div>
           </div>
         </div>
 

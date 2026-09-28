@@ -43,7 +43,7 @@ export default function AboutPage() {
             Racha Store est née d&apos;une conviction simple : l&apos;élégance ne devrait jamais être éphémère.
           </p>
           <p className="text-stone leading-relaxed mt-6">
-            Racha Store est une boutique basée à Dakar, dans le quartier de Scat Urbain. Nous sélectionnons des
+            Racha Store est une boutique basée à Dakar. Nous sélectionnons des
             vêtements, sacs, chaussures, bijoux et parfums, et chaque fiche produit indique la composition exacte
             et les conseils d&apos;entretien.
           </p>

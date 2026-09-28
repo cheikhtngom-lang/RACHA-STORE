@@ -13,7 +13,8 @@
 
 create table public.shop_settings (
   id boolean primary key default true check (id),
-  contact_email text not null
+  -- Vide : aucun e-mail affiché, les clients écrivent depuis le formulaire de contact.
+  contact_email text
     check (char_length(contact_email) <= 254 and contact_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
   -- Tels qu'affichés ; le premier est le numéro principal (en-tête, page Contact).
   phones text[] not null default '{}'
@@ -45,12 +46,12 @@ create policy "Admin : modifier les coordonnées de la boutique"
   using ((select public.is_admin()))
   with check ((select public.is_admin()));
 
--- Valeurs affichées jusqu'ici (src/lib/site.ts).
+-- Valeurs de départ : ni e-mail ni quartier affichés, à la demande de la propriétaire.
 insert into public.shop_settings (contact_email, phones, address, opening_hours, instagram_url, tiktok_url)
 values (
-  'sy.ndeyetacko@gmail.com',
-  array['+221 77 344 59 51', '+221 76 630 52 62', '+33 7 51 22 66 11'],
-  'Scat Urbain, Dakar, Sénégal',
+  null,
+  array['+221 76 630 52 62', '+33 7 51 22 66 11'],
+  'Dakar, Sénégal',
   'Du lundi au samedi, de 10h à 19h',
   'https://www.instagram.com/racha_store_221',
   'https://www.tiktok.com/@racha2200'

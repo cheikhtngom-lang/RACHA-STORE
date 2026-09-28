@@ -12,10 +12,10 @@ const shippingOptions = [
   { title: "Livraison internationale", delay: "5 à 8 jours ouvrés", price: "À partir de 12 000 F CFA" },
 ];
 
-const returnSteps = (address: string) => [
+const returnSteps = [
   { step: "1", title: "Demandez votre retour", description: "Par téléphone ou WhatsApp, ou depuis « Mon compte » > « Commandes »." },
   { step: "2", title: "Préparez le colis", description: "Article non porté, dans son emballage d'origine, avec ses étiquettes." },
-  { step: "3", title: "Remettez-nous l'article", description: `À notre adresse (${address}), sous 30 jours après réception.` },
+  { step: "3", title: "Remettez-nous l'article", description: "Nous vous indiquons où le déposer, sous 30 jours après réception." },
   { step: "4", title: "Recevez votre remboursement", description: "Sous 5 à 10 jours ouvrés après réception et contrôle de l'article." },
 ];
 
@@ -45,7 +45,7 @@ export default async function ShippingReturnsPage() {
       <section className="mb-20">
         <h2 className="font-display text-2xl text-ink mb-8">Comment retourner un article</h2>
         <div className="grid sm:grid-cols-2 gap-8">
-          {returnSteps(shop.address).map((s) => (
+          {returnSteps.map((s) => (
             <div key={s.step} className="flex gap-4">
               <span className="font-display text-3xl text-gold shrink-0">{s.step}</span>
               <div>
