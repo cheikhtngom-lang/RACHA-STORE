@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Megaphone, Mail, Users, Settings, ExternalLink, LogOut, Menu } from "lucide-react";
+import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Megaphone, Mail, Users, Settings, Store, LogOut, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
@@ -166,8 +166,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
     return (
       <div className="flex flex-col gap-0.5">
-        <Link href="/" target="_blank" className={itemClass}>
-          <ExternalLink size={16} strokeWidth={1.5} />
+        {/* Même onglet : le bouton « Administration » de la boutique ramène ici. */}
+        <Link href="/" className={itemClass}>
+          <Store size={16} strokeWidth={1.5} />
           Voir la boutique
         </Link>
         <button type="button" onClick={signOut} className={itemClass}>
