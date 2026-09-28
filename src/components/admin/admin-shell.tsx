@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, Package, Shirt, Layers, Ticket, Mail, Users, ExternalLink, LogOut, Menu } from "lucide-react";
+import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Mail, Users, ExternalLink, LogOut, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
@@ -15,6 +15,7 @@ type Counts = { orders: number; messages: number };
 
 const navItems: { label: string; href: string; icon: typeof LayoutGrid; count?: keyof Counts }[] = [
   { label: "Tableau de bord", href: "/admin", icon: LayoutGrid },
+  { label: "Statistiques", href: "/admin/statistiques", icon: ChartLine },
   { label: "Commandes", href: "/admin/commandes", icon: Package, count: "orders" },
   { label: "Produits", href: "/admin/produits", icon: Shirt },
   { label: "Catégories", href: "/admin/categories", icon: Layers },

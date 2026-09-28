@@ -20,7 +20,7 @@ const sections: { title: string; paragraphs: string[] }[] = [
       "Commandes : coordonnées de livraison, articles achetés, montants et code promo utilisé.",
       "Formulaire de contact : nom, adresse e-mail, sujet et message.",
       "Newsletter : adresse e-mail.",
-      "Mesure d'audience : pages consultées, de façon anonyme et sans cookie.",
+      "Mesure d'audience : pages consultées, site de provenance (Instagram, Google…) et type d'appareil (mobile ou ordinateur), comptés de façon anonyme, sans cookie ni adresse IP.",
     ],
   },
   {
