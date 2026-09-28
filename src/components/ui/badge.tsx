@@ -16,7 +16,7 @@ export function Badge({
         variant === "default" && "bg-ink text-cream",
         variant === "gold" && "bg-gold text-ink-dark",
         variant === "outline" && "border border-ink/30 text-ink",
-        variant === "sale" && "bg-[#6E2A32] text-cream",
+        variant === "sale" && "bg-danger text-cream",
         className
       )}
     >

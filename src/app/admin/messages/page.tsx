@@ -97,7 +97,7 @@ export default function AdminMessagesPage() {
       {!failed && !messages && <Loading />}
       {messages && visible.length === 0 && <EmptyState>{onlyUnread ? "Aucun message non lu." : "Aucun message pour le moment."}</EmptyState>}
       {visible.length > 0 && (
-        <ul className="border border-line divide-y divide-line">
+        <ul className="dash-card overflow-hidden divide-y divide-line">
           {visible.map((m) => {
             const open = openId === m.id;
             return (
@@ -128,7 +128,7 @@ export default function AdminMessagesPage() {
                     <div className="flex flex-wrap items-center gap-4 mt-4">
                       <a
                         href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`}
-                        className="inline-flex items-center gap-2 h-9 px-4 bg-ink text-cream font-sans-wide text-[0.65rem] uppercase hover:bg-ink-dark transition-colors"
+                        className="inline-flex items-center gap-2 h-9 px-4 bg-ink text-cream font-sans-wide text-[0.65rem] uppercase hover:bg-ink-hover transition-colors"
                       >
                         <Mail size={14} strokeWidth={1.5} />
                         Répondre
@@ -136,7 +136,7 @@ export default function AdminMessagesPage() {
                       <button type="button" onClick={() => setRead(m, false)} className="text-xs text-stone hover:text-ink underline underline-offset-2 cursor-pointer">
                         Marquer comme non lu
                       </button>
-                      <button type="button" onClick={() => setDeleting(m)} className="text-xs text-[#6E2A32] underline underline-offset-2 cursor-pointer">
+                      <button type="button" onClick={() => setDeleting(m)} className="text-xs text-danger underline underline-offset-2 cursor-pointer">
                         Supprimer
                       </button>
                     </div>

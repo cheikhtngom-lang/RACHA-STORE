@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { area, curveMonotoneX, line } from "d3-shape";
 import { ArrowDownRight, ArrowUpRight, Table2, ChartLine } from "lucide-react";
 import { INK, formatPercent } from "./theme";
+import { SpotlightCard } from "@/components/dashboard/fx";
 import { cn } from "@/lib/utils";
 
 // Évolution par rapport à la période précédente. Sans valeur précédente, pas
@@ -65,7 +66,7 @@ export function KpiCard({
   note,
 }: {
   label: string;
-  value: string;
+  value: React.ReactNode;
   current?: number;
   previous?: number;
   higherIsBetter?: boolean;
@@ -74,7 +75,7 @@ export function KpiCard({
   note?: string;
 }) {
   return (
-    <div className="min-w-0 border border-line bg-cream p-4 sm:p-5 flex flex-col gap-3">
+    <SpotlightCard className="min-w-0 p-4 sm:p-5 flex flex-col gap-3">
       <p className="font-sans-wide text-[0.62rem] uppercase text-stone-light">{label}</p>
       <div className="flex items-end justify-between gap-3">
         <p className="text-2xl sm:text-[1.7rem] font-semibold text-ink leading-none">{value}</p>
@@ -85,7 +86,7 @@ export function KpiCard({
       ) : (
         note && <p className="text-xs text-stone-light">{note}</p>
       )}
-    </div>
+    </SpotlightCard>
   );
 }
 
@@ -108,7 +109,7 @@ export function ChartCard({
 }) {
   const [showTable, setShowTable] = useState(false);
   return (
-    <section className={cn("min-w-0 border border-line bg-cream flex flex-col", className)}>
+    <section className={cn("dash-card min-w-0 flex flex-col", className)}>
       <div className="flex items-start justify-between gap-4 px-5 sm:px-6 pt-5">
         <div className="min-w-0">
           <h2 className="font-sans-wide text-[0.68rem] uppercase text-ink">{title}</h2>

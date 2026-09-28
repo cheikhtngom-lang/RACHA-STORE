@@ -116,7 +116,7 @@ export default function AdminPromoCodesPage() {
       {!failed && !codes && <Loading />}
       {codes && codes.length === 0 && <EmptyState>Aucun code promo pour le moment.</EmptyState>}
       {codes && codes.length > 0 && (
-        <ul className="border border-line divide-y divide-line">
+        <ul className="dash-card overflow-hidden divide-y divide-line">
           {codes.map((p) => {
             const status = codeStatus(p);
             return (
@@ -143,7 +143,7 @@ export default function AdminPromoCodesPage() {
                     <button
                       type="button"
                       onClick={() => setDeleting(p)}
-                      className="text-xs text-[#6E2A32] underline underline-offset-2 cursor-pointer"
+                      className="text-xs text-danger underline underline-offset-2 cursor-pointer"
                     >
                       Supprimer
                     </button>

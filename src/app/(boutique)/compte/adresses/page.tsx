@@ -156,13 +156,13 @@ function AddressBook() {
       {!addresses ? (
         <p className="text-sm text-stone-light">Chargement…</p>
       ) : addresses.length === 0 ? (
-        <p className="text-sm text-stone-light border border-line p-8">
+        <p className="dash-card text-sm text-stone-light p-8">
           Aucune adresse enregistrée. Ajoutez-en une pour la retrouver automatiquement lors de vos commandes.
         </p>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
           {addresses.map((a) => (
-            <div key={a.id} className="border border-line p-6 relative">
+            <div key={a.id} className="dash-card p-6">
               {a.is_default && (
                 <span className="absolute top-4 right-4 font-sans-wide text-[0.6rem] uppercase text-gold">Par défaut</span>
               )}
@@ -195,7 +195,7 @@ function AddressBook() {
       )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="w-[92vw] max-w-md p-8 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="theme-dashboard text-ink w-[92vw] max-w-md p-8 max-h-[90vh] overflow-y-auto rounded-[14px] border border-line">
           <DialogTitle className="font-display text-2xl text-ink mb-6">
             {editingId ? "Modifier l'adresse" : "Ajouter une adresse"}
           </DialogTitle>

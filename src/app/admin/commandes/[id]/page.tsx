@@ -164,7 +164,7 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
                     type="button"
                     onClick={() => setConfirmCancel(true)}
                     disabled={updating}
-                    className="mt-5 text-xs text-[#6E2A32] underline underline-offset-2 cursor-pointer"
+                    className="mt-5 text-xs text-danger underline underline-offset-2 cursor-pointer"
                   >
                     Annuler la commande
                   </button>

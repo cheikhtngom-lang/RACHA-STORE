@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
               <Label htmlFor="forgot-email">Adresse e-mail</Label>
               <Input id="forgot-email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
-            {error && <p className="text-sm text-[#6E2A32]">{error}</p>}
+            {error && <p className="text-sm text-danger">{error}</p>}
             <Button type="submit" variant="primary" size="lg" disabled={submitting}>
               {submitting ? "Envoi…" : "Recevoir le lien"}
             </Button>

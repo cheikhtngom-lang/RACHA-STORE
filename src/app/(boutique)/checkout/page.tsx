@@ -329,7 +329,7 @@ export default function CheckoutPage() {
                   {[contact.postalCode, contact.city].filter(Boolean).join(" ")}, {contact.country}
                 </p>
               </div>
-              {error && <p className="text-sm text-[#6E2A32] border border-[#6E2A32]/30 p-4">{error}</p>}
+              {error && <p className="text-sm text-danger border border-danger/30 p-4">{error}</p>}
               <div className="flex gap-4 mt-2">
                 <Button type="button" variant="outline" size="lg" onClick={() => goToStep(2)} disabled={submitting}>
                   Retour

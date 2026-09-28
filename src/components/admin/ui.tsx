@@ -10,11 +10,13 @@ import { cn } from "@/lib/utils";
 
 export function PageHeader({
   title,
+  eyebrow,
   description,
   action,
   back,
 }: {
   title: string;
+  eyebrow?: string;
   description?: React.ReactNode;
   action?: React.ReactNode;
   back?: { href: string; label: string };
@@ -29,8 +31,9 @@ export function PageHeader({
       )}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl sm:text-4xl text-ink">{title}</h1>
-          {description && <p className="text-sm text-stone-light mt-2">{description}</p>}
+          {eyebrow && <p className="eyebrow text-gold-light mb-3">{eyebrow}</p>}
+          <h1 className="font-display text-4xl sm:text-5xl text-ink leading-none">{title}</h1>
+          {description && <p className="text-sm text-stone-light mt-3">{description}</p>}
         </div>
         {action}
       </div>
@@ -50,10 +53,13 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={cn("border border-line bg-cream", className)}>
+    <section className={cn("dash-card overflow-hidden", className)}>
       {title && (
-        <div className="flex items-center justify-between gap-4 px-5 sm:px-6 py-4 border-b border-line bg-sand/40">
-          <h2 className="font-sans-wide text-[0.68rem] uppercase text-ink">{title}</h2>
+        <div className="flex items-center justify-between gap-4 px-5 sm:px-6 py-4 border-b border-line">
+          <h2 className="flex items-center gap-2.5 font-sans-wide text-[0.68rem] uppercase text-ink">
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-gold shadow-[0_0_10px_2px_rgb(201_161_94/0.55)]" />
+            {title}
+          </h2>
           {action}
         </div>
       )}
@@ -98,11 +104,11 @@ export function Loading() {
 }
 
 export function LoadError({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-[#6E2A32] border border-[#6E2A32]/30 p-4">{children}</p>;
+  return <p className="text-sm text-danger border border-danger/30 bg-danger/5 rounded-[14px] p-4">{children}</p>;
 }
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-stone-light border border-line px-6 py-12 text-center">{children}</p>;
+  return <p className="dash-card text-sm text-stone-light px-6 py-12 text-center">{children}</p>;
 }
 
 // Case à cocher native, alignée sur le style du site. Plus simple qu'un
@@ -153,14 +159,14 @@ export function ConfirmDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-md p-6 sm:p-8">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md p-6 sm:p-8 rounded-[14px] border border-line">
         <DialogTitle className="font-display text-2xl text-ink mb-3 pr-10">{title}</DialogTitle>
         <div className="text-sm text-stone leading-relaxed mb-8">{children}</div>
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
             Retour
           </Button>
-          <Button type="button" variant="primary" className="bg-[#6E2A32] hover:bg-[#5a2129]" onClick={onConfirm} disabled={pending}>
+          <Button type="button" variant="primary" className="bg-danger hover:bg-danger/85" onClick={onConfirm} disabled={pending}>
             {pending ? "Un instant…" : confirmLabel}
           </Button>
         </div>

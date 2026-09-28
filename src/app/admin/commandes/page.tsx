@@ -127,7 +127,7 @@ function OrdersResults({ status, search }: { status: OrderStatus | "all"; search
 
   return (
     <>
-      <ul className="border border-line divide-y divide-line">
+      <ul className="dash-card overflow-hidden divide-y divide-line">
         {result.rows.map((o) => (
           <li key={o.id}>
             <Link href={`/admin/commandes/${o.id}`} className="flex items-start justify-between gap-4 px-5 sm:px-6 py-4 hover:bg-sand/50 transition-colors">

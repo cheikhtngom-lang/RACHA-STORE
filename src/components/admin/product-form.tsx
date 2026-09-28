@@ -407,7 +407,7 @@ export function ProductForm({ product }: { product?: ProductRecord }) {
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
-              className="self-start text-xs text-[#6E2A32] underline underline-offset-2 cursor-pointer"
+              className="self-start text-xs text-danger underline underline-offset-2 cursor-pointer"
             >
               Supprimer le produit
             </button>

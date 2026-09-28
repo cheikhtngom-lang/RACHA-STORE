@@ -17,8 +17,34 @@
   --color-stone: #4c4a41;
   --color-stone-light: #8c897c;
 
+  --color-danger: #6e2a32;
+  /* Survol des boutons foncés (bg-ink). */
+  --color-ink-hover: #171d19;
+  /* Fond de page, sous les cartes. */
+  --color-canvas: #faf8f3;
+
   --background: var(--color-cream);
   --foreground: var(--color-ink);
+}
+
+/* Tableaux de bord (administration, Mon compte) : mêmes noms de couleurs,
+   valeurs sombres. Tous les composants du site suivent sans être réécrits :
+   « ink » reste la couleur du texte, « cream » celle des surfaces.
+   ink-dark ne change pas : il sert aux voiles et au texte posé sur l'or. */
+.theme-dashboard {
+  --color-ink: #f1ece0;
+  --color-ink-soft: #d8d1c1;
+  --color-ink-hover: #ffffff;
+  --color-cream: #151b17;
+  --color-sand: #1d2520;
+  --color-line: #2b352f;
+  --color-stone: #bdb7a8;
+  --color-stone-light: #8f8a7d;
+  --color-gold: #c9a15e;
+  --color-gold-pale: #2a2519;
+  --color-danger: #e8828f;
+  --color-canvas: #0d110f;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -33,6 +59,9 @@
   --color-line: var(--color-line);
   --color-stone: var(--color-stone);
   --color-stone-light: var(--color-stone-light);
+  --color-danger: var(--color-danger);
+  --color-ink-hover: var(--color-ink-hover);
+  --color-canvas: var(--color-canvas);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -135,4 +164,133 @@ body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ------------------------------------------------------------------------
+   Tableaux de bord : effets (inspirés de reactbits.dev), sans bibliothèque.
+   Tous s'arrêtent si le visiteur a demandé moins d'animations.
+   ------------------------------------------------------------------------ */
+
+/* Dans la couche « components » : une classe Tailwind peut la compléter. */
+@layer components {
+  /* Carte : surface légèrement éclairée par le haut, filet fin, ombre portée. */
+  .dash-card {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0) 60%),
+      var(--color-cream);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 24px 48px -32px rgb(0 0 0 / 0.8);
+  }
+}
+
+/* Projecteur : halo doré qui suit le pointeur (SpotlightCard) et filet qui
+   s'allume près de lui (MagicBento). Position fournie par --mx / --my. */
+.fx-spotlight::before,
+.fx-spotlight::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.fx-spotlight::before {
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    380px circle at var(--mx, 50%) var(--my, 0%),
+    rgb(201 161 94 / 0.13),
+    transparent 45%
+  );
+}
+.fx-spotlight::after {
+  inset: -1px;
+  padding: 1px;
+  background: radial-gradient(
+    220px circle at var(--mx, 50%) var(--my, 0%),
+    rgb(226 200 143 / 0.75),
+    transparent 60%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+.fx-spotlight:hover::before,
+.fx-spotlight:hover::after,
+.fx-spotlight:focus-visible::before,
+.fx-spotlight:focus-visible::after {
+  opacity: 1;
+}
+
+/* Aurore : trois lueurs floues qui dérivent lentement (Aurora). */
+.fx-aurora {
+  position: absolute;
+  inset: -45% -15% auto -15%;
+  height: 150%;
+  filter: blur(70px);
+  opacity: 0.6;
+  background:
+    radial-gradient(38% 48% at 22% 32%, rgb(183 143 76 / 0.5), transparent 70%),
+    radial-gradient(34% 44% at 72% 22%, rgb(16 165 138 / 0.32), transparent 70%),
+    radial-gradient(28% 38% at 50% 62%, rgb(91 143 208 / 0.16), transparent 70%);
+  animation: fx-aurora 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes fx-aurora {
+  0% {
+    transform: translate3d(-4%, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 4%, 0) rotate(7deg) scale(1.08);
+  }
+  100% {
+    transform: translate3d(5%, -3%, 0) rotate(-5deg) scale(1.02);
+  }
+}
+
+/* Trame de points, fondue vers le bas (DotGrid). */
+.fx-dots {
+  background-image: radial-gradient(rgb(241 236 224 / 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 0%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 0%, #000 25%, transparent 75%);
+}
+
+/* Reflet qui traverse un texte doré (ShinyText). */
+.fx-shine {
+  background: linear-gradient(
+    110deg,
+    var(--color-gold-light) 38%,
+    #fff8e6 50%,
+    var(--color-gold-light) 62%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: fx-shine 7s linear infinite;
+}
+@keyframes fx-shine {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-aurora,
+  .fx-shine {
+    animation: none;
+  }
 }

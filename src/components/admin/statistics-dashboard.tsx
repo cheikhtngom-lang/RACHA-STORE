@@ -71,7 +71,7 @@ function parseDate(iso: string) {
   return new Date(y, m - 1, d);
 }
 
-function bucketLabel(iso: string, monthly: boolean) {
+export function bucketLabel(iso: string, monthly: boolean) {
   return parseDate(iso).toLocaleDateString(
     "fr-FR",
     monthly ? { month: "short", year: "2-digit" } : { day: "numeric", month: "short" }
@@ -93,7 +93,7 @@ export function periodLabel(p: Analytics["period"]) {
 }
 
 const money = (n: number) => formatPrice(n);
-const moneyAxis = (n: number) => (n === 0 ? "0" : `${formatCompact(n)} F`);
+export const moneyAxis = (n: number) => (n === 0 ? "0" : `${formatCompact(n)} F`);
 const ratio = (a: number, b: number) => (b > 0 ? a / b : 0);
 
 export function StatisticsDashboard({ data, categoryOrder }: { data: Analytics; categoryOrder: string[] }) {

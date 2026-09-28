@@ -47,7 +47,7 @@ function OrdersList() {
   }, [userId]);
 
   if (failed) {
-    return <p className="text-sm text-[#6E2A32]">Impossible de charger vos commandes. Actualisez la page.</p>;
+    return <p className="text-sm text-danger">Impossible de charger vos commandes. Actualisez la page.</p>;
   }
 
   if (!orders) {
@@ -56,7 +56,7 @@ function OrdersList() {
 
   if (orders.length === 0) {
     return (
-      <div className="flex flex-col items-center text-center gap-4 border border-line py-20 px-6">
+      <div className="dash-card flex flex-col items-center text-center gap-4 py-20 px-6">
         <Package size={36} strokeWidth={1} className="text-stone-light" />
         <p className="text-sm text-stone-light max-w-sm">Vous n&apos;avez pas encore passé de commande.</p>
         <Link href="/boutique" className="text-xs font-sans-wide uppercase underline underline-offset-4 text-ink">
@@ -71,8 +71,8 @@ function OrdersList() {
       {orders.map((order) => {
         const status = statusLabels[order.status];
         return (
-          <div key={order.id} className="border border-line">
-            <div className="flex flex-wrap items-center justify-between gap-3 p-6 border-b border-line bg-sand/40">
+          <div key={order.id} className="dash-card overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-6 border-b border-line bg-ink/[0.02]">
               <div>
                 <p className="text-sm text-ink">Commande n° {order.order_number}</p>
                 <p className="text-xs text-stone-light mt-1">
@@ -86,7 +86,7 @@ function OrdersList() {
             <ul className="divide-y divide-line">
               {order.order_items.map((item) => (
                 <li key={item.id} className="flex gap-4 p-6">
-                  <div className="relative h-20 w-16 shrink-0 bg-sand">
+                  <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-md bg-sand">
                     {item.image_url && (
                       <Image src={item.image_url} alt={item.product_name} fill sizes="64px" className="object-cover" />
                     )}

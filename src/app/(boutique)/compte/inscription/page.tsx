@@ -115,7 +115,7 @@ export default function RegisterPage() {
                     .
                   </span>
                 </label>
-                {error && <p className="text-sm text-[#6E2A32]">{error}</p>}
+                {error && <p className="text-sm text-danger">{error}</p>}
                 <Button type="submit" variant="primary" size="lg" className="mt-2" disabled={submitting}>
                   {submitting ? "Création du compte…" : "Créer mon compte"}
                 </Button>

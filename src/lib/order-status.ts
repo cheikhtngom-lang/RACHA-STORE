@@ -9,5 +9,5 @@ export const orderStatusLabels: Record<OrderStatus, { label: string; className: 
   paid: { label: "Payée", className: "bg-gold text-ink-dark" },
   shipped: { label: "Expédiée", className: "bg-ink text-cream" },
   delivered: { label: "Livrée", className: "bg-ink text-cream" },
-  cancelled: { label: "Annulée", className: "bg-[#6E2A32] text-cream" },
+  cancelled: { label: "Annulée", className: "bg-danger text-cream" },
 };

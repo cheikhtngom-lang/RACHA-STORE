@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { AuroraBackdrop } from "@/components/dashboard/fx";
 import { cn } from "@/lib/utils";
 
 type Access = "loading" | "anonymous" | "forbidden" | "error" | "admin";
@@ -37,6 +38,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [email, setEmail] = useState("");
   const [counts, setCounts] = useState<Counts>({ orders: 0, messages: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Thème sombre sur tout le document : fenêtres, menus et listes déroulantes
+  // sont affichés hors de la page et doivent le suivre.
+  useEffect(() => {
+    document.documentElement.classList.add("theme-dashboard");
+    return () => document.documentElement.classList.remove("theme-dashboard");
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -84,7 +92,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   if (access === "loading" || access === "anonymous") {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="theme-dashboard flex-1 flex items-center justify-center bg-canvas text-ink">
         <p className="text-sm text-stone-light">Chargement…</p>
       </div>
     );
@@ -92,17 +100,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   if (access === "forbidden" || access === "error") {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-28 gap-4">
-        <p className="eyebrow text-gold">Administration</p>
-        <h1 className="font-display text-3xl sm:text-4xl text-ink">
+      <div className="theme-dashboard relative flex-1 flex flex-col items-center justify-center text-center px-6 py-28 gap-4 bg-canvas text-ink overflow-hidden">
+        <AuroraBackdrop />
+        <p className="relative eyebrow text-gold">Administration</p>
+        <h1 className="relative font-display text-3xl sm:text-4xl text-ink">
           {access === "error" ? "Vérification impossible" : "Accès réservé"}
         </h1>
-        <p className="text-sm text-stone-light max-w-sm">
+        <p className="relative text-sm text-stone-light max-w-sm">
           {access === "error"
             ? "Les droits de ce compte n'ont pas pu être vérifiés. Vérifiez la connexion internet puis rechargez la page."
             : `Le compte ${email} n'est pas déclaré comme administrateur de la boutique.`}
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 mt-4">
+        <div className="relative flex flex-col sm:flex-row gap-3 mt-4">
           <Button asChild variant="primary">
             <Link href="/">Retour à la boutique</Link>
           </Button>
@@ -114,7 +123,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const nav = (tone: "dark" | "light") => (
+  const nav = () => (
     <nav className="flex flex-col gap-0.5">
       {navItems.map((item) => {
         const active = isActive(pathname, item.href);
@@ -124,21 +133,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             key={item.href}
             href={item.href}
             onClick={() => setMenuOpen(false)}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 text-sm transition-colors",
-              tone === "dark"
-                ? active
-                  ? "bg-cream/10 text-cream"
-                  : "text-cream/70 hover:text-cream hover:bg-cream/5"
-                : active
-                  ? "bg-ink text-cream"
-                  : "text-stone hover:bg-sand"
+              "relative flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-sm transition-colors",
+              active
+                ? "bg-gradient-to-r from-gold/15 to-gold/0 text-ink"
+                : "text-stone-light hover:text-ink hover:bg-ink/5",
+              active && "before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:rounded-full before:bg-gold before:shadow-[0_0_12px_2px_rgb(201_161_94/0.6)]"
             )}
           >
-            <item.icon size={16} strokeWidth={1.5} />
+            <item.icon size={16} strokeWidth={1.5} className={active ? "text-gold-light" : undefined} />
             <span className="flex-1">{item.label}</span>
             {count > 0 && (
-              <span className="min-w-5 h-5 px-1.5 flex items-center justify-center bg-gold text-ink-dark text-[0.65rem] tabular-nums">
+              <span className="min-w-5 h-5 px-1.5 rounded-full flex items-center justify-center bg-gold text-ink-dark text-[0.65rem] font-medium tabular-nums shadow-[0_0_12px_-2px_rgb(201_161_94/0.7)]">
                 {count}
               </span>
             )}
@@ -148,10 +155,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     </nav>
   );
 
-  const footerLinks = (tone: "dark" | "light") => {
+  const footerLinks = () => {
     const itemClass = cn(
-      "flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer",
-      tone === "dark" ? "text-cream/70 hover:text-cream" : "text-stone hover:bg-sand"
+      "flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-sm text-stone-light hover:text-ink hover:bg-ink/5 transition-colors cursor-pointer"
     );
     return (
       <div className="flex flex-col gap-0.5">
@@ -163,29 +169,29 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <LogOut size={16} strokeWidth={1.5} />
           Se déconnecter
         </button>
-        <p className={cn("px-4 pt-3 text-xs truncate", tone === "dark" ? "text-cream/40" : "text-stone-light")}>{email}</p>
+        <p className="px-4 pt-3 text-xs text-stone-light/70 truncate">{email}</p>
       </div>
     );
   };
 
   return (
-    <div className="flex-1 lg:grid lg:grid-cols-[256px_1fr]">
-      <aside className="hidden lg:flex flex-col justify-between bg-ink text-cream sticky top-0 h-screen py-8 px-4">
+    <div className="theme-dashboard flex-1 bg-canvas text-ink lg:grid lg:grid-cols-[264px_1fr]">
+      <aside className="hidden lg:flex flex-col justify-between sticky top-0 h-screen py-8 px-4 border-r border-line bg-cream/60 backdrop-blur-xl z-10">
         <div>
           <Link href="/admin" className="block px-4 mb-10">
-            <span className="block font-display text-2xl tracking-[0.12em]">RACHA STORE</span>
-            <span className="eyebrow text-gold-light">Administration</span>
+            <span className="fx-shine block font-display text-2xl tracking-[0.12em]">RACHA STORE</span>
+            <span className="eyebrow text-stone-light">Administration</span>
           </Link>
-          {nav("dark")}
+          {nav()}
         </div>
-        {footerLinks("dark")}
+        {footerLinks()}
       </aside>
 
-      <header className="lg:hidden sticky top-0 z-30 h-16 bg-ink text-cream flex items-center gap-4 px-5">
+      <header className="lg:hidden sticky top-0 z-30 h-16 bg-cream/80 backdrop-blur-xl border-b border-line flex items-center gap-4 px-5">
         <button type="button" aria-label="Ouvrir le menu" onClick={() => setMenuOpen(true)} className="cursor-pointer">
           <Menu size={22} strokeWidth={1.5} />
         </button>
-        <Link href="/admin" className="font-display text-xl tracking-[0.12em]">
+        <Link href="/admin" className="fx-shine font-display text-xl tracking-[0.12em]">
           RACHA STORE
         </Link>
         {counts.orders > 0 && (
@@ -197,13 +203,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
       <Sheet open={menuOpen} onOpenChange={setMenuOpen} side="left" title="Administration" widthClassName="w-[85vw] max-w-[320px]">
         <div className="flex flex-col justify-between h-full py-4 px-2">
-          {nav("light")}
-          <div className="border-t border-line pt-4 mt-6">{footerLinks("light")}</div>
+          {nav()}
+          <div className="border-t border-line pt-4 mt-6">{footerLinks()}</div>
         </div>
       </Sheet>
 
-      <main className="min-w-0 px-5 sm:px-8 lg:px-12 py-8 lg:py-12">
-        <div className="max-w-[1200px]">{children}</div>
+      <main className="relative min-w-0 px-5 sm:px-8 lg:px-12 py-8 lg:py-12">
+        <AuroraBackdrop />
+        <div className="relative max-w-[1280px]">{children}</div>
       </main>
     </div>
   );

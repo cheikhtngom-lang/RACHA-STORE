@@ -77,7 +77,7 @@ export default function AdminNewsletterPage() {
       {!failed && !subscribers && <Loading />}
       {subscribers && subscribers.length === 0 && <EmptyState>Personne ne s&apos;est encore inscrit.</EmptyState>}
       {subscribers && subscribers.length > 0 && (
-        <ul className="border border-line divide-y divide-line">
+        <ul className="dash-card overflow-hidden divide-y divide-line">
           {subscribers.map((s) => (
             <li key={s.id} className="flex items-center justify-between gap-4 px-5 sm:px-6 py-3">
               <div className="min-w-0">
@@ -87,7 +87,7 @@ export default function AdminNewsletterPage() {
               <button
                 type="button"
                 onClick={() => setRemoving(s)}
-                className="text-xs text-stone hover:text-[#6E2A32] underline underline-offset-2 cursor-pointer shrink-0"
+                className="text-xs text-stone hover:text-danger underline underline-offset-2 cursor-pointer shrink-0"
               >
                 Retirer
               </button>

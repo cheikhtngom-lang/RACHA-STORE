@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Palette des graphiques, validée sur le fond crème (#faf8f3) par le script de
-// contrôle dataviz : luminosité, saturation, séparation pour les daltonismes
-// (ordre cyclique, car le dernier segment d'un anneau touche le premier) et
-// contraste >= 3:1. L'ordre fait partie de la validation : ne pas le changer.
-export const SERIES = ["#127d58", "#b07a18", "#3a6ea5", "#a33a4a", "#7a5fb0"] as const;
+// Palette des graphiques, validée sur la surface sombre des cartes (#151b17,
+// .theme-dashboard) par le script de contrôle dataviz : luminosité,
+// saturation, séparation pour les daltonismes (ordre cyclique, car le dernier
+// segment d'un anneau touche le premier) et contraste >= 3:1. Mêmes teintes
+// que l'ancienne palette sur fond crème, éclaircies. L'ordre fait partie de
+// la validation : ne pas le changer.
+export const SERIES = ["#10a58a", "#c0801c", "#5b8fd0", "#d0606f", "#9a82d6"] as const;
 // « Autres » et « Produits supprimés » : neutre, jamais une couleur de série.
-export const OTHER = "#a8a397";
+export const OTHER = "#7d7a70";
 
 // Une couleur par grandeur, la même sur toute la page.
 export const MEASURE = {
@@ -18,12 +20,12 @@ export const MEASURE = {
 } as const;
 
 export const INK = {
-  primary: "#242c27",
-  muted: "#8c897c",
-  grid: "#c9bfa8",
-  surface: "#faf8f3",
-  good: "#0f6b4a",
-  bad: "#8e2f3d",
+  primary: "#f1ece0",
+  muted: "#9a958a",
+  grid: "#3a443e",
+  surface: "#151b17",
+  good: "#4cc393",
+  bad: "#e8828f",
 } as const;
 
 const compact = new Intl.NumberFormat("fr-FR", { notation: "compact", maximumFractionDigits: 1 });

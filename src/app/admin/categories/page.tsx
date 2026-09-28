@@ -82,7 +82,7 @@ export default function AdminCategoriesPage() {
       {!failed && !categories && <Loading />}
       {categories && categories.length === 0 && <EmptyState>Aucune catégorie.</EmptyState>}
       {categories && categories.length > 0 && (
-        <ul className="border border-line divide-y divide-line">
+        <ul className="dash-card overflow-hidden divide-y divide-line">
           {categories.map((c) => {
             const count = c.products[0]?.count ?? 0;
             return (
@@ -105,7 +105,7 @@ export default function AdminCategoriesPage() {
                     <button
                       type="button"
                       onClick={() => setDeleting(c)}
-                      className="text-xs text-[#6E2A32] underline underline-offset-2 cursor-pointer"
+                      className="text-xs text-danger underline underline-offset-2 cursor-pointer"
                     >
                       Supprimer
                     </button>

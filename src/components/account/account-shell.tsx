@@ -7,6 +7,7 @@ import { LayoutGrid, Package, MapPin, Heart, LogOut, Settings } from "lucide-rea
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/auth-store";
+import { AuroraBackdrop } from "@/components/dashboard/fx";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -16,6 +17,11 @@ const navItems = [
   { label: "Liste de souhaits", href: "/liste-de-souhaits", icon: Heart },
 ];
 
+const itemClass =
+  "relative flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-sm whitespace-nowrap transition-colors cursor-pointer";
+
+// Espace client en thème sombre (.theme-dashboard), entre l'en-tête et le
+// pied de page de la boutique qui gardent le leur.
 export function AccountShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -36,58 +42,58 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   }
 
   if (status !== "authenticated" || !user) {
-    return <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-28" />;
+    return <div className="theme-dashboard flex-1 bg-canvas min-h-[70vh]" />;
   }
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-10 sm:py-14">
-      <div className="mb-10">
-        <p className="eyebrow text-gold mb-2">Mon compte</p>
-        <h1 className="font-display text-4xl sm:text-5xl text-ink">
-          Bonjour{user.firstName ? ` ${user.firstName}` : ""}
-        </h1>
-        <p className="text-sm text-stone-light mt-2">{user.email}</p>
-      </div>
+    <div className="theme-dashboard relative flex-1 bg-canvas text-ink overflow-hidden border-b border-line">
+      <AuroraBackdrop />
+      <div className="relative mx-auto max-w-[1400px] px-5 sm:px-8 py-12 sm:py-16">
+        <div className="mb-10 sm:mb-12">
+          <p className="eyebrow text-gold-light mb-3">Mon compte</p>
+          <h1 className="font-display text-5xl sm:text-6xl text-ink leading-none">
+            Bonjour{user.firstName ? ` ${user.firstName}` : ""}
+          </h1>
+          <p className="text-sm text-stone-light mt-3">{user.email}</p>
+        </div>
 
-      <div className="grid lg:grid-cols-[240px_1fr] gap-12">
-        <aside>
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
-            {navItems.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 text-sm whitespace-nowrap transition-colors",
-                    active ? "bg-ink text-cream" : "text-stone hover:bg-sand"
-                  )}
-                >
-                  <item.icon size={16} strokeWidth={1.5} />
-                  {item.label}
+        <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-8 lg:gap-10 items-start">
+          <aside className="dash-card min-w-0 p-2 lg:sticky lg:top-28">
+            <nav className="flex lg:flex-col gap-1 overflow-x-auto">
+              {navItems.map((item) => {
+                const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      itemClass,
+                      active
+                        ? "bg-gradient-to-r from-gold/15 to-gold/0 text-ink before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:rounded-full before:bg-gold before:shadow-[0_0_12px_2px_rgb(201_161_94/0.6)]"
+                        : "text-stone-light hover:text-ink hover:bg-ink/5"
+                    )}
+                  >
+                    <item.icon size={16} strokeWidth={1.5} className={active ? "text-gold-light" : undefined} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              {isAdmin && (
+                <Link href="/admin" className={cn(itemClass, "text-stone-light hover:text-ink hover:bg-ink/5")}>
+                  <Settings size={16} strokeWidth={1.5} />
+                  Administration
                 </Link>
-              );
-            })}
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="flex items-center gap-3 px-4 py-3 text-sm whitespace-nowrap text-stone hover:bg-sand transition-colors"
-              >
-                <Settings size={16} strokeWidth={1.5} />
-                Administration
-              </Link>
-            )}
-            <button
-              onClick={signOut}
-              className="flex items-center gap-3 px-4 py-3 text-sm text-stone hover:bg-sand transition-colors cursor-pointer whitespace-nowrap"
-            >
-              <LogOut size={16} strokeWidth={1.5} />
-              Se déconnecter
-            </button>
-          </nav>
-        </aside>
+              )}
+              <button onClick={signOut} className={cn(itemClass, "text-stone-light hover:text-ink hover:bg-ink/5")}>
+                <LogOut size={16} strokeWidth={1.5} />
+                Se déconnecter
+              </button>
+            </nav>
+          </aside>
 
-        <div>{children}</div>
+          <div className="min-w-0">{children}</div>
+        </div>
       </div>
     </div>
   );

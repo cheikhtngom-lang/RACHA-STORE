@@ -119,7 +119,7 @@ export default function AdminProductsPage() {
               {products.length === 0 ? "Aucun produit. Ajoutez votre premier article." : "Aucun produit ne correspond à ces filtres."}
             </EmptyState>
           ) : (
-            <ul className="border border-line divide-y divide-line">
+            <ul className="dash-card overflow-hidden divide-y divide-line">
               {visible.map((p) => (
                 <li key={p.id}>
                   <Link href={`/admin/produits/${p.id}`} className="flex items-center gap-4 px-4 sm:px-6 py-3 hover:bg-sand/50 transition-colors">
@@ -135,7 +135,7 @@ export default function AdminProductsPage() {
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0 text-right">
                       <span className="text-sm tabular-nums">{formatPrice(p.price)}</span>
-                      <span className={cn("text-xs", p.stock === 0 ? "text-[#6E2A32]" : p.stock <= 3 ? "text-gold" : "text-stone-light")}>
+                      <span className={cn("text-xs", p.stock === 0 ? "text-danger" : p.stock <= 3 ? "text-gold" : "text-stone-light")}>
                         {p.stock === 0 ? "Épuisé" : `${p.stock} en stock`}
                       </span>
                     </div>

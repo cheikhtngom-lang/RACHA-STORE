@@ -63,7 +63,7 @@ function LoginForm() {
       <p className="text-sm text-stone-light mb-10">Accédez à votre compte pour suivre vos commandes.</p>
 
       {linkError && (
-        <p className="text-sm text-[#6E2A32] border border-[#6E2A32]/30 p-4 mb-6">
+        <p className="text-sm text-danger border border-danger/30 p-4 mb-6">
           Ce lien n&apos;est plus valide ou a déjà été utilisé. Connectez-vous, ou demandez un nouveau lien.
         </p>
       )}
@@ -87,7 +87,7 @@ function LoginForm() {
         <Link href="/compte/mot-de-passe-oublie" className="self-end text-xs text-stone underline underline-offset-2 hover:text-ink">
           Mot de passe oublié ?
         </Link>
-        {error && <p className="text-sm text-[#6E2A32]">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
         <Button type="submit" variant="primary" size="lg" className="mt-2" disabled={submitting}>
           {submitting ? "Connexion…" : "Se connecter"}
         </Button>

@@ -125,7 +125,7 @@ export function AddToCartForm({
               </button>
             ))}
           </div>
-          {sizeError && <p className="text-xs text-[#6E2A32] mt-2">Merci de sélectionner une taille.</p>}
+          {sizeError && <p className="text-xs text-danger mt-2">Merci de sélectionner une taille.</p>}
         </div>
       )}
 
