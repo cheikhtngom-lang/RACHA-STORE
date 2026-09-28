@@ -275,6 +275,7 @@
     <tr><td><code>/admin/statistiques</code></td><td>Ventes, visites, provenance, catégories, produits, villes, jours, codes promo (7, 30, 90 jours ou 12 mois).</td></tr>
     <tr><td><code>/admin/commandes</code>, <code>/admin/commandes/[id]</code></td><td>Liste filtrable, détail, changement de statut, contact client (appel, WhatsApp, e-mail).</td></tr>
     <tr><td><code>/admin/produits</code>, <code>/admin/categories</code></td><td>Catalogue : création, modification, photos, stock, couleurs, tailles.</td></tr>
+    <tr><td><code>/admin/annonces</code></td><td>Annonces du bandeau défilant (soldes, nouveautés…) : texte, lien, dates, ordre, aperçu en direct.</td></tr>
     <tr><td><code>/admin/codes-promo</code>, <code>/admin/messages</code>, <code>/admin/newsletter</code></td><td>Promotions, messages du formulaire de contact, abonnés.</td></tr>
   </table>
 
@@ -288,6 +289,7 @@
     <tr><td><code>20260927190000_admin.sql</code></td><td>Table des administrateurs, <code>is_admin()</code>, droits de l'administration.</td></tr>
     <tr><td><code>20260928090000_hardening.sql</code></td><td>Longueurs maximales, anti-spam, index des listes.</td></tr>
     <tr><td><code>20260928160000_analytics.sql</code></td><td>Mesure d'audience maison et calcul des statistiques.</td></tr>
+    <tr><td><code>20260928200000_announcements.sql</code></td><td>Annonces du bandeau défilant.</td></tr>
   </table>
 
   <h3>Tables</h3>
@@ -304,6 +306,7 @@
     <tr><td><code>contact_messages</code></td><td>Messages du formulaire de contact (lu / non lu).</td></tr>
     <tr><td><code>newsletter_subscribers</code></td><td>Inscriptions à la newsletter.</td></tr>
     <tr><td><code>admins</code></td><td>Comptes autorisés à utiliser l'administration.</td></tr>
+    <tr><td><code>announcements</code></td><td>Annonces du bandeau : texte, lien, dates de début et de fin, ordre, affichée ou non. Le site ne lit que celles en cours.</td></tr>
     <tr><td><code>site_visits_daily</code>, <code>page_views_daily</code></td><td>Compteurs agrégés par jour (visites par provenance et appareil, pages vues).</td></tr>
   </table>
   <p>Types énumérés : <code>order_status</code> (en attente de paiement, payée, expédiée, livrée, annulée) et
@@ -349,6 +352,14 @@
     <li>Le catalogue est lu côté serveur et gardé en cache 60 secondes au plus.</li>
     <li>Une modification dans l'administration force une relecture immédiate.</li>
     <li>Les photos sont envoyées dans Supabase Storage et servies par l'optimiseur d'images de Next.js.</li>
+  </ul>
+
+  <h3>Bandeau d'annonces</h3>
+  <ul>
+    <li>La gérante écrit les annonces dans <code>/admin/annonces</code> ; elle peut les programmer (dates de début et de fin), les masquer et les réordonner.</li>
+    <li>La boutique les lit avec le catalogue (même cache, vidé à chaque modification) et les fait défiler en haut de chaque page.</li>
+    <li>Le défilement s'arrête au survol, au clavier ou avec le bouton pause ; il est immobile pour les visiteurs qui ont demandé moins d'animations.</li>
+    <li>Sans annonce en cours, le bandeau disparaît.</li>
   </ul>
 
   <h3>Mesure d'audience</h3>
@@ -421,6 +432,7 @@
     <tr><td>28 sept. 2026</td><td>Page Statistiques et mesure d'audience maison.</td></tr>
     <tr><td>28 sept. 2026</td><td>Pied de page « Nous contacter » : e-mail de la boutique et trois numéros joignables par appel ou WhatsApp.</td></tr>
     <tr><td>28 sept. 2026</td><td>Nouveau design sombre des tableaux de bord administrateur et client.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Bandeau d'annonces défilant, géré depuis l'administration (page Annonces).</td></tr>
   </table>
 
   <!-- 11 -->
