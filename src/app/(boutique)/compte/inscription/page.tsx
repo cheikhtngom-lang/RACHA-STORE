@@ -11,6 +11,7 @@ import { toAccountUser, useAuthStore } from "@/store/auth-store";
 import { Input, Label } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { BackToShop } from "@/components/shared/back-to-shop";
 import { img, pools } from "@/data/images";
 
 export default function RegisterPage() {
@@ -54,6 +55,7 @@ export default function RegisterPage() {
     <div className="grid lg:grid-cols-2 min-h-[85vh]">
       <div className="flex items-center justify-center px-6 py-16 sm:py-24 order-2 lg:order-1">
         <div className="w-full max-w-sm">
+          <BackToShop />
           {emailSentTo ? (
             <div>
               <p className="eyebrow text-gold mb-3">Dernière étape</p>

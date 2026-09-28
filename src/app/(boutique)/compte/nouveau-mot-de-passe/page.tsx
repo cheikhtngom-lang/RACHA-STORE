@@ -9,6 +9,7 @@ import { authErrorMessage } from "@/lib/auth";
 import { useAuthStore } from "@/store/auth-store";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BackToShop } from "@/components/shared/back-to-shop";
 
 // On arrive ici depuis le lien « mot de passe oublié » : /auth/confirm a déjà ouvert la session.
 export default function NewPasswordPage() {
@@ -39,6 +40,7 @@ export default function NewPasswordPage() {
 
   return (
     <div className="mx-auto max-w-sm px-6 py-16 sm:py-24 min-h-[70vh]">
+      <BackToShop />
       <p className="eyebrow text-gold mb-3">Mon compte</p>
       <h1 className="font-display text-3xl sm:text-4xl text-ink mb-4">Nouveau mot de passe</h1>
 

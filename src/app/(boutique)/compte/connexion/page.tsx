@@ -10,6 +10,7 @@ import { authErrorMessage, safeNextPath } from "@/lib/auth";
 import { toAccountUser, useAuthStore } from "@/store/auth-store";
 import { Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BackToShop } from "@/components/shared/back-to-shop";
 import { img, pools } from "@/data/images";
 
 function LoginForm() {
@@ -44,6 +45,7 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-sm">
+      <BackToShop />
       <p className="eyebrow text-gold mb-3">Bienvenue</p>
       <h1 className="font-display text-3xl sm:text-4xl text-ink mb-2">Connexion</h1>
       <p className="text-sm text-stone-light mb-10">Accédez à votre compte pour suivre vos commandes.</p>
