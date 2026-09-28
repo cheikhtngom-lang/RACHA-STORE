@@ -20,7 +20,7 @@ const STEPS = ["Informations", "Livraison", "Paiement"];
 
 // Messages levés par la fonction create_order : on peut les montrer tels quels.
 const KNOWN_ORDER_ERRORS =
-  /^(Stock insuffisant|Taille invalide|Couleur invalide|Produit introuvable|Code promo invalide|Coordonnées|Le panier est vide|Quantité invalide)/;
+  /^(Stock insuffisant|Taille invalide|Couleur invalide|Produit introuvable|Code promo invalide|Coordonnées|Le panier est vide|Quantité invalide|Trop de commandes)/;
 
 type ContactForm = LastOrder["contact"];
 

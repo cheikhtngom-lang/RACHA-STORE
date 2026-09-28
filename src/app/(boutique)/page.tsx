@@ -6,6 +6,7 @@ import { CategoryShowcase } from "@/components/home/category-showcase";
 import { EditorialBanner } from "@/components/home/editorial-banner";
 import { InstagramGallery } from "@/components/home/instagram-gallery";
 import { SectionHeading } from "@/components/shared/section-heading";
+import { StoreJsonLd } from "@/components/shared/json-ld";
 import { ProductCarousel } from "@/components/product/product-carousel";
 import { Button } from "@/components/ui/button";
 import { img, pools } from "@/data/images";
@@ -21,6 +22,7 @@ export default async function Home() {
 
   return (
     <>
+      <StoreJsonLd />
       <Hero />
 
       <section className="border-b border-line py-12 sm:py-14">

@@ -8,6 +8,7 @@ import { StoreHydration } from "@/components/store-hydration";
 import { CatalogProvider } from "@/components/catalog-provider";
 import { AuthListener } from "@/components/auth-listener";
 import { getCatalog } from "@/lib/catalog";
+import { Analytics } from "@vercel/analytics/next";
 
 // En-tête, pied de page, panier et catalogue de la boutique. Utilisé par le
 // layout (boutique) et par la page 404, qui ne passe pas par ce layout.
@@ -25,6 +26,8 @@ export async function Storefront({ children }: { children: React.ReactNode }) {
       <CartDrawer />
       <SearchOverlay />
       <MobileNav />
+      {/* Mesure d'audience Vercel : sans cookie, donc sans bandeau de consentement. Boutique seulement. */}
+      <Analytics />
     </CatalogProvider>
   );
 }

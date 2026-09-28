@@ -5,13 +5,13 @@ import { toast } from "sonner";
 import { Input, Textarea, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PhoneLink } from "@/components/shared/phone-link";
-import { address } from "@/lib/site";
+import { address, contactEmail, openingHours } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
 
 const infos: { title: string; value: string; href?: string }[] = [
-  { title: "E-mail", value: "contact@rachamarket.com" },
+  { title: "E-mail", value: contactEmail, href: `mailto:${contactEmail}` },
   { title: "Adresse", value: address.full, href: address.mapsUrl },
-  { title: "Horaires", value: "Du lundi au samedi, de 10h à 19h" },
+  { title: "Horaires", value: openingHours },
 ];
 
 export default function ContactPage() {
@@ -20,8 +20,14 @@ export default function ContactPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (sending) return;
     const form = new FormData(e.currentTarget);
     const value = (name: string) => String(form.get(name) ?? "").trim();
+    // Champ invisible rempli : c'est un robot. On fait comme si tout allait bien.
+    if (value("website")) {
+      setSent(true);
+      return;
+    }
     setSending(true);
     const { error } = await createClient().from("contact_messages").insert({
       first_name: value("firstName"),
@@ -32,7 +38,10 @@ export default function ContactPage() {
     });
     setSending(false);
     if (error) {
-      toast.error("Le message n'a pas pu être envoyé", { description: "Réessayez, ou appelez-nous." });
+      // P0001 : limite anti-spam de la base, message déjà rédigé pour le visiteur.
+      toast.error("Le message n'a pas pu être envoyé", {
+        description: error.code === "P0001" ? error.message : "Réessayez, ou appelez-nous.",
+      });
       return;
     }
     setSent(true);
@@ -61,7 +70,7 @@ export default function ContactPage() {
                 {info.href ? (
                   <a
                     href={info.href}
-                    target="_blank"
+                    target={info.href.startsWith("http") ? "_blank" : undefined}
                     rel="noopener noreferrer"
                     className="text-sm text-ink underline underline-offset-4 decoration-line hover:decoration-ink"
                   >
@@ -72,6 +81,27 @@ export default function ContactPage() {
                 )}
               </div>
             ))}
+          </div>
+
+          <div className="mt-6 border border-line">
+            <iframe
+              src={address.embedUrl}
+              title={`Carte : ${address.full}`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="block w-full h-72 border-0 bg-sand"
+            />
+            <div className="flex items-center justify-between gap-4 p-4 border-t border-line">
+              <p className="text-sm text-ink">{address.full}</p>
+              <a
+                href={address.directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 font-sans-wide text-[0.65rem] uppercase text-ink underline underline-offset-4"
+              >
+                Itinéraire
+              </a>
+            </div>
           </div>
         </div>
 
@@ -88,24 +118,29 @@ export default function ContactPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="contact-firstname">Prénom</Label>
-                  <Input id="contact-firstname" name="firstName" autoComplete="given-name" required />
+                  <Input id="contact-firstname" name="firstName" autoComplete="given-name" maxLength={100} required />
                 </div>
                 <div>
                   <Label htmlFor="contact-lastname">Nom</Label>
-                  <Input id="contact-lastname" name="lastName" autoComplete="family-name" required />
+                  <Input id="contact-lastname" name="lastName" autoComplete="family-name" maxLength={100} required />
                 </div>
               </div>
               <div>
                 <Label htmlFor="contact-email">Adresse e-mail</Label>
-                <Input id="contact-email" name="email" type="email" autoComplete="email" required />
+                <Input id="contact-email" name="email" type="email" autoComplete="email" maxLength={254} required />
               </div>
               <div>
                 <Label htmlFor="contact-subject">Sujet</Label>
-                <Input id="contact-subject" name="subject" required placeholder="Question sur une commande, un produit…" />
+                <Input id="contact-subject" name="subject" maxLength={200} required placeholder="Question sur une commande, un produit…" />
               </div>
               <div>
                 <Label htmlFor="contact-message">Message</Label>
                 <Textarea id="contact-message" name="message" rows={6} maxLength={5000} required />
+              </div>
+              {/* Piège à robots : invisible pour un visiteur, rempli par les robots de spam. */}
+              <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                <label htmlFor="contact-website">Site web</label>
+                <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
               <Button type="submit" variant="primary" size="lg" className="self-start mt-2" disabled={sending}>
                 {sending ? "Envoi…" : "Envoyer le message"}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCatalog } from "@/lib/catalog";
 import { getRelatedProducts } from "@/lib/catalog-selectors";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
+import { ProductJsonLd } from "@/components/shared/json-ld";
 import { Price } from "@/components/shared/price";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { AddToCartForm } from "@/components/product/add-to-cart-form";
@@ -51,6 +52,7 @@ export default async function ProductPage({
 
   return (
     <div>
+      <ProductJsonLd product={product} category={category} />
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8 pt-6">
         <Breadcrumbs
           items={[

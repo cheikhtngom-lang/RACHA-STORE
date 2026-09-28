@@ -108,7 +108,11 @@ export default function RegisterPage() {
                     <Link href="/cgv" className="underline underline-offset-2">
                       conditions générales de vente
                     </Link>{" "}
-                    et la politique de confidentialité.
+                    et la{" "}
+                    <Link href="/confidentialite" className="underline underline-offset-2">
+                      politique de confidentialité
+                    </Link>
+                    .
                   </span>
                 </label>
                 {error && <p className="text-sm text-[#6E2A32]">{error}</p>}

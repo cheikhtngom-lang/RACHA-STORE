@@ -10,6 +10,7 @@ import { ProductGrid } from "@/components/product/product-grid";
 import { Sheet } from "@/components/ui/sheet";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "newest";
 
@@ -100,6 +101,9 @@ export function ShopPage({ categorySlug, title, description }: { categorySlug?: 
   return (
     <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-10 sm:py-14">
       <div className="mb-10">
+        <div className="mb-6">
+          <Breadcrumbs items={categorySlug ? [{ label: "Boutique", href: "/boutique" }, { label: title }] : [{ label: "Boutique" }]} />
+        </div>
         <h1 className="font-display text-4xl sm:text-5xl text-ink">{title}</h1>
         {description && <p className="text-stone text-sm mt-3 max-w-xl">{description}</p>}
       </div>

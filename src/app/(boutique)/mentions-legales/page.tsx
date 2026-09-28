@@ -15,7 +15,7 @@ const sections = [
   },
   {
     title: "3. Hébergement",
-    body: `Le site est hébergé par [Nom de l'hébergeur à compléter], [adresse de l'hébergeur à compléter].`,
+    body: `Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis. Les comptes clients et les commandes sont stockés chez Supabase Inc.`,
   },
   {
     title: "4. Propriété intellectuelle",
@@ -27,7 +27,7 @@ const sections = [
   },
   {
     title: "6. Cookies",
-    body: `Le site utilise des cookies afin d'améliorer l'expérience utilisateur et réaliser des statistiques de visite. Vous pouvez à tout moment paramétrer votre navigateur pour refuser l'utilisation de cookies.`,
+    body: `Le site n'utilise que les cookies nécessaires à son fonctionnement (session des clients connectés) et aucun cookie publicitaire. La mesure d'audience se fait sans cookie. Le détail figure dans la politique de confidentialité.`,
   },
 ];
 
@@ -35,7 +35,7 @@ export default function LegalPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">Mentions légales</h1>
-      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : Janvier 2026</p>
+      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : septembre 2026</p>
 
       <div className="flex flex-col gap-10">
         {sections.map((s) => (

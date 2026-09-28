@@ -9,18 +9,10 @@ import { PhoneLink } from "@/components/shared/phone-link";
 import { address, social } from "@/lib/site";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { useCatalog } from "@/components/catalog-provider";
 
-const columns = [
-  {
-    title: "Boutique",
-    links: [
-      { label: "Prêt-à-porter", href: "/boutique/pret-a-porter" },
-      { label: "Sacs & Maroquinerie", href: "/boutique/sacs-maroquinerie" },
-      { label: "Chaussures", href: "/boutique/chaussures" },
-      { label: "Bijoux & Accessoires", href: "/boutique/bijoux-accessoires" },
-      { label: "Beauté & Parfums", href: "/boutique/beaute-parfums" },
-    ],
-  },
+// La colonne « Boutique » est construite avec les catégories de la base.
+const staticColumns = [
   {
     title: "Service client",
     links: [
@@ -38,12 +30,46 @@ const columns = [
       { label: "Éditions limitées", href: "/boutique?filter=edition-limitee" },
       { label: "Mentions légales", href: "/mentions-legales" },
       { label: "CGV", href: "/cgv" },
+      { label: "Confidentialité", href: "/confidentialite" },
     ],
   },
 ];
 
 export function Footer() {
+  const { categories } = useCatalog();
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
+
+  const columns = [
+    { title: "Boutique", links: categories.map((c) => ({ label: c.name, href: `/boutique/${c.slug}` })) },
+    ...staticColumns,
+  ];
+
+  async function subscribe(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || subscribing) return;
+    // Champ invisible rempli : c'est un robot. On fait comme si tout allait bien.
+    if (honeypot) {
+      setEmail("");
+      toast.success("Merci pour votre inscription");
+      return;
+    }
+    setSubscribing(true);
+    const { error } = await createClient().rpc("subscribe_newsletter", { p_email: email });
+    setSubscribing(false);
+    if (error) {
+      toast.error("Inscription impossible", {
+        // P0001 : message de la base (adresse invalide, limite anti-spam), déjà rédigé pour le visiteur.
+        description: error.code === "P0001" ? error.message : "Vérifiez votre adresse e-mail.",
+      });
+      return;
+    }
+    toast.success("Merci pour votre inscription", {
+      description: "Vous recevrez nos prochaines nouveautés.",
+    });
+    setEmail("");
+  }
 
   return (
     <footer className="bg-ink text-cream">
@@ -56,30 +82,36 @@ export function Footer() {
               Recevez en avant-première nos nouvelles collections, nos éditions limitées et des offres exclusives.
             </p>
             <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!email) return;
-                const { error } = await createClient().rpc("subscribe_newsletter", { p_email: email });
-                if (error) {
-                  toast.error("Inscription impossible", { description: "Vérifiez votre adresse e-mail." });
-                  return;
-                }
-                toast.success("Merci pour votre inscription", {
-                  description: "Vous recevrez nos prochaines nouveautés.",
-                });
-                setEmail("");
-              }}
-              className="flex items-stretch border-b border-cream/40 focus-within:border-gold transition-colors"
+              onSubmit={subscribe}
+              className="relative flex items-stretch border-b border-cream/40 focus-within:border-gold transition-colors"
             >
               <input
                 type="email"
                 required
+                maxLength={254}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Votre adresse e-mail"
+                aria-label="Votre adresse e-mail"
                 className="flex-1 bg-transparent py-3 text-sm placeholder:text-cream/40 focus:outline-none"
               />
-              <button type="submit" aria-label="S'inscrire" className="px-2 text-gold-light hover:text-gold cursor-pointer">
+              {/* Piège à robots : invisible pour un visiteur. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                className="absolute -left-[9999px] h-px w-px"
+              />
+              <button
+                type="submit"
+                aria-label="S'inscrire"
+                disabled={subscribing}
+                className="px-2 text-gold-light hover:text-gold cursor-pointer disabled:opacity-40"
+              >
                 <ArrowRight size={20} strokeWidth={1.5} />
               </button>
             </form>

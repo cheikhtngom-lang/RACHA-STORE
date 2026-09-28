@@ -3,11 +3,12 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Phone } from "lucide-react";
 import { WhatsAppIcon } from "./social-icons";
+import { phone } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-const PHONE_DISPLAY = "+221 77 344 59 51";
-const PHONE_TEL = "+221773445951";
-const PHONE_WHATSAPP = "221773445951";
+const PHONE_DISPLAY = phone.display;
+const PHONE_TEL = phone.tel;
+const PHONE_WHATSAPP = phone.tel.replace("+", "");
 
 export function PhoneLink({
   className,

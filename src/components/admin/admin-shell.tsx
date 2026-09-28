@@ -82,7 +82,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   if (access === "loading" || access === "anonymous") {
-    return <div className="flex-1" />;
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-sm text-stone-light">Chargement…</p>
+      </div>
+    );
   }
 
   if (access === "forbidden" || access === "error") {
