@@ -6,9 +6,9 @@ import Link from "next/link";
 import { Package } from "lucide-react";
 import { AccountShell } from "@/components/account/account-shell";
 import { createClient } from "@/lib/supabase/client";
+import { orderStatusLabels as statusLabels, type OrderStatus } from "@/lib/order-status";
+import { useAuthStore } from "@/store/auth-store";
 import { formatPrice, cn } from "@/lib/utils";
-
-type OrderStatus = "pending" | "paid" | "shipped" | "delivered" | "cancelled";
 
 type OrderRow = {
   id: string;
@@ -27,28 +27,24 @@ type OrderRow = {
   }[];
 };
 
-const statusLabels: Record<OrderStatus, { label: string; className: string }> = {
-  pending: { label: "En attente de paiement", className: "border border-ink/30 text-ink" },
-  paid: { label: "Payée", className: "bg-gold text-ink-dark" },
-  shipped: { label: "Expédiée", className: "bg-ink text-cream" },
-  delivered: { label: "Livrée", className: "bg-ink text-cream" },
-  cancelled: { label: "Annulée", className: "bg-[#6E2A32] text-cream" },
-};
-
 function OrdersList() {
+  const userId = useAuthStore((s) => s.user?.id);
   const [orders, setOrders] = useState<OrderRow[] | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    if (!userId) return;
+    // Filtre explicite : un compte administrateur peut lire toutes les commandes.
     createClient()
       .from("orders")
       .select("id, order_number, status, created_at, total, order_items (id, product_name, image_url, color, size, quantity, line_total)")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         if (error) setFailed(true);
         else setOrders(data as OrderRow[]);
       });
-  }, []);
+  }, [userId]);
 
   if (failed) {
     return <p className="text-sm text-[#6E2A32]">Impossible de charger vos commandes. Actualisez la page.</p>;

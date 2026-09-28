@@ -1,16 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Jost, Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { AnnouncementBar } from "@/components/layout/announcement-bar";
-import { CartDrawer } from "@/components/layout/cart-drawer";
-import { SearchOverlay } from "@/components/layout/search-overlay";
-import { MobileNav } from "@/components/layout/mobile-nav";
-import { StoreHydration } from "@/components/store-hydration";
-import { CatalogProvider } from "@/components/catalog-provider";
-import { AuthListener } from "@/components/auth-listener";
-import { getCatalog } from "@/lib/catalog";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -53,26 +43,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const catalog = await getCatalog();
-
+// Commun à la boutique et à l'administration : l'en-tête et le pied de page
+// de la boutique sont dans (boutique)/layout.tsx.
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
       className={`${cormorant.variable} ${jost.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
-        <CatalogProvider catalog={catalog}>
-          <StoreHydration />
-          <AuthListener />
-          <AnnouncementBar />
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <CartDrawer />
-          <SearchOverlay />
-          <MobileNav />
-        </CatalogProvider>
+        {children}
         <Toaster
           position="bottom-right"
           toastOptions={{

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, Package, MapPin, Heart, LogOut } from "lucide-react";
+import { LayoutGrid, Package, MapPin, Heart, LogOut, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/auth-store";
@@ -21,12 +21,20 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const status = useAuthStore((s) => s.status);
   const user = useAuthStore((s) => s.user);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (status === "anonymous") {
       router.replace(`/compte/connexion?next=${encodeURIComponent(pathname)}`);
     }
   }, [status, pathname, router]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    createClient()
+      .rpc("is_admin")
+      .then(({ data }) => setIsAdmin(data === true));
+  }, [status, user?.id]);
 
   async function signOut() {
     await createClient().auth.signOut();
@@ -67,6 +75,15 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-3 px-4 py-3 text-sm whitespace-nowrap text-stone hover:bg-sand transition-colors"
+              >
+                <Settings size={16} strokeWidth={1.5} />
+                Administration
+              </Link>
+            )}
             <button
               onClick={signOut}
               className="flex items-center gap-3 px-4 py-3 text-sm text-stone hover:bg-sand transition-colors cursor-pointer whitespace-nowrap"
