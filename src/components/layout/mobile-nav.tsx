@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { User, Heart, MapPin } from "lucide-react";
+import { User, UserPlus, Heart, MapPin } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { PhoneLink } from "@/components/shared/phone-link";
 import { useUiStore } from "@/store/ui-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useCatalog } from "@/components/catalog-provider";
 import { address } from "@/lib/site";
 
@@ -13,6 +14,7 @@ export function MobileNav() {
   const isOpen = useUiStore((s) => s.isMobileNavOpen);
   const close = useUiStore((s) => s.closeMobileNav);
   const { categories } = useCatalog();
+  const isLoggedIn = useAuthStore((s) => s.status === "authenticated");
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && close()} side="left" title="Menu" widthClassName="w-full sm:w-[380px]">
@@ -55,9 +57,20 @@ export function MobileNav() {
         </div>
 
         <div className="flex flex-col px-6 py-6 gap-5 border-t border-line">
-          <Link href="/compte" onClick={close} className="flex items-center gap-3 text-sm text-stone">
-            <User size={17} strokeWidth={1.5} /> Mon compte
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/compte" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+              <User size={17} strokeWidth={1.5} /> Mon compte
+            </Link>
+          ) : (
+            <>
+              <Link href="/compte/connexion" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+                <User size={17} strokeWidth={1.5} /> Se connecter
+              </Link>
+              <Link href="/compte/inscription" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+                <UserPlus size={17} strokeWidth={1.5} /> Créer un compte
+              </Link>
+            </>
+          )}
           <Link href="/liste-de-souhaits" onClick={close} className="flex items-center gap-3 text-sm text-stone">
             <Heart size={17} strokeWidth={1.5} /> Liste de souhaits
           </Link>

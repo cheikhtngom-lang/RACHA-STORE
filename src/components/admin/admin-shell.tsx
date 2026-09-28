@@ -10,7 +10,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type Access = "loading" | "anonymous" | "forbidden" | "admin";
+type Access = "loading" | "anonymous" | "forbidden" | "error" | "admin";
 type Counts = { orders: number; messages: number };
 
 const navItems: { label: string; href: string; icon: typeof LayoutGrid; count?: keyof Counts }[] = [
@@ -50,8 +50,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       setEmail(session.user.email ?? "");
       // Supabase déconseille d'attendre un autre appel dans ce callback : on le diffère.
       setTimeout(async () => {
-        const { data } = await supabase.rpc("is_admin");
-        setAccess(data === true ? "admin" : "forbidden");
+        const { data, error } = await supabase.rpc("is_admin");
+        setAccess(error ? "error" : data === true ? "admin" : "forbidden");
       }, 0);
     });
     return () => subscription.unsubscribe();
@@ -85,13 +85,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     return <div className="flex-1" />;
   }
 
-  if (access === "forbidden") {
+  if (access === "forbidden" || access === "error") {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-28 gap-4">
         <p className="eyebrow text-gold">Administration</p>
-        <h1 className="font-display text-3xl sm:text-4xl text-ink">Accès réservé</h1>
+        <h1 className="font-display text-3xl sm:text-4xl text-ink">
+          {access === "error" ? "Vérification impossible" : "Accès réservé"}
+        </h1>
         <p className="text-sm text-stone-light max-w-sm">
-          Le compte {email} n&apos;est pas déclaré comme administrateur de la boutique.
+          {access === "error"
+            ? "Les droits de ce compte n'ont pas pu être vérifiés. Vérifiez la connexion internet puis rechargez la page."
+            : `Le compte ${email} n'est pas déclaré comme administrateur de la boutique.`}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 mt-4">
           <Button asChild variant="primary">

@@ -10,6 +10,7 @@ import { useCatalog } from "@/components/catalog-provider";
 import { useUiStore } from "@/store/ui-store";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
+import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -30,6 +31,7 @@ export function Header() {
   const openCart = useUiStore((s) => s.openCart);
   const cartCount = useCartStore((s) => s.totalItems());
   const wishlistCount = useWishlistStore((s) => s.ids.length);
+  const isLoggedIn = useAuthStore((s) => s.status === "authenticated");
 
   useEffect(() => {
     if (!isHome) return;
@@ -82,8 +84,15 @@ export function Header() {
           <button aria-label="Rechercher" onClick={openSearch} className="hidden sm:flex cursor-pointer hover:text-gold transition-colors">
             <Search size={19} strokeWidth={1.5} />
           </button>
-          <Link href="/compte" aria-label="Mon compte" className="hidden sm:flex cursor-pointer hover:text-gold transition-colors">
+          <Link
+            href={isLoggedIn ? "/compte" : "/compte/connexion"}
+            aria-label={isLoggedIn ? "Mon compte" : "Connexion"}
+            className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors"
+          >
             <User size={19} strokeWidth={1.5} />
+            <span className="hidden sm:inline font-sans-wide text-[0.72rem] uppercase">
+              {isLoggedIn ? "Mon compte" : "Connexion"}
+            </span>
           </Link>
           <Link href="/liste-de-souhaits" aria-label="Liste de souhaits" className="relative cursor-pointer hover:text-gold transition-colors">
             <Heart size={19} strokeWidth={1.5} />
