@@ -21,7 +21,7 @@ export function ImagesField({
 }: {
   images: string[];
   onChange: Update;
-  folder: "produits" | "categories";
+  folder: "produits" | "categories" | "accueil";
   single?: boolean;
   onUploaded?: (url: string) => void;
 }) {

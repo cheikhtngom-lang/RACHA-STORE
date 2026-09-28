@@ -13,10 +13,11 @@ import { img, pools } from "@/data/images";
 import { getCatalog } from "@/lib/catalog";
 import { getNewArrivals, getBestSellers, getLimitedEditions } from "@/lib/catalog-selectors";
 import { getShopInfo } from "@/lib/get-shop-info";
+import { getHomeEditorial } from "@/lib/get-home-editorial";
 import { socialHandle } from "@/lib/shop-info";
 
 export default async function Home() {
-  const [{ products, categories }, shop] = await Promise.all([getCatalog(), getShopInfo()]);
+  const [{ products, categories }, shop, editorial] = await Promise.all([getCatalog(), getShopInfo(), getHomeEditorial()]);
   const instagramHandle = socialHandle(shop.instagramUrl);
   const newArrivals = getNewArrivals(products);
   const bestSellers = getBestSellers(products);
@@ -60,7 +61,7 @@ export default async function Home() {
       )}
 
       <section>
-        <EditorialBanner />
+        <EditorialBanner content={editorial} categorySlugs={categories.map((c) => c.slug)} />
       </section>
 
       {bestSellers.length > 0 && (
