@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture Racha Store</title>
+<!-- Export PDF depuis le navigateur (même méthode que les autres projets). -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --ink: #242c27;
+    --ink-soft: #4c4a41;
+    --muted: #8c897c;
+    --gold: #b78f4c;
+    --gold-pale: #f4e9d2;
+    --cream: #faf8f3;
+    --sand: #f1ebdd;
+    --line: #e4dcc9;
+    --green: #127d58;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #e9e4d8;
+    color: var(--ink);
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    max-width: 900px; margin: 0 auto; padding: 16px 24px;
+    background: var(--ink); color: var(--cream);
+  }
+  .toolbar strong { font-family: Georgia, "Times New Roman", serif; font-size: 15pt; letter-spacing: .08em; font-weight: normal; }
+  .toolbar span { display: block; font-size: 9pt; color: #c9bfa8; }
+  .toolbar .actions { display: flex; gap: 10px; }
+  .toolbar button {
+    border: 0; padding: 10px 16px; cursor: pointer;
+    font: 600 9pt "Segoe UI", sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .btn-pdf { background: var(--gold); color: #171d19; }
+  .btn-word { background: transparent; color: var(--cream); outline: 1px solid #c9bfa8 !important; }
+  #document-content { max-width: 900px; margin: 0 auto 40px; background: #fff; padding: 56px 64px; }
+  .cover { border-bottom: 2px solid var(--gold); padding-bottom: 28px; margin-bottom: 8px; }
+  .eyebrow { font-size: 8pt; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); margin: 0 0 10px; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: normal; font-size: 30pt; line-height: 1.1; margin: 0 0 12px; }
+  h2 {
+    font-family: Georgia, "Times New Roman", serif; font-weight: normal; font-size: 18pt;
+    margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line);
+    page-break-after: avoid; break-after: avoid;
+  }
+  h3 { font-size: 11.5pt; margin: 22px 0 8px; color: var(--ink); page-break-after: avoid; break-after: avoid; }
+  p { margin: 0 0 10px; }
+  ul { margin: 0 0 12px; padding-left: 20px; }
+  li { margin-bottom: 4px; }
+  code {
+    font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+    background: var(--sand); color: #7a4f12; padding: 1px 5px;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 9.5pt; page-break-inside: auto; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  th {
+    text-align: left; background: var(--ink); color: var(--cream);
+    font-weight: 600; font-size: 8.5pt; letter-spacing: .04em; padding: 7px 10px;
+  }
+  td { border-bottom: 1px solid var(--line); padding: 7px 10px; vertical-align: top; }
+  code { white-space: nowrap; }
+  thead { display: table-header-group; }
+  table.avoid { page-break-inside: avoid; break-inside: avoid; }
+  table.dates td:first-child { white-space: nowrap; }
+  .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+  .meta div { background: var(--cream); border: 1px solid var(--line); padding: 10px 12px; }
+  .meta b { display: block; font-size: 7.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+  .toc { columns: 2; column-gap: 32px; padding-left: 18px; }
+  .note { background: var(--gold-pale); border-left: 3px solid var(--gold); padding: 10px 14px; margin: 10px 0 14px; }
+  .todo { background: #fbecee; border-left: 3px solid #a33a4a; padding: 10px 14px; margin: 10px 0 14px; }
+  figure { margin: 14px 0 18px; page-break-inside: avoid; break-inside: avoid; }
+  figure svg { display: block; width: 100%; height: auto; max-height: 68mm; }
+  figcaption { font-size: 8.5pt; color: var(--muted); margin-top: 6px; }
+  .tree {
+    font-family: Consolas, "Courier New", monospace; font-size: 8.8pt; line-height: 1.5;
+    background: var(--cream); border: 1px solid var(--line); padding: 14px 16px; white-space: pre; overflow-x: auto;
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  .avoid { page-break-inside: avoid; break-inside: avoid; }
+  @media print {
+    body { background: #fff; }
+    .toolbar { display: none; }
+    #document-content { margin: 0; padding: 0; max-width: none; }
+  }
+  @page { size: A4; margin: 16mm 15mm; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div>
+    <strong>RACHA STORE</strong>
+    <span>Document d'architecture</span>
+  </div>
+  <div class="actions">
+    <button class="btn-pdf" onclick="downloadPDF()">Télécharger en PDF</button>
+    <button class="btn-word" onclick="downloadWord()">Télécharger en Word</button>
+  </div>
+</div>
+
+<div id="document-content">
+
+  <div class="cover">
+    <p class="eyebrow">Document d'architecture</p>
+    <h1>Racha Store</h1>
+    <p>Boutique en ligne de mode (prêt-à-porter, maroquinerie, chaussures, bijoux, beauté) basée à Scat Urbain, Dakar.
+      Ce document décrit comment le site est construit, où vivent les données, comment il est protégé et déployé,
+      et tout ce qui a été réalisé depuis le début du projet.</p>
+    <div class="meta">
+      <div><b>Site</b>www.rachamarket.com</div>
+      <div><b>Mise à jour</b>28 septembre 2026</div>
+      <div><b>Hébergement</b>Vercel</div>
+      <div><b>Données</b>Supabase</div>
+    </div>
+  </div>
+
+  <h2>Sommaire</h2>
+  <ol class="toc">
+    <li>Vue d'ensemble</li>
+    <li>Choix technologiques</li>
+    <li>Organisation du code</li>
+    <li>Pages et parcours</li>
+    <li>Base de données</li>
+    <li>Flux principaux</li>
+    <li>Sécurité et données personnelles</li>
+    <li>Tableaux de bord</li>
+    <li>Déploiement et infrastructure</li>
+    <li>Historique des évolutions</li>
+    <li>Reste à faire avant le lancement</li>
+  </ol>
+
+  <!-- 1 -->
+  <h2>1. Vue d'ensemble</h2>
+  <p>Le site est une application <b>Next.js</b> hébergée sur <b>Vercel</b>. Toutes les données (catalogue, comptes,
+    commandes, messages, statistiques) sont dans <b>Supabase</b> : une base PostgreSQL, l'authentification des comptes et
+    le stockage des photos produits. Le navigateur parle directement à Supabase ; ce sont les règles de sécurité de la
+    base (RLS) qui décident de ce que chacun peut lire ou modifier.</p>
+
+  <figure>
+    <svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif" font-size="12">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#8c897c"/>
+        </marker>
+      </defs>
+      <!-- Visiteurs -->
+      <rect x="10" y="120" width="150" height="90" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="85" y="152" text-anchor="middle" font-weight="600" fill="#242c27">Navigateur</text>
+      <text x="85" y="172" text-anchor="middle" fill="#4c4a41">clients, gérante</text>
+      <text x="85" y="190" text-anchor="middle" fill="#8c897c" font-size="11">panier : stockage local</text>
+
+      <!-- Vercel -->
+      <rect x="260" y="30" width="230" height="130" fill="#242c27"/>
+      <text x="375" y="60" text-anchor="middle" font-weight="600" fill="#e2c88f">Vercel</text>
+      <text x="375" y="84" text-anchor="middle" fill="#faf8f3">Next.js 16 (App Router)</text>
+      <text x="375" y="104" text-anchor="middle" fill="#c9bfa8" font-size="11">pages, catalogue en cache 60 s</text>
+      <text x="375" y="122" text-anchor="middle" fill="#c9bfa8" font-size="11">webhook « nouvelle commande »</text>
+      <text x="375" y="140" text-anchor="middle" fill="#c9bfa8" font-size="11">Web Analytics, en-têtes de sécurité</text>
+
+      <!-- Supabase -->
+      <rect x="260" y="200" width="230" height="120" fill="#faf8f3" stroke="#127d58" stroke-width="1.5"/>
+      <text x="375" y="228" text-anchor="middle" font-weight="600" fill="#127d58">Supabase</text>
+      <text x="375" y="250" text-anchor="middle" fill="#242c27">PostgreSQL + règles RLS</text>
+      <text x="375" y="270" text-anchor="middle" fill="#4c4a41" font-size="11">Auth (comptes, e-mails)</text>
+      <text x="375" y="288" text-anchor="middle" fill="#4c4a41" font-size="11">Storage (photos « products »)</text>
+      <text x="375" y="306" text-anchor="middle" fill="#4c4a41" font-size="11">fonctions : create_order, admin_analytics…</text>
+
+      <!-- Services -->
+      <rect x="590" y="30" width="160" height="60" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="670" y="55" text-anchor="middle" font-weight="600" fill="#242c27">Resend</text>
+      <text x="670" y="74" text-anchor="middle" fill="#8c897c" font-size="11">e-mails sortants</text>
+      <rect x="590" y="130" width="160" height="60" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="670" y="155" text-anchor="middle" font-weight="600" fill="#242c27">ImprovMX</text>
+      <text x="670" y="174" text-anchor="middle" fill="#8c897c" font-size="11">contact@ → Gmail</text>
+      <rect x="590" y="230" width="160" height="60" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="670" y="255" text-anchor="middle" font-weight="600" fill="#242c27">UptimeRobot</text>
+      <text x="670" y="274" text-anchor="middle" fill="#8c897c" font-size="11">surveillance du site</text>
+
+      <!-- Liens -->
+      <line x1="160" y1="150" x2="258" y2="100" stroke="#8c897c" marker-end="url(#arrow)"/>
+      <text x="196" y="112" fill="#8c897c" font-size="10.5">pages</text>
+      <line x1="160" y1="185" x2="258" y2="255" stroke="#8c897c" marker-end="url(#arrow)"/>
+      <text x="170" y="240" fill="#8c897c" font-size="10.5">données (RLS)</text>
+      <line x1="375" y1="198" x2="375" y2="162" stroke="#8c897c" marker-end="url(#arrow)"/>
+      <text x="382" y="185" fill="#8c897c" font-size="10.5">webhook</text>
+      <line x1="490" y1="70" x2="588" y2="60" stroke="#8c897c" marker-end="url(#arrow)"/>
+      <line x1="490" y1="240" x2="588" y2="85" stroke="#8c897c" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+      <text x="520" y="200" fill="#8c897c" font-size="10.5">SMTP</text>
+      <line x1="588" y1="260" x2="492" y2="140" stroke="#8c897c" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+    </svg>
+    <figcaption>Figure 1 : les briques du site et leurs échanges. Traits pointillés : e-mails d'authentification (Supabase via le SMTP de Resend) et surveillance.</figcaption>
+  </figure>
+
+  <!-- 2 -->
+  <h2>2. Choix technologiques</h2>
+  <table>
+    <thead><tr><th>Domaine</th><th>Outil</th><th>Rôle</th></tr></thead>
+    <tr><td>Application</td><td>Next.js 16.3 (App Router), React 19.2, TypeScript 5</td><td>Pages de la boutique, compte client, administration, routes serveur.</td></tr>
+    <tr><td>Styles</td><td>Tailwind CSS 4, polices Cormorant, Jost et Inter</td><td>Charte : encre <code>#242c27</code>, or <code>#b78f4c</code>, crème <code>#faf8f3</code>.</td></tr>
+    <tr><td>Composants</td><td>Radix UI, lucide-react, sonner, Embla</td><td>Fenêtres, menus, listes, icônes, notifications, carrousels.</td></tr>
+    <tr><td>État local</td><td>Zustand</td><td>Panier et liste de souhaits (gardés dans le navigateur), session.</td></tr>
+    <tr><td>Graphiques</td><td>d3-shape (SVG maison)</td><td>Courbes, barres, anneaux de la page Statistiques.</td></tr>
+    <tr><td>Base de données</td><td>Supabase PostgreSQL</td><td>Catalogue, clients, commandes, promotions, messages, audience.</td></tr>
+    <tr><td>Comptes</td><td>Supabase Auth</td><td>Inscription avec confirmation par e-mail, mot de passe oublié.</td></tr>
+    <tr><td>Photos</td><td>Supabase Storage (bucket public <code>products</code>)</td><td>Photos envoyées depuis l'administration.</td></tr>
+    <tr><td>E-mails</td><td>Resend (domaine rachamarket.com vérifié)</td><td>E-mails de compte (SMTP de Supabase) et alerte « Nouvelle commande ».</td></tr>
+    <tr><td>Adresse de contact</td><td>ImprovMX</td><td>contact@rachamarket.com redirigé vers la boîte Gmail de la boutique.</td></tr>
+    <tr><td>Hébergement</td><td>Vercel (DNS du domaine inclus)</td><td>Déploiement automatique à chaque envoi sur la branche <code>main</code>.</td></tr>
+    <tr><td>Audience</td><td>Vercel Web Analytics + compteur maison</td><td>Sans cookie : pas de bandeau de consentement nécessaire.</td></tr>
+  </table>
+
+  <!-- 3 -->
+  <h2>3. Organisation du code</h2>
+  <div class="tree">racha-store/
+├── src/
+│   ├── app/                    pages (App Router)
+│   │   ├── (boutique)/         boutique : accueil, catalogue, produit, panier, commande,
+│   │   │                       compte client, pages d'information et légales
+│   │   ├── admin/              administration (réservée aux comptes déclarés admins)
+│   │   ├── api/webhooks/       nouvelle-commande : e-mail à la boutique
+│   │   ├── auth/confirm/       liens reçus par e-mail (inscription, mot de passe)
+│   │   ├── sitemap.ts, robots.ts
+│   │   └── globals.css         couleurs, thème sombre des tableaux de bord, effets
+│   ├── components/
+│   │   ├── layout/             en-tête, pied de page, menu mobile
+│   │   ├── home/ shop/ product/ checkout/   sections de la boutique
+│   │   ├── account/            cadre de l'espace client
+│   │   ├── admin/              cadre, formulaires et graphiques de l'administration
+│   │   ├── dashboard/          effets des tableaux de bord (projecteur, aurore, compteurs)
+│   │   ├── shared/             logo, téléphone (appel ou WhatsApp), icônes, JSON-LD
+│   │   └── ui/                 boutons, champs, fenêtres, menus (Radix)
+│   ├── lib/                    catalogue, prix, e-mail de commande, coordonnées (site.ts),
+│   │                           clients Supabase, statuts de commande
+│   └── store/                  panier, liste de souhaits, session, interface
+├── supabase/
+│   ├── migrations/             schéma et règles, à exécuter dans l'ordre
+│   ├── seed.sql                catalogue de départ
+│   └── templates/              e-mails de confirmation et de mot de passe (français)
+├── next.config.ts              en-têtes de sécurité, domaines d'images autorisés
+└── .env.example                variables d'environnement attendues</div>
+
+  <!-- 4 -->
+  <h2>4. Pages et parcours</h2>
+  <h3>Boutique (publique)</h3>
+  <table class="avoid">
+    <thead><tr><th>Adresse</th><th>Contenu</th></tr></thead>
+    <tr><td><code>/</code></td><td>Accueil : collections, nouveautés, catégories.</td></tr>
+    <tr><td><code>/boutique</code>, <code>/boutique/[catégorie]</code></td><td>Catalogue avec filtres et tri.</td></tr>
+    <tr><td><code>/produit/[slug]</code></td><td>Fiche produit : photos, couleurs, tailles, stock, ajout au panier.</td></tr>
+    <tr><td><code>/panier</code>, <code>/checkout</code>, <code>/checkout/confirmation</code></td><td>Panier, informations de livraison, code promo, confirmation.</td></tr>
+    <tr><td><code>/liste-de-souhaits</code></td><td>Articles gardés de côté (synchronisés avec le compte une fois connecté).</td></tr>
+    <tr><td><code>/contact</code>, <code>/faq</code>, <code>/a-propos</code>, <code>/livraison-retours</code></td><td>Formulaire de contact avec carte, questions fréquentes, histoire, livraison.</td></tr>
+    <tr><td><code>/cgv</code>, <code>/mentions-legales</code>, <code>/confidentialite</code></td><td>Pages légales.</td></tr>
+  </table>
+  <h3>Compte client</h3>
+  <table class="avoid">
+    <thead><tr><th>Adresse</th><th>Contenu</th></tr></thead>
+    <tr><td><code>/compte/connexion</code>, <code>/compte/inscription</code></td><td>Connexion, création de compte (confirmation par e-mail).</td></tr>
+    <tr><td><code>/compte/mot-de-passe-oublie</code>, <code>/compte/nouveau-mot-de-passe</code></td><td>Réinitialisation du mot de passe.</td></tr>
+    <tr><td><code>/compte</code></td><td>Tableau de bord : nombre de commandes, liste de souhaits, adresses, suivi de la dernière commande.</td></tr>
+    <tr><td><code>/compte/commandes</code>, <code>/compte/adresses</code></td><td>Historique des commandes, carnet d'adresses.</td></tr>
+  </table>
+  <h3>Administration</h3>
+  <table class="avoid">
+    <thead><tr><th>Adresse</th><th>Contenu</th></tr></thead>
+    <tr><td><code>/admin</code></td><td>Tableau de bord : à encaisser, à expédier, ventes du mois, messages, chiffre d'affaires sur 30 jours, stock faible.</td></tr>
+    <tr><td><code>/admin/statistiques</code></td><td>Ventes, visites, provenance, catégories, produits, villes, jours, codes promo (7, 30, 90 jours ou 12 mois).</td></tr>
+    <tr><td><code>/admin/commandes</code>, <code>/admin/commandes/[id]</code></td><td>Liste filtrable, détail, changement de statut, contact client (appel, WhatsApp, e-mail).</td></tr>
+    <tr><td><code>/admin/produits</code>, <code>/admin/categories</code></td><td>Catalogue : création, modification, photos, stock, couleurs, tailles.</td></tr>
+    <tr><td><code>/admin/codes-promo</code>, <code>/admin/messages</code>, <code>/admin/newsletter</code></td><td>Promotions, messages du formulaire de contact, abonnés.</td></tr>
+  </table>
+
+  <!-- 5 -->
+  <h2>5. Base de données</h2>
+  <p>Montants en F CFA, entiers. Les fichiers de <code>supabase/migrations</code> sont exécutés une fois, dans l'ordre,
+    dans Supabase &gt; SQL Editor :</p>
+  <table class="avoid">
+    <thead><tr><th>Fichier</th><th>Contenu</th></tr></thead>
+    <tr><td><code>20260927120000_initial_schema.sql</code></td><td>Tables, règles RLS, création de commande, codes promo, bucket photos.</td></tr>
+    <tr><td><code>20260927190000_admin.sql</code></td><td>Table des administrateurs, <code>is_admin()</code>, droits de l'administration.</td></tr>
+    <tr><td><code>20260928090000_hardening.sql</code></td><td>Longueurs maximales, anti-spam, index des listes.</td></tr>
+    <tr><td><code>20260928160000_analytics.sql</code></td><td>Mesure d'audience maison et calcul des statistiques.</td></tr>
+  </table>
+
+  <h3>Tables</h3>
+  <table>
+    <thead><tr><th>Table</th><th>Rôle</th></tr></thead>
+    <tr><td><code>categories</code></td><td>Catégories du catalogue (nom, slug, description, image, position).</td></tr>
+    <tr><td><code>products</code></td><td>Produits : prix, prix barré, stock, couleurs, tailles, photos, mise en vente, éditions limitées.</td></tr>
+    <tr><td><code>profiles</code></td><td>Profil client (prénom, nom, téléphone), créé à l'inscription.</td></tr>
+    <tr><td><code>addresses</code></td><td>Carnet d'adresses de chaque client.</td></tr>
+    <tr><td><code>wishlist_items</code></td><td>Liste de souhaits enregistrée sur le compte.</td></tr>
+    <tr><td><code>orders</code></td><td>Commandes : client, adresse, mode de livraison, remise, frais de port, total, statut.</td></tr>
+    <tr><td><code>order_items</code></td><td>Articles commandés, avec nom et prix copiés au moment de l'achat.</td></tr>
+    <tr><td><code>promo_codes</code></td><td>Codes promo : pourcentage, dates, nombre d'utilisations.</td></tr>
+    <tr><td><code>contact_messages</code></td><td>Messages du formulaire de contact (lu / non lu).</td></tr>
+    <tr><td><code>newsletter_subscribers</code></td><td>Inscriptions à la newsletter.</td></tr>
+    <tr><td><code>admins</code></td><td>Comptes autorisés à utiliser l'administration.</td></tr>
+    <tr><td><code>site_visits_daily</code>, <code>page_views_daily</code></td><td>Compteurs agrégés par jour (visites par provenance et appareil, pages vues).</td></tr>
+  </table>
+  <p>Types énumérés : <code>order_status</code> (en attente de paiement, payée, expédiée, livrée, annulée) et
+    <code>shipping_method</code> (standard, express).</p>
+
+  <h3>Fonctions appelées par le site</h3>
+  <table class="avoid">
+    <thead><tr><th>Fonction</th><th>Rôle</th></tr></thead>
+    <tr><td><code>create_order</code></td><td>Crée la commande en une seule transaction : recalcule prix, remise et frais de port, décrémente le stock.</td></tr>
+    <tr><td><code>check_promo_code</code></td><td>Vérifie un code promo et renvoie sa remise.</td></tr>
+    <tr><td><code>subscribe_newsletter</code></td><td>Inscription à la newsletter, avec contrôle de l'adresse.</td></tr>
+    <tr><td><code>is_admin</code></td><td>Indique si le compte connecté est administrateur ; utilisée par toutes les règles « Admin ».</td></tr>
+    <tr><td><code>admin_set_order_status</code></td><td>Changement de statut d'une commande par l'administration.</td></tr>
+    <tr><td><code>track_page_view</code></td><td>Compte une page vue et, en début de visite, sa provenance.</td></tr>
+    <tr><td><code>admin_analytics</code></td><td>Calcule tous les chiffres de la page Statistiques, réservé aux administrateurs.</td></tr>
+  </table>
+  <p>Déclencheurs : création du profil à l'inscription (<code>handle_new_user</code>), dates de mise à jour,
+    limites anti-spam sur les messages, la newsletter et les commandes.</p>
+
+  <!-- 6 -->
+  <h2>6. Flux principaux</h2>
+  <h3>Passer une commande</h3>
+  <ol>
+    <li>Le panier est gardé dans le navigateur (stockage local), avec les couleurs et tailles choisies.</li>
+    <li>Au paiement, le site envoie seulement les produits, quantités, couleurs, tailles et coordonnées à <code>create_order</code>.</li>
+    <li>La base recalcule tout : prix réels, code promo, livraison (5 000 F CFA en standard, 10 000 F CFA en express, offerte dès 100 000 F CFA).
+      Le stock est décrémenté dans la même transaction : deux clients ne peuvent pas acheter la dernière pièce.</li>
+    <li>La commande est créée au statut « En attente de paiement ».</li>
+    <li>Un webhook Supabase appelle <code>/api/webhooks/nouvelle-commande</code> (protégé par un secret partagé), qui envoie l'e-mail
+      « Nouvelle commande » à la boutique via Resend, avec un lien WhatsApp vers le client.</li>
+    <li>La gérante suit la commande dans l'administration (payée, expédiée, livrée) ; le client voit le suivi dans son compte.</li>
+  </ol>
+
+  <h3>Comptes clients</h3>
+  <ul>
+    <li>Inscription avec confirmation par e-mail (modèles en français, envoyés par le SMTP de Resend).</li>
+    <li>Les liens des e-mails arrivent sur <code>/auth/confirm</code>, qui ouvre la session puis redirige.</li>
+    <li>Un administrateur se connecte avec son compte habituel et arrive directement sur <code>/admin</code>.</li>
+  </ul>
+
+  <h3>Catalogue</h3>
+  <ul>
+    <li>Le catalogue est lu côté serveur et gardé en cache 60 secondes au plus.</li>
+    <li>Une modification dans l'administration force une relecture immédiate.</li>
+    <li>Les photos sont envoyées dans Supabase Storage et servies par l'optimiseur d'images de Next.js.</li>
+  </ul>
+
+  <h3>Mesure d'audience</h3>
+  <ul>
+    <li>À chaque page, le site appelle <code>track_page_view</code> : seules des sommes par jour sont enregistrées, sans cookie ni adresse IP.</li>
+    <li>La provenance (Instagram, TikTok, Facebook, Google, WhatsApp, accès direct) est déduite de la page d'origine.</li>
+    <li>Les adresses inventées par des robots sont regroupées dans « autre » : la table ne peut pas être remplie artificiellement.</li>
+    <li>Compteur en place depuis le 28 septembre 2026 ; Vercel Web Analytics en complément.</li>
+  </ul>
+
+  <!-- 7 -->
+  <h2>7. Sécurité et données personnelles</h2>
+  <table>
+    <thead><tr><th>Protection</th><th>Détail</th></tr></thead>
+    <tr><td>Règles RLS</td><td>Chaque table est fermée par défaut. Un client ne lit que ses commandes, adresses et liste de souhaits ; seuls les comptes de la table <code>admins</code> gèrent le catalogue et les commandes.</td></tr>
+    <tr><td>Prix côté base</td><td>Le navigateur n'envoie jamais de montant : un prix modifié dans la page n'a aucun effet.</td></tr>
+    <tr><td>En-têtes HTTP</td><td>Content-Security-Policy (sources autorisées : le site, Supabase, Google Maps), HSTS 2 ans, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy.</td></tr>
+    <tr><td>Anti-spam</td><td>Contact : 3 messages par adresse en 10 minutes, 50 par heure au total. Newsletter : 100 inscriptions par heure. Commandes : 5 par e-mail ou téléphone par heure, 60 en 10 minutes. Champs piège invisibles pour les robots, longueurs maximales sur tous les champs.</td></tr>
+    <tr><td>Clés</td><td>Seule la clé publique Supabase est dans le navigateur. La clé secrète, la clé Resend et le secret du webhook ne sont que dans les variables serveur de Vercel.</td></tr>
+    <tr><td>Mots de passe</td><td>Gérés par Supabase Auth, chiffrés de façon irréversible.</td></tr>
+    <tr><td>Données personnelles</td><td>Page Confidentialité conforme à la loi sénégalaise n° 2008-12 ; aucune donnée de navigation nominative.</td></tr>
+    <tr><td>Sauvegardes</td><td>Sauvegarde quotidienne de la base par Supabase (les photos du Storage n'y sont pas incluses).</td></tr>
+  </table>
+
+  <!-- 8 -->
+  <h2>8. Tableaux de bord</h2>
+  <p>L'administration et l'espace client utilisent un thème sombre, inspiré de reactbits.dev, aux couleurs de la marque (or et vert) :</p>
+  <ul>
+    <li><b>Un seul interrupteur</b> : la classe <code>.theme-dashboard</code> (globals.css) redonne des valeurs sombres aux couleurs du site ;
+      toutes les pages, formulaires et fenêtres suivent sans être réécrits.</li>
+    <li><b>Effets</b> (<code>src/components/dashboard/fx.tsx</code>) : cartes à halo qui suit le pointeur, aurore animée et trame de points
+      en haut de page, chiffres qui défilent jusqu'à leur valeur, nom de la marque au reflet doré.</li>
+    <li><b>Accessibilité</b> : animations coupées si le visiteur demande moins de mouvement, contrastes vérifiés (texte au moins 4,5:1),
+      palette des graphiques validée pour les daltonismes sur le fond sombre, chaque graphique consultable aussi en tableau.</li>
+    <li><b>Espace client</b> : compteurs (commandes, liste de souhaits, adresses) et suivi en quatre étapes de la dernière commande.</li>
+  </ul>
+
+  <!-- 9 -->
+  <h2>9. Déploiement et infrastructure</h2>
+  <table class="avoid">
+    <thead><tr><th>Élément</th><th>Configuration</th></tr></thead>
+    <tr><td>Code</td><td>Dépôt GitHub, branche <code>main</code>.</td></tr>
+    <tr><td>Mise en ligne</td><td>Vercel (projet « racha-store ») redéploie automatiquement à chaque envoi sur <code>main</code>.</td></tr>
+    <tr><td>Domaine</td><td>rachamarket.com acheté sur Vercel ; www.rachamarket.com est l'adresse principale, l'adresse sans « www » y redirige.</td></tr>
+    <tr><td>E-mails du domaine</td><td>Resend (envoi, sous-domaine <code>send.rachamarket.com</code>) et ImprovMX (réception de contact@).</td></tr>
+    <tr><td>Base</td><td>Migrations exécutées à la main dans Supabase &gt; SQL Editor ; URL du site configurée dans Supabase Auth pour les liens des e-mails.</td></tr>
+    <tr><td>Surveillance</td><td>UptimeRobot vérifie que le site répond et alerte par e-mail.</td></tr>
+  </table>
+  <h3>Variables d'environnement (Vercel)</h3>
+  <table class="avoid">
+    <thead><tr><th>Variable</th><th>Usage</th></tr></thead>
+    <tr><td><code>NEXT_PUBLIC_SITE_URL</code></td><td>Adresse publique ; tant qu'elle est vide, le site est servi sans indexation.</td></tr>
+    <tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code></td><td>Connexion publique à Supabase.</td></tr>
+    <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Lecture de la commande complète par le webhook (serveur uniquement).</td></tr>
+    <tr><td><code>ORDER_WEBHOOK_SECRET</code></td><td>Secret partagé avec le webhook Supabase.</td></tr>
+    <tr><td><code>RESEND_API_KEY</code>, <code>ORDER_NOTIFICATION_EMAILS</code></td><td>Envoi de l'e-mail « Nouvelle commande » et destinataires.</td></tr>
+  </table>
+
+  <!-- 10 -->
+  <h2>10. Historique des évolutions</h2>
+  <table class="dates">
+    <thead><tr><th>Date</th><th>Évolution</th></tr></thead>
+    <tr><td>13 sept. 2026</td><td>Création du projet Next.js et de toute la boutique (accueil, catalogue, fiche produit, panier, commande, compte, pages d'information).</td></tr>
+    <tr><td>27 sept. 2026</td><td>Branchement sur Supabase (catalogue, comptes, commandes, messages, newsletter) et retrait du contenu de démonstration.</td></tr>
+    <tr><td>27 sept. 2026</td><td>Adresse de contact contact@rachamarket.com.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Administration <code>/admin</code> : commandes, produits, catégories, codes promo, messages, newsletter.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Lien de connexion visible dans l'en-tête ; retour à la boutique depuis les pages de connexion.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Préparation au lancement : en-têtes de sécurité, référencement (sitemap, robots, données structurées), anti-spam.</td></tr>
+    <tr><td>28 sept. 2026</td><td>E-mail « Nouvelle commande », arrivée des administrateurs sur <code>/admin</code>, mentions légales.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Page Statistiques et mesure d'audience maison.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Pied de page « Nous contacter » : e-mail de la boutique et trois numéros joignables par appel ou WhatsApp.</td></tr>
+    <tr><td>28 sept. 2026</td><td>Nouveau design sombre des tableaux de bord administrateur et client.</td></tr>
+  </table>
+
+  <!-- 11 -->
+  <h2>11. Reste à faire avant le lancement</h2>
+  <div class="todo avoid">
+    <p><b>Paiement en ligne.</b> Choix retenu : Wave, Orange Money et carte bancaire via un prestataire sénégalais (PayTech ou PayDunya),
+      sans paiement à la livraison. À faire : ouvrir le compte marchand, intégrer le paiement, vérifier la signature des
+      notifications du prestataire et rendre l'encaissement d'une commande impossible à compter deux fois. D'ici là, les commandes restent
+      « En attente de paiement ».</p>
+  </div>
+  <ul>
+    <li>Confirmer la réception de l'e-mail « Nouvelle commande » lors d'une vraie commande de test.</li>
+    <li>Remplacer les produits de départ (<code>seed.sql</code>, photos d'illustration Unsplash) par le vrai catalogue, s'ils sont encore en ligne.</li>
+    <li>Prévoir une copie des photos du Storage, non incluses dans les sauvegardes Supabase.</li>
+  </ul>
+
+</div>
+
+<script>
+  function downloadPDF() {
+    const element = document.getElementById("document-content");
+    html2pdf()
+      .set({
+        margin: [12, 10, 12, 10],
+        filename: "Architecture_Racha_Store.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"], avoid: ["tr", "figure", ".avoid", ".tree"] },
+      })
+      .from(element)
+      .save();
+  }
+
+  function downloadWord() {
+    const styles = document.querySelector("style").innerHTML;
+    const header =
+      "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' " +
+      "xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Architecture Racha Store</title>" +
+      "<style>" + styles + "</style></head><body>";
+    const source = header + document.getElementById("document-content").innerHTML + "</body></html>";
+    const link = document.createElement("a");
+    link.href = "data:application/vnd.ms-word;charset=utf-8," + encodeURIComponent(source);
+    link.download = "Architecture_Racha_Store.doc";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
+</body>
+</html>
