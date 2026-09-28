@@ -277,7 +277,7 @@
     <tr><td><code>/admin/produits</code>, <code>/admin/categories</code></td><td>Catalogue : création, modification, photos, stock, couleurs, tailles.</td></tr>
     <tr><td><code>/admin/annonces</code></td><td>Annonces du bandeau défilant (soldes, nouveautés…) : texte, lien, dates, ordre, aperçu en direct.</td></tr>
     <tr><td><code>/admin/codes-promo</code>, <code>/admin/messages</code>, <code>/admin/newsletter</code></td><td>Promotions, messages du formulaire de contact, abonnés.</td></tr>
-    <tr><td><code>/admin/parametres</code></td><td>Mon compte (nom, téléphone, e-mail de connexion, mot de passe, déconnexion de tous les appareils) et Boutique (coordonnées et réseaux sociaux affichés sur le site, destinataires de l'e-mail « Nouvelle commande »).</td></tr>
+    <tr><td><code>/admin/parametres</code></td><td>Mon compte (nom, téléphone, e-mail de connexion, mot de passe, déconnexion de tous les appareils), Boutique (coordonnées et réseaux sociaux affichés sur le site, destinataires de l'e-mail « Nouvelle commande ») et Page d'accueil (photo et textes du bloc couture africaine).</td></tr>
   </table>
 
   <!-- 5 -->
@@ -293,6 +293,7 @@
     <tr><td><code>20260928200000_announcements.sql</code></td><td>Annonces du bandeau défilant.</td></tr>
     <tr><td><code>20260929090000_settings.sql</code></td><td>Paramètres de la boutique et réglages internes.</td></tr>
     <tr><td><code>20260929140000_tenues_africaines.sql</code></td><td>Catégorie « Tenues africaines » ; bandeau sans les retours sous 30 jours.</td></tr>
+    <tr><td><code>20260929160000_home_editorial.sql</code></td><td>Bloc mis en avant de l'accueil (photo et textes modifiables).</td></tr>
   </table>
 
   <h3>Tables</h3>
@@ -311,6 +312,7 @@
     <tr><td><code>admins</code></td><td>Comptes autorisés à utiliser l'administration.</td></tr>
     <tr><td><code>shop_settings</code></td><td>Une ligne : e-mail de contact, téléphones, adresse, horaires, Instagram, TikTok. Lisible par tous, modifiable par les administrateurs.</td></tr>
     <tr><td><code>admin_settings</code></td><td>Une ligne : destinataires de l'e-mail « Nouvelle commande ». Réservée aux administrateurs.</td></tr>
+    <tr><td><code>home_editorial</code></td><td>Une ligne : photo, petit titre, titre, texte et bouton du bloc mis en avant de l'accueil. Lisible par tous, modifiable par les administrateurs.</td></tr>
     <tr><td><code>announcements</code></td><td>Annonces du bandeau : texte, lien, dates de début et de fin, ordre, affichée ou non. Le site ne lit que celles en cours.</td></tr>
     <tr><td><code>site_visits_daily</code>, <code>page_views_daily</code></td><td>Compteurs agrégés par jour (visites par provenance et appareil, pages vues).</td></tr>
   </table>
@@ -450,6 +452,7 @@
     <tr><td>29 sept. 2026</td><td>Page Paramètres : compte de la gérante (nom, e-mail, mot de passe, sessions) et coordonnées de la boutique modifiables sans développeur.</td></tr>
     <tr><td>29 sept. 2026</td><td>Coordonnées publiques réduites à la demande de la propriétaire : ni e-mail ni quartier sur le site, plus de carte ; contact par téléphone, WhatsApp ou formulaire.</td></tr>
     <tr><td>29 sept. 2026</td><td>Livraison 7j/7 au Sénégal et partout dans le monde ; retours limités aux articles défectueux (échange ou remboursement) ; paiement Wave, Orange Money, Visa, Mastercard ; catégorie « Tenues africaines » et tissus africains proposés dans « Matières » ; accroche « Le style qui vous ressemble ».</td></tr>
+    <tr><td>29 sept. 2026</td><td>Bloc « Couture africaine » de l'accueil (grand boubou, taille basse, ndokette, kaftan), photo et textes modifiables par la gérante dans Paramètres.</td></tr>
   </table>
 
   <!-- 11 -->
