@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Mail, MapPin } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { InstagramIcon, TikTokIcon } from "@/components/shared/social-icons";
 import { PhoneLink } from "@/components/shared/phone-link";
-import { address, social } from "@/lib/site";
+import { address, footerContact, social } from "@/lib/site";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useCatalog } from "@/components/catalog-provider";
@@ -115,15 +115,39 @@ export function Footer() {
                 <ArrowRight size={20} strokeWidth={1.5} />
               </button>
             </form>
-            <PhoneLink className="text-sm text-cream/70 hover:text-cream transition-colors mt-6" />
-            <a
-              href={address.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-sm text-cream/70 hover:text-cream transition-colors mt-2"
-            >
-              {address.full}
-            </a>
+            <div className="mt-12">
+              <p className="font-sans-wide text-[0.68rem] uppercase text-gold-light mb-5">Nous contacter</p>
+              <ul className="flex flex-col gap-3 text-sm">
+                <li>
+                  <a
+                    href={`mailto:${footerContact.email}`}
+                    className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors [overflow-wrap:anywhere]"
+                  >
+                    <Mail size={14} strokeWidth={1.5} className="shrink-0" />
+                    {footerContact.email}
+                  </a>
+                </li>
+                {footerContact.phones.map((number) => (
+                  <li key={number.tel}>
+                    <PhoneLink number={number} className="text-cream/70 hover:text-cream transition-colors" />
+                  </li>
+                ))}
+                <li>
+                  <a
+                    href={address.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors"
+                  >
+                    <MapPin size={14} strokeWidth={1.5} className="shrink-0" />
+                    {address.full}
+                  </a>
+                </li>
+              </ul>
+              <p className="text-xs text-cream/50 mt-4">
+                Cliquez sur un numéro pour appeler ou écrire sur WhatsApp.
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">

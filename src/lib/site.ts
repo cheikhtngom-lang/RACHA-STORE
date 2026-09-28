@@ -5,9 +5,22 @@ export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || 
 
 export const contactEmail = "contact@rachamarket.com";
 
-export const phone = {
+export type PhoneNumber = { display: string; tel: string };
+
+export const phone: PhoneNumber = {
   display: "+221 77 344 59 51",
   tel: "+221773445951",
+};
+
+// Bloc « Nous contacter » du pied de page : chaque numéro se joint par appel
+// ou sur WhatsApp.
+export const footerContact = {
+  email: "sy.ndeyetacko@gmail.com",
+  phones: [
+    phone,
+    { display: "+221 76 630 52 62", tel: "+221766305262" },
+    { display: "+33 7 51 22 66 11", tel: "+33751226611" },
+  ] satisfies PhoneNumber[],
 };
 
 export const openingHours = "Du lundi au samedi, de 10h à 19h";

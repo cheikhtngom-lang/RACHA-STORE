@@ -3,21 +3,19 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Phone } from "lucide-react";
 import { WhatsAppIcon } from "./social-icons";
-import { phone } from "@/lib/site";
+import { phone, type PhoneNumber } from "@/lib/site";
 import { cn } from "@/lib/utils";
-
-const PHONE_DISPLAY = phone.display;
-const PHONE_TEL = phone.tel;
-const PHONE_WHATSAPP = phone.tel.replace("+", "");
 
 export function PhoneLink({
   className,
   iconSize = 14,
   showIcon = true,
+  number = phone,
 }: {
   className?: string;
   iconSize?: number;
   showIcon?: boolean;
+  number?: PhoneNumber;
 }) {
   return (
     <DropdownMenu.Root>
@@ -27,7 +25,7 @@ export function PhoneLink({
           className={cn("flex items-center gap-2 cursor-pointer", className)}
         >
           {showIcon && <Phone size={iconSize} strokeWidth={1.5} className="shrink-0" />}
-          {PHONE_DISPLAY}
+          {number.display}
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
@@ -38,7 +36,7 @@ export function PhoneLink({
         >
           <DropdownMenu.Item asChild>
             <a
-              href={`tel:${PHONE_TEL}`}
+              href={`tel:${number.tel}`}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-sand transition-colors cursor-pointer outline-none"
             >
               <Phone size={15} strokeWidth={1.5} className="text-gold" />
@@ -47,7 +45,7 @@ export function PhoneLink({
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
             <a
-              href={`https://wa.me/${PHONE_WHATSAPP}`}
+              href={`https://wa.me/${number.tel.replace("+", "")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-sand transition-colors cursor-pointer outline-none"
