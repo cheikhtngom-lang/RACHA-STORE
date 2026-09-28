@@ -8,7 +8,7 @@ import { PageHeader, Field, CheckboxField, Loading, LoadError, EmptyState, Confi
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { dbErrorMessage, formatDate } from "@/lib/admin/utils";
+import { DAY, dbErrorMessage, formatDate, fromInputDate, toInputDate } from "@/lib/admin/utils";
 import { cn } from "@/lib/utils";
 
 type PromoCode = {
@@ -20,23 +20,6 @@ type PromoCode = {
   max_uses: number | null;
   times_used: number;
 };
-
-const DAY = 24 * 60 * 60 * 1000;
-
-// La base stocke un instant ; l'écran parle en jours. « Jusqu'au 31 inclus »
-// est enregistré comme le 1er à minuit.
-function toInputDate(iso: string | null, shiftDays = 0) {
-  if (!iso) return "";
-  const d = new Date(new Date(iso).getTime() + shiftDays * DAY);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function fromInputDate(value: string, shiftDays = 0) {
-  if (!value) return null;
-  const d = new Date(`${value}T00:00:00`);
-  d.setDate(d.getDate() + shiftDays);
-  return d.toISOString();
-}
 
 function codeStatus(p: PromoCode) {
   const now = Date.now();

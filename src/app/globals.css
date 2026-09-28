@@ -166,6 +166,30 @@ body {
   overflow: hidden;
 }
 
+/* Bandeau d'annonces : la bande contient deux copies identiques et recule
+   de la moitié de sa largeur, puis recommence. Durée fournie par le composant. */
+.marquee {
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+}
+.marquee:hover,
+.marquee:focus-within,
+.marquee-paused {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    animation: none;
+  }
+}
+
 /* ------------------------------------------------------------------------
    Tableaux de bord : effets (inspirés de reactbits.dev), sans bibliothèque.
    Tous s'arrêtent si le visiteur a demandé moins d'animations.
