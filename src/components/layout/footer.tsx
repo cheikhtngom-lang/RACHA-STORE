@@ -6,7 +6,8 @@ import { ArrowRight, Mail, MapPin } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { InstagramIcon, TikTokIcon } from "@/components/shared/social-icons";
 import { PhoneLink } from "@/components/shared/phone-link";
-import { address, footerContact, social } from "@/lib/site";
+import { useShopInfo } from "@/components/shop-info-provider";
+import { mapsLinks } from "@/lib/shop-info";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useCatalog } from "@/components/catalog-provider";
@@ -37,6 +38,7 @@ const staticColumns = [
 
 export function Footer() {
   const { categories } = useCatalog();
+  const shop = useShopInfo();
   const [email, setEmail] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [subscribing, setSubscribing] = useState(false);
@@ -120,33 +122,35 @@ export function Footer() {
               <ul className="flex flex-col gap-3 text-sm">
                 <li>
                   <a
-                    href={`mailto:${footerContact.email}`}
+                    href={`mailto:${shop.contactEmail}`}
                     className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors [overflow-wrap:anywhere]"
                   >
                     <Mail size={14} strokeWidth={1.5} className="shrink-0" />
-                    {footerContact.email}
+                    {shop.contactEmail}
                   </a>
                 </li>
-                {footerContact.phones.map((number) => (
+                {shop.phones.map((number) => (
                   <li key={number.tel}>
                     <PhoneLink number={number} className="text-cream/70 hover:text-cream transition-colors" />
                   </li>
                 ))}
                 <li>
                   <a
-                    href={address.mapsUrl}
+                    href={mapsLinks(shop.address).search}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors"
                   >
                     <MapPin size={14} strokeWidth={1.5} className="shrink-0" />
-                    {address.full}
+                    {shop.address}
                   </a>
                 </li>
               </ul>
-              <p className="text-xs text-cream/50 mt-4">
-                Cliquez sur un numéro pour appeler ou écrire sur WhatsApp.
-              </p>
+              {shop.phones.length > 0 && (
+                <p className="text-xs text-cream/50 mt-4">
+                  Cliquez sur un numéro pour appeler ou écrire sur WhatsApp.
+                </p>
+              )}
             </div>
           </div>
 
@@ -171,24 +175,28 @@ export function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <Logo light className="items-start sm:items-center" />
           <div className="flex items-center gap-5">
-            <a
-              href={social.instagram.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="text-cream/70 hover:text-gold-light transition-colors"
-            >
-              <InstagramIcon size={18} />
-            </a>
-            <a
-              href={social.tiktok.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="TikTok"
-              className="text-cream/70 hover:text-gold-light transition-colors"
-            >
-              <TikTokIcon size={18} />
-            </a>
+            {shop.instagramUrl && (
+              <a
+                href={shop.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-cream/70 hover:text-gold-light transition-colors"
+              >
+                <InstagramIcon size={18} />
+              </a>
+            )}
+            {shop.tiktokUrl && (
+              <a
+                href={shop.tiktokUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="text-cream/70 hover:text-gold-light transition-colors"
+              >
+                <TikTokIcon size={18} />
+              </a>
+            )}
           </div>
           <p className="text-xs text-cream/50 text-center sm:text-right">
             © {new Date().getFullYear()} Racha Store. Tous droits réservés.

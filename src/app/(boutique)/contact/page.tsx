@@ -5,16 +5,18 @@ import { toast } from "sonner";
 import { Input, Textarea, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PhoneLink } from "@/components/shared/phone-link";
-import { address, contactEmail, openingHours } from "@/lib/site";
+import { useShopInfo } from "@/components/shop-info-provider";
+import { mapsLinks } from "@/lib/shop-info";
 import { createClient } from "@/lib/supabase/client";
 
-const infos: { title: string; value: string; href?: string }[] = [
-  { title: "E-mail", value: contactEmail, href: `mailto:${contactEmail}` },
-  { title: "Adresse", value: address.full, href: address.mapsUrl },
-  { title: "Horaires", value: openingHours },
-];
-
 export default function ContactPage() {
+  const shop = useShopInfo();
+  const maps = mapsLinks(shop.address);
+  const infos: { title: string; value: string; href?: string }[] = [
+    { title: "E-mail", value: shop.contactEmail, href: `mailto:${shop.contactEmail}` },
+    { title: "Adresse", value: shop.address, href: maps.search },
+    ...(shop.openingHours ? [{ title: "Horaires", value: shop.openingHours }] : []),
+  ];
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -53,7 +55,7 @@ export default function ContactPage() {
         <p className="eyebrow text-gold mb-4">Nous contacter</p>
         <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">Une question ?</h1>
         <p className="text-sm text-stone-light">
-          Notre équipe est à votre écoute du lundi au samedi pour vous accompagner dans vos choix.
+          Notre équipe est à votre écoute pour vous accompagner dans vos choix.
         </p>
       </div>
 
@@ -61,8 +63,15 @@ export default function ContactPage() {
         <div>
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="border border-line p-6">
-              <p className="text-xs font-sans-wide uppercase text-stone-light mb-1">Téléphone</p>
-              <PhoneLink className="text-sm text-ink" showIcon={false} />
+              <p className="text-xs font-sans-wide uppercase text-stone-light mb-1">
+                {shop.phones.length > 1 ? "Téléphones" : "Téléphone"}
+              </p>
+              <div className="flex flex-col gap-1">
+                {shop.phones.map((number) => (
+                  <PhoneLink key={number.tel} number={number} className="text-sm text-ink" showIcon={false} />
+                ))}
+              </div>
+              <p className="text-xs text-stone-light mt-2">Appel ou WhatsApp</p>
             </div>
             {infos.map((info) => (
               <div key={info.title} className="border border-line p-6">
@@ -85,16 +94,16 @@ export default function ContactPage() {
 
           <div className="mt-6 border border-line">
             <iframe
-              src={address.embedUrl}
-              title={`Carte : ${address.full}`}
+              src={maps.embed}
+              title={`Carte : ${shop.address}`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="block w-full h-72 border-0 bg-sand"
             />
             <div className="flex items-center justify-between gap-4 p-4 border-t border-line">
-              <p className="text-sm text-ink">{address.full}</p>
+              <p className="text-sm text-ink">{shop.address}</p>
               <a
-                href={address.directionsUrl}
+                href={maps.directions}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 font-sans-wide text-[0.65rem] uppercase text-ink underline underline-offset-4"

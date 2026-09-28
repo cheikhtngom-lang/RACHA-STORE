@@ -1,0 +1,20 @@
+<div style="font-family: Arial, Helvetica, sans-serif; color: #242c27; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
+  <p style="font-family: Georgia, 'Times New Roman', serif; font-size: 24px; margin: 0 0 24px;">Racha Store</p>
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
+    Bonjour,<br />
+    Une demande a été faite pour remplacer l'adresse e-mail de votre compte, {{ .Email }}, par {{ .NewEmail }}.
+    Pour confirmer ce changement :
+  </p>
+  <p style="margin: 0 0 24px;">
+    <a
+      href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email_change&next=/admin/parametres"
+      style="display: inline-block; background: #242c27; color: #faf8f3; text-decoration: none; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; padding: 14px 28px;"
+      >Confirmer le changement</a
+    >
+  </p>
+  <p style="font-size: 13px; line-height: 1.6; color: #8c897c; margin: 0 0 32px;">
+    Le même e-mail est envoyé aux deux adresses : le changement n'est fait qu'une fois les deux liens ouverts.
+    Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail et changez votre mot de passe.
+  </p>
+  <p style="font-size: 12px; color: #8c897c; margin: 0;">Racha Store, Scat Urbain, Dakar, Sénégal</p>
+</div>

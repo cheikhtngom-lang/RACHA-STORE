@@ -8,9 +8,10 @@ import { PhoneLink } from "@/components/shared/phone-link";
 import { useUiStore } from "@/store/ui-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useCatalog } from "@/components/catalog-provider";
-import { address } from "@/lib/site";
+import { useShopInfo } from "@/components/shop-info-provider";
 
 export function MobileNav() {
+  const shop = useShopInfo();
   const isOpen = useUiStore((s) => s.isMobileNavOpen);
   const close = useUiStore((s) => s.closeMobileNav);
   const { categories } = useCatalog();
@@ -86,7 +87,7 @@ export function MobileNav() {
 
         <div className="flex flex-col px-6 py-6 gap-3 border-t border-line text-xs text-stone-light">
           <p className="flex items-center gap-2">
-            <MapPin size={14} strokeWidth={1.5} /> {address.district}, {address.city}
+            <MapPin size={14} strokeWidth={1.5} /> {shop.address}
           </p>
           <PhoneLink className="text-xs text-stone-light" iconSize={14} />
         </div>

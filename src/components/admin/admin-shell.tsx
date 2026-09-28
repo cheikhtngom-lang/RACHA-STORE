@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Megaphone, Mail, Users, ExternalLink, LogOut, Menu } from "lucide-react";
+import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Megaphone, Mail, Users, Settings, ExternalLink, LogOut, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
@@ -24,6 +24,7 @@ const navItems: { label: string; href: string; icon: typeof LayoutGrid; count?: 
   { label: "Annonces", href: "/admin/annonces", icon: Megaphone },
   { label: "Messages", href: "/admin/messages", icon: Mail, count: "messages" },
   { label: "Newsletter", href: "/admin/newsletter", icon: Users },
+  { label: "Paramètres", href: "/admin/parametres", icon: Settings },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -37,6 +38,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [access, setAccess] = useState<Access>("loading");
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [counts, setCounts] = useState<Counts>({ orders: 0, messages: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -58,6 +60,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       }
       if (event === "TOKEN_REFRESHED") return;
       setEmail(session.user.email ?? "");
+      const meta = session.user.user_metadata ?? {};
+      setName([meta.first_name, meta.last_name].filter(Boolean).join(" "));
       // Supabase déconseille d'attendre un autre appel dans ce callback : on le diffère.
       setTimeout(async () => {
         const { data, error } = await supabase.rpc("is_admin");
@@ -170,7 +174,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <LogOut size={16} strokeWidth={1.5} />
           Se déconnecter
         </button>
-        <p className="px-4 pt-3 text-xs text-stone-light/70 truncate">{email}</p>
+        <Link href="/admin/parametres" className="block px-4 pt-3 min-w-0 group">
+          {name && <span className="block text-sm text-ink truncate group-hover:text-gold-light transition-colors">{name}</span>}
+          <span className="block text-xs text-stone-light/70 truncate">{email}</span>
+        </Link>
       </div>
     );
   };

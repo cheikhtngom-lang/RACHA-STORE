@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getShopInfo } from "@/lib/get-shop-info";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
   description: "Toutes les réponses à vos questions sur les commandes, livraisons, retours et tailles.",
 };
 
-const groups = [
+const groups = (phone: string) => [
   {
     title: "Commandes",
     items: [
@@ -50,7 +51,7 @@ const groups = [
       },
       {
         q: "Comment initier un retour ?",
-        a: "Contactez-nous par téléphone ou WhatsApp au +221 77 344 59 51, ou depuis « Mon compte » > « Commandes ». Nous vous indiquons ensuite comment nous remettre l'article.",
+        a: `Contactez-nous par téléphone ou WhatsApp${phone ? ` au ${phone}` : ""}, ou depuis « Mon compte » > « Commandes ». Nous vous indiquons ensuite comment nous remettre l'article.`,
       },
       {
         q: "Sous quel délai suis-je remboursé·e ?",
@@ -74,7 +75,8 @@ const groups = [
   },
 ];
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const shop = await getShopInfo();
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-16 sm:py-24">
       <div className="text-center mb-16">
@@ -83,7 +85,7 @@ export default function FaqPage() {
       </div>
 
       <div className="flex flex-col gap-14">
-        {groups.map((group) => (
+        {groups(shop.phones[0]?.display ?? "").map((group) => (
           <div key={group.title} id={group.id}>
             <h2 className="font-display text-2xl text-ink mb-4">{group.title}</h2>
             <Accordion type="multiple">

@@ -3,20 +3,24 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Phone } from "lucide-react";
 import { WhatsAppIcon } from "./social-icons";
-import { phone, type PhoneNumber } from "@/lib/site";
+import { useShopInfo } from "@/components/shop-info-provider";
+import type { PhoneNumber } from "@/lib/shop-info";
 import { cn } from "@/lib/utils";
 
 export function PhoneLink({
   className,
   iconSize = 14,
   showIcon = true,
-  number = phone,
+  number,
 }: {
   className?: string;
   iconSize?: number;
   showIcon?: boolean;
   number?: PhoneNumber;
 }) {
+  const main = useShopInfo().phones[0];
+  const shown = number ?? main;
+  if (!shown) return null;
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -25,7 +29,7 @@ export function PhoneLink({
           className={cn("flex items-center gap-2 cursor-pointer", className)}
         >
           {showIcon && <Phone size={iconSize} strokeWidth={1.5} className="shrink-0" />}
-          {number.display}
+          {shown.display}
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
@@ -36,7 +40,7 @@ export function PhoneLink({
         >
           <DropdownMenu.Item asChild>
             <a
-              href={`tel:${number.tel}`}
+              href={`tel:${shown.tel}`}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-sand transition-colors cursor-pointer outline-none"
             >
               <Phone size={15} strokeWidth={1.5} className="text-gold" />
@@ -45,7 +49,7 @@ export function PhoneLink({
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
             <a
-              href={`https://wa.me/${number.tel.replace("+", "")}`}
+              href={`https://wa.me/${shown.tel.replace("+", "")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-sand transition-colors cursor-pointer outline-none"

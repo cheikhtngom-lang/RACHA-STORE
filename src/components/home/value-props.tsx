@@ -13,7 +13,7 @@ const props = [
   },
   {
     title: "Service client",
-    description: "Par téléphone ou WhatsApp, du lundi au samedi.",
+    description: "Par téléphone ou WhatsApp, numéros en bas de page.",
   },
 ];
 

@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { address, contactEmail, phone } from "@/lib/site";
+import { getShopInfo } from "@/lib/get-shop-info";
+import type { ShopInfo } from "@/lib/shop-info";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
   description: "Données collectées par Racha Store, utilisation, durée de conservation et exercice de vos droits.",
 };
 
-const sections: { title: string; paragraphs: string[] }[] = [
+const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => [
   {
     title: "1. Responsable du traitement",
     paragraphs: [
-      `Racha Store, ${address.full}. Pour toute question sur vos données : ${contactEmail} ou ${phone.display}.`,
+      `Racha Store, ${shop.address}. Pour toute question sur vos données : ${shop.contactEmail}${shop.phones[0] ? ` ou ${shop.phones[0].display}` : ""}.`,
     ],
   },
   {
@@ -61,20 +62,21 @@ const sections: { title: string; paragraphs: string[] }[] = [
   {
     title: "8. Vos droits",
     paragraphs: [
-      `Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous pouvez accéder à vos données, les faire rectifier ou supprimer, et vous opposer à leur utilisation. Écrivez à ${contactEmail}. Pour vous désinscrire de la newsletter, la même adresse suffit.`,
+      `Conformément à la loi sénégalaise n° 2008-12 du 25 janvier 2008 sur la protection des données à caractère personnel, vous pouvez accéder à vos données, les faire rectifier ou supprimer, et vous opposer à leur utilisation. Écrivez à ${shop.contactEmail}. Pour vous désinscrire de la newsletter, la même adresse suffit.`,
       "Vous pouvez également saisir la Commission de Protection des Données Personnelles (CDP).",
     ],
   },
 ];
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const shop = await getShopInfo();
   return (
     <div className="mx-auto max-w-2xl px-5 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">Politique de confidentialité</h1>
       <p className="text-xs text-stone-light mb-16">Dernière mise à jour : septembre 2026</p>
 
       <div className="flex flex-col gap-10">
-        {sections.map((s) => (
+        {sections(shop).map((s) => (
           <section key={s.title}>
             <h2 className="font-display text-xl text-ink mb-3">{s.title}</h2>
             <div className="flex flex-col gap-3">

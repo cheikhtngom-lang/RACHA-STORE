@@ -1,4 +1,5 @@
-import { address, phone, siteUrl, social } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
+import type { ShopInfo } from "@/lib/shop-info";
 import type { Category, Product } from "@/lib/types";
 
 // Données structurées lues par Google (fiche boutique, prix et stock dans les
@@ -14,7 +15,7 @@ function absolute(path: string) {
   return path.startsWith("http") ? path : `${siteUrl}${path}`;
 }
 
-export function StoreJsonLd() {
+export function StoreJsonLd({ shop }: { shop: ShopInfo }) {
   if (!siteUrl) return null;
   return (
     <JsonLd
@@ -25,22 +26,17 @@ export function StoreJsonLd() {
         url: siteUrl,
         logo: absolute("/brand/logo.jpeg"),
         image: absolute("/brand/og-image.jpg"),
-        telephone: phone.tel,
+        telephone: shop.phones[0]?.tel,
+        email: shop.contactEmail,
         address: {
           "@type": "PostalAddress",
-          streetAddress: address.district,
-          addressLocality: address.city,
+          streetAddress: shop.address,
           addressCountry: "SN",
         },
-        // Traduction de openingHours (lib/site.ts) : à modifier ensemble.
-        openingHoursSpecification: {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-          opens: "10:00",
-          closes: "19:00",
-        },
+        // Les horaires sont un texte libre (/admin/parametres) : pas d'horaires
+        // structurés, qui risqueraient de le contredire.
         currenciesAccepted: "XOF",
-        sameAs: [social.instagram.url, social.tiktok.url],
+        sameAs: [shop.instagramUrl, shop.tiktokUrl].filter(Boolean),
       }}
     />
   );

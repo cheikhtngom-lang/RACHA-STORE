@@ -7,6 +7,8 @@ import { siteUrl } from "@/lib/site";
 // Appelé par Supabase (Database > Webhooks) à chaque nouvelle commande :
 // envoie l'e-mail « Nouvelle commande » à la boutique via Resend.
 //
+// Destinataires : /admin/parametres (table admin_settings), sinon la variable
+// ORDER_NOTIFICATION_EMAILS.
 // Variables Vercel (serveur uniquement, jamais NEXT_PUBLIC_) :
 // ORDER_WEBHOOK_SECRET, SUPABASE_SECRET_KEY, RESEND_API_KEY, ORDER_NOTIFICATION_EMAILS.
 
@@ -27,11 +29,11 @@ export async function POST(request: Request) {
 
   const secretKey = process.env.SUPABASE_SECRET_KEY;
   const resendKey = process.env.RESEND_API_KEY;
-  const recipients = (process.env.ORDER_NOTIFICATION_EMAILS ?? "")
+  const envRecipients = (process.env.ORDER_NOTIFICATION_EMAILS ?? "")
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
-  if (!secretKey || !resendKey || recipients.length === 0) {
+  if (!secretKey || !resendKey) {
     console.error("Webhook nouvelle-commande : variables d'environnement manquantes");
     return new Response("Server misconfigured", { status: 500 });
   }
@@ -56,6 +58,14 @@ export async function POST(request: Request) {
   if (error || !order) {
     console.error("Webhook nouvelle-commande : commande introuvable", orderId, error?.message);
     return new Response("Order not found", { status: 404 });
+  }
+
+  // Destinataires choisis dans /admin/parametres ; à défaut, ORDER_NOTIFICATION_EMAILS.
+  const { data: settings } = await supabase.from("admin_settings").select("order_emails").maybeSingle();
+  const recipients: string[] = settings?.order_emails?.length ? settings.order_emails : envRecipients;
+  if (recipients.length === 0) {
+    console.error("Webhook nouvelle-commande : aucun destinataire");
+    return new Response("Server misconfigured", { status: 500 });
   }
 
   const { subject, html, text } = buildOrderNotification(order as NotificationOrder, siteUrl ?? "https://www.rachamarket.com");

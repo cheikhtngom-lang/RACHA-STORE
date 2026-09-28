@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { img, pools } from "@/data/images";
-import { social } from "@/lib/site";
 
 const shots = [
   pools.apparel[4],
@@ -11,17 +10,17 @@ const shots = [
   pools.apparel[16],
 ];
 
-export function InstagramGallery() {
+export function InstagramGallery({ url, handle }: { url: string; handle: string | null }) {
   return (
     <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
       {shots.map((id, i) => (
         <a
           key={i}
-          href={social.instagram.url}
+          href={url}
           target="_blank"
           rel="noopener noreferrer"
           className="group relative aspect-square overflow-hidden bg-sand block"
-          aria-label={`Voir ${social.instagram.handle} sur Instagram`}
+          aria-label={`Voir ${handle ?? "Racha Store"} sur Instagram`}
         >
           <Image
             src={img(id, 500, 500)}

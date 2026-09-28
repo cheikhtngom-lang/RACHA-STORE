@@ -12,17 +12,19 @@ import { Button } from "@/components/ui/button";
 import { img, pools } from "@/data/images";
 import { getCatalog } from "@/lib/catalog";
 import { getNewArrivals, getBestSellers, getLimitedEditions } from "@/lib/catalog-selectors";
-import { social } from "@/lib/site";
+import { getShopInfo } from "@/lib/get-shop-info";
+import { socialHandle } from "@/lib/shop-info";
 
 export default async function Home() {
-  const { products, categories } = await getCatalog();
+  const [{ products, categories }, shop] = await Promise.all([getCatalog(), getShopInfo()]);
+  const instagramHandle = socialHandle(shop.instagramUrl);
   const newArrivals = getNewArrivals(products);
   const bestSellers = getBestSellers(products);
   const limited = getLimitedEditions(products);
 
   return (
     <>
-      <StoreJsonLd />
+      <StoreJsonLd shop={shop} />
       <Hero />
 
       <section className="border-b border-line py-12 sm:py-14">
@@ -101,17 +103,19 @@ export default async function Home() {
         </section>
       )}
 
-      <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
-          <SectionHeading
-            eyebrow={social.instagram.handle}
-            title="Suivez-nous sur Instagram"
-            align="center"
-            className="mb-10 sm:mb-14 mx-auto"
-          />
-          <InstagramGallery />
-        </div>
-      </section>
+      {shop.instagramUrl && (
+        <section className="py-20 sm:py-28">
+          <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+            <SectionHeading
+              eyebrow={instagramHandle ?? "Instagram"}
+              title="Suivez-nous sur Instagram"
+              align="center"
+              className="mb-10 sm:mb-14 mx-auto"
+            />
+            <InstagramGallery url={shop.instagramUrl} handle={instagramHandle} />
+          </div>
+        </section>
+      )}
     </>
   );
 }
