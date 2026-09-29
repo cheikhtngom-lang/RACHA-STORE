@@ -162,7 +162,7 @@
       <text x="375" y="60" text-anchor="middle" font-weight="600" fill="#e2c88f">Vercel</text>
       <text x="375" y="84" text-anchor="middle" fill="#faf8f3">Next.js 16 (App Router)</text>
       <text x="375" y="104" text-anchor="middle" fill="#c9bfa8" font-size="11">pages, catalogue en cache 60 s</text>
-      <text x="375" y="122" text-anchor="middle" fill="#c9bfa8" font-size="11">webhook « nouvelle commande »</text>
+      <text x="375" y="122" text-anchor="middle" fill="#c9bfa8" font-size="11">paiement PayDunya, webhooks</text>
       <text x="375" y="140" text-anchor="middle" fill="#c9bfa8" font-size="11">Web Analytics, en-têtes de sécurité</text>
 
       <!-- Supabase -->
@@ -174,15 +174,18 @@
       <text x="375" y="306" text-anchor="middle" fill="#4c4a41" font-size="11">fonctions : create_order, admin_analytics…</text>
 
       <!-- Services -->
-      <rect x="590" y="30" width="160" height="60" fill="#faf8f3" stroke="#e4dcc9"/>
-      <text x="670" y="55" text-anchor="middle" font-weight="600" fill="#242c27">Resend</text>
-      <text x="670" y="74" text-anchor="middle" fill="#8c897c" font-size="11">e-mails sortants</text>
-      <rect x="590" y="130" width="160" height="60" fill="#faf8f3" stroke="#e4dcc9"/>
-      <text x="670" y="155" text-anchor="middle" font-weight="600" fill="#242c27">ImprovMX</text>
-      <text x="670" y="174" text-anchor="middle" fill="#8c897c" font-size="11">contact@ → Gmail</text>
-      <rect x="590" y="230" width="160" height="60" fill="#faf8f3" stroke="#e4dcc9"/>
-      <text x="670" y="255" text-anchor="middle" font-weight="600" fill="#242c27">UptimeRobot</text>
-      <text x="670" y="274" text-anchor="middle" fill="#8c897c" font-size="11">surveillance du site</text>
+      <rect x="590" y="20" width="160" height="55" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="670" y="43" text-anchor="middle" font-weight="600" fill="#242c27">Resend</text>
+      <text x="670" y="61" text-anchor="middle" fill="#8c897c" font-size="11">e-mails sortants</text>
+      <rect x="590" y="95" width="160" height="55" fill="#faf8f3" stroke="#b78f4c" stroke-width="1.5"/>
+      <text x="670" y="118" text-anchor="middle" font-weight="600" fill="#242c27">PayDunya</text>
+      <text x="670" y="136" text-anchor="middle" fill="#8c897c" font-size="11">Wave, Orange Money, carte</text>
+      <rect x="590" y="170" width="160" height="55" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="670" y="193" text-anchor="middle" font-weight="600" fill="#242c27">ImprovMX</text>
+      <text x="670" y="211" text-anchor="middle" fill="#8c897c" font-size="11">contact@ → Gmail</text>
+      <rect x="590" y="245" width="160" height="55" fill="#faf8f3" stroke="#e4dcc9"/>
+      <text x="670" y="268" text-anchor="middle" font-weight="600" fill="#242c27">UptimeRobot</text>
+      <text x="670" y="286" text-anchor="middle" fill="#8c897c" font-size="11">surveillance du site</text>
 
       <!-- Liens -->
       <line x1="160" y1="150" x2="258" y2="100" stroke="#8c897c" marker-end="url(#arrow)"/>
@@ -191,12 +194,14 @@
       <text x="170" y="240" fill="#8c897c" font-size="10.5">données (RLS)</text>
       <line x1="375" y1="198" x2="375" y2="162" stroke="#8c897c" marker-end="url(#arrow)"/>
       <text x="382" y="185" fill="#8c897c" font-size="10.5">webhook</text>
-      <line x1="490" y1="70" x2="588" y2="60" stroke="#8c897c" marker-end="url(#arrow)"/>
-      <line x1="490" y1="240" x2="588" y2="85" stroke="#8c897c" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+      <line x1="490" y1="55" x2="588" y2="47" stroke="#8c897c" marker-end="url(#arrow)"/>
+      <line x1="492" y1="122" x2="588" y2="122" stroke="#b78f4c" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+      <text x="503" y="114" fill="#8c897c" font-size="10.5">factures, IPN</text>
+      <line x1="490" y1="240" x2="588" y2="68" stroke="#8c897c" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
       <text x="520" y="200" fill="#8c897c" font-size="10.5">SMTP</text>
-      <line x1="588" y1="260" x2="492" y2="140" stroke="#8c897c" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+      <line x1="588" y1="272" x2="492" y2="150" stroke="#8c897c" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
     </svg>
-    <figcaption>Figure 1 : les briques du site et leurs échanges. Traits pointillés : e-mails d'authentification (Supabase via le SMTP de Resend) et surveillance.</figcaption>
+    <figcaption>Figure 1 : les briques du site et leurs échanges. Le client paie sur la page de PayDunya, qui prévient le site (IPN). Traits pointillés : e-mails d'authentification (Supabase via le SMTP de Resend) et surveillance.</figcaption>
   </figure>
 
   <!-- 2 -->
@@ -211,7 +216,8 @@
     <tr><td>Base de données</td><td>Supabase PostgreSQL</td><td>Catalogue, clients, commandes, promotions, messages, audience.</td></tr>
     <tr><td>Comptes</td><td>Supabase Auth</td><td>Inscription avec confirmation par e-mail, mot de passe oublié.</td></tr>
     <tr><td>Photos</td><td>Supabase Storage (bucket public <code>products</code>)</td><td>Photos envoyées depuis l'administration.</td></tr>
-    <tr><td>E-mails</td><td>Resend (domaine rachamarket.com vérifié)</td><td>E-mails de compte (SMTP de Supabase) et alerte « Nouvelle commande ».</td></tr>
+    <tr><td>Paiement</td><td>PayDunya (paiement avec redirection)</td><td>Wave, Orange Money et carte bancaire, sur la page de PayDunya : le site ne voit jamais les données de paiement.</td></tr>
+    <tr><td>E-mails</td><td>Resend (domaine rachamarket.com vérifié)</td><td>E-mails de compte (SMTP de Supabase) et alertes « Nouvelle commande », « Commande payée », « Paiement à vérifier ».</td></tr>
     <tr><td>Adresse de contact</td><td>ImprovMX</td><td>contact@rachamarket.com redirigé vers la boîte Gmail de la boutique.</td></tr>
     <tr><td>Hébergement</td><td>Vercel (DNS du domaine inclus)</td><td>Déploiement automatique à chaque envoi sur la branche <code>main</code>.</td></tr>
     <tr><td>Audience</td><td>Vercel Web Analytics + compteur maison</td><td>Sans cookie : pas de bandeau de consentement nécessaire.</td></tr>
@@ -225,7 +231,8 @@
 │   │   ├── (boutique)/         boutique : accueil, catalogue, produit, panier, commande,
 │   │   │                       compte client, pages d'information et légales
 │   │   ├── admin/              administration (réservée aux comptes déclarés admins)
-│   │   ├── api/webhooks/       nouvelle-commande : e-mail à la boutique
+│   │   ├── api/paiement/       ouvre la page PayDunya d'une commande
+│   │   ├── api/webhooks/       nouvelle-commande (e-mail), paydunya (notification de paiement)
 │   │   ├── auth/confirm/       liens reçus par e-mail (inscription, mot de passe)
 │   │   ├── sitemap.ts, robots.ts
 │   │   └── globals.css         couleurs, thème sombre des tableaux de bord, effets
@@ -237,7 +244,8 @@
 │   │   ├── dashboard/          effets des tableaux de bord (projecteur, aurore, compteurs)
 │   │   ├── shared/             logo, téléphone (appel ou WhatsApp), icônes, JSON-LD
 │   │   └── ui/                 boutons, champs, fenêtres, menus (Radix)
-│   ├── lib/                    catalogue, prix, e-mail de commande, coordonnées (site.ts),
+│   ├── lib/                    catalogue, prix, paiement (paydunya.ts, payment.ts),
+│   │                           e-mails de commande, coordonnées (site.ts),
 │   │                           clients Supabase, statuts de commande
 │   └── store/                  panier, liste de souhaits, session, interface
 ├── supabase/
@@ -255,7 +263,8 @@
     <tr><td><code>/</code></td><td>Accueil : collections, nouveautés, catégories.</td></tr>
     <tr><td><code>/boutique</code>, <code>/boutique/[catégorie]</code></td><td>Catalogue avec filtres et tri.</td></tr>
     <tr><td><code>/produit/[slug]</code></td><td>Fiche produit : photos, couleurs, tailles, stock, ajout au panier.</td></tr>
-    <tr><td><code>/panier</code>, <code>/checkout</code>, <code>/checkout/confirmation</code></td><td>Panier, informations de livraison, code promo, confirmation.</td></tr>
+    <tr><td><code>/panier</code>, <code>/checkout</code></td><td>Panier, informations de livraison, code promo, puis envoi vers la page de paiement PayDunya.</td></tr>
+    <tr><td><code>/checkout/paiement/[id]</code></td><td>Retour de PayDunya : paiement reçu, paiement en attente (bouton « Payer »), ou commande annulée. Sans téléphone, e-mail ni adresse.</td></tr>
     <tr><td><code>/liste-de-souhaits</code></td><td>Articles gardés de côté (synchronisés avec le compte une fois connecté).</td></tr>
     <tr><td><code>/contact</code>, <code>/faq</code>, <code>/a-propos</code>, <code>/livraison-retours</code></td><td>Formulaire de contact (messages lus dans l'administration), questions fréquentes, histoire, livraison.</td></tr>
     <tr><td><code>/cgv</code>, <code>/mentions-legales</code>, <code>/confidentialite</code></td><td>Pages légales.</td></tr>
@@ -266,14 +275,14 @@
     <tr><td><code>/compte/connexion</code>, <code>/compte/inscription</code></td><td>Connexion, création de compte (confirmation par e-mail).</td></tr>
     <tr><td><code>/compte/mot-de-passe-oublie</code>, <code>/compte/nouveau-mot-de-passe</code></td><td>Réinitialisation du mot de passe.</td></tr>
     <tr><td><code>/compte</code></td><td>Tableau de bord : nombre de commandes, liste de souhaits, adresses, suivi de la dernière commande.</td></tr>
-    <tr><td><code>/compte/commandes</code>, <code>/compte/adresses</code></td><td>Historique des commandes, carnet d'adresses.</td></tr>
+    <tr><td><code>/compte/commandes</code>, <code>/compte/adresses</code></td><td>Historique des commandes (lien « Payer la commande » tant qu'elle est en attente), carnet d'adresses.</td></tr>
   </table>
   <h3>Administration</h3>
   <table class="avoid">
     <thead><tr><th>Adresse</th><th>Contenu</th></tr></thead>
     <tr><td><code>/admin</code></td><td>Tableau de bord : à encaisser, à expédier, ventes du mois, messages, chiffre d'affaires sur 30 jours, stock faible.</td></tr>
     <tr><td><code>/admin/statistiques</code></td><td>Ventes, visites, provenance, catégories, produits, villes, jours, codes promo (7, 30, 90 jours ou 12 mois).</td></tr>
-    <tr><td><code>/admin/commandes</code>, <code>/admin/commandes/[id]</code></td><td>Liste filtrable, détail, changement de statut, contact client (appel, WhatsApp, e-mail).</td></tr>
+    <tr><td><code>/admin/commandes</code>, <code>/admin/commandes/[id]</code></td><td>Liste filtrable, détail, paiements PayDunya (reçus, mode test, alertes de remboursement), changement de statut, contact client (appel, WhatsApp, e-mail).</td></tr>
     <tr><td><code>/admin/produits</code>, <code>/admin/categories</code></td><td>Catalogue : création, modification, photos, stock, couleurs, tailles.</td></tr>
     <tr><td><code>/admin/annonces</code></td><td>Annonces du bandeau défilant (soldes, nouveautés…) : texte, lien, dates, ordre, aperçu en direct.</td></tr>
     <tr><td><code>/admin/codes-promo</code>, <code>/admin/messages</code>, <code>/admin/newsletter</code></td><td>Promotions, messages du formulaire de contact, abonnés.</td></tr>
@@ -294,6 +303,7 @@
     <tr><td><code>20260929090000_settings.sql</code></td><td>Paramètres de la boutique et réglages internes.</td></tr>
     <tr><td><code>20260929140000_tenues_africaines.sql</code></td><td>Catégorie « Tenues africaines » ; bandeau sans les retours sous 30 jours.</td></tr>
     <tr><td><code>20260929160000_home_editorial.sql</code></td><td>Bloc mis en avant de l'accueil (photo et textes modifiables).</td></tr>
+    <tr><td><code>20260929200000_paiement_paydunya.sql</code></td><td>Paiements PayDunya : table <code>payments</code>, date de paiement des commandes, enregistrement d'un paiement une seule fois.</td></tr>
   </table>
 
   <h3>Tables</h3>
@@ -304,7 +314,8 @@
     <tr><td><code>profiles</code></td><td>Profil client (prénom, nom, téléphone), créé à l'inscription.</td></tr>
     <tr><td><code>addresses</code></td><td>Carnet d'adresses de chaque client.</td></tr>
     <tr><td><code>wishlist_items</code></td><td>Liste de souhaits enregistrée sur le compte.</td></tr>
-    <tr><td><code>orders</code></td><td>Commandes : client, adresse, mode de livraison, remise, frais de port, total, statut.</td></tr>
+    <tr><td><code>orders</code></td><td>Commandes : client, adresse, mode de livraison, remise, frais de port, total, statut, date de paiement.</td></tr>
+    <tr><td><code>payments</code></td><td>Factures PayDunya d'une commande : jeton, mode test ou production, statut, montant demandé et payé, reçu. Écrite par le serveur seulement, lue par les administrateurs.</td></tr>
     <tr><td><code>order_items</code></td><td>Articles commandés, avec nom et prix copiés au moment de l'achat.</td></tr>
     <tr><td><code>promo_codes</code></td><td>Codes promo : pourcentage, dates, nombre d'utilisations.</td></tr>
     <tr><td><code>contact_messages</code></td><td>Messages du formulaire de contact (lu / non lu).</td></tr>
@@ -329,6 +340,7 @@
     <tr><td><code>admin_set_order_status</code></td><td>Changement de statut d'une commande par l'administration.</td></tr>
     <tr><td><code>track_page_view</code></td><td>Compte une page vue et, en début de visite, sa provenance.</td></tr>
     <tr><td><code>admin_analytics</code></td><td>Calcule tous les chiffres de la page Statistiques, réservé aux administrateurs.</td></tr>
+    <tr><td><code>record_paydunya_payment</code></td><td>Enregistre le statut d'une facture PayDunya et passe la commande à « Payée » une seule fois. Appelée par le serveur uniquement (clé secrète).</td></tr>
   </table>
   <p>Déclencheurs : création du profil à l'inscription (<code>handle_new_user</code>), dates de mise à jour,
     limites anti-spam sur les messages, la newsletter et les commandes.</p>
@@ -341,10 +353,17 @@
     <li>Au paiement, le site envoie seulement les produits, quantités, couleurs, tailles et coordonnées à <code>create_order</code>.</li>
     <li>La base recalcule tout : prix réels, code promo, livraison (5 000 F CFA en standard, 10 000 F CFA en express, offerte dès 100 000 F CFA).
       Le stock est décrémenté dans la même transaction : deux clients ne peuvent pas acheter la dernière pièce.</li>
-    <li>La commande est créée au statut « En attente de paiement ».</li>
+    <li>La commande est créée au statut « En attente de paiement » et le panier est vidé.</li>
     <li>Un webhook Supabase appelle <code>/api/webhooks/nouvelle-commande</code> (protégé par un secret partagé), qui envoie l'e-mail
       « Nouvelle commande » à la boutique via Resend, avec un lien WhatsApp vers le client.</li>
-    <li>La gérante suit la commande dans l'administration (payée, expédiée, livrée) ; le client voit le suivi dans son compte.</li>
+    <li>Le navigateur appelle <code>/api/paiement</code> : le serveur ouvre une facture PayDunya du montant de la commande (ou reprend
+      celle encore ouverte, pour qu'une commande n'ait jamais deux factures payables) et le client part sur la page de PayDunya.</li>
+    <li>PayDunya prévient le site sur <code>/api/webhooks/paydunya</code> (signature vérifiée : SHA-512 de la clé principale) et le client
+      revient sur <code>/checkout/paiement/[id]</code>. Dans les deux cas, le serveur redemande le statut à l'API PayDunya puis appelle
+      <code>record_paydunya_payment</code>, qui ne compte le paiement qu'une fois, même si les deux arrivent en même temps.</li>
+    <li>Paiement reçu : la commande passe à « Payée » et la boutique reçoit l'e-mail « Commande payée ». Deuxième paiement, paiement
+      d'une commande annulée ou montant différent : e-mail « Paiement à vérifier » et alerte sur la fiche de la commande.</li>
+    <li>La gérante suit la commande dans l'administration (expédiée, livrée) ; le client voit le suivi dans son compte.</li>
   </ol>
 
   <h3>Comptes clients</h3>
@@ -394,7 +413,8 @@
     <tr><td>Prix côté base</td><td>Le navigateur n'envoie jamais de montant : un prix modifié dans la page n'a aucun effet.</td></tr>
     <tr><td>En-têtes HTTP</td><td>Content-Security-Policy (sources autorisées : le site et Supabase), HSTS 2 ans, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy.</td></tr>
     <tr><td>Anti-spam</td><td>Contact : 3 messages par adresse en 10 minutes, 50 par heure au total. Newsletter : 100 inscriptions par heure. Commandes : 5 par e-mail ou téléphone par heure, 60 en 10 minutes. Champs piège invisibles pour les robots, longueurs maximales sur tous les champs.</td></tr>
-    <tr><td>Clés</td><td>Seule la clé publique Supabase est dans le navigateur. La clé secrète, la clé Resend et le secret du webhook ne sont que dans les variables serveur de Vercel.</td></tr>
+    <tr><td>Clés</td><td>Seule la clé publique Supabase est dans le navigateur. La clé secrète, la clé Resend, les clés PayDunya et le secret du webhook ne sont que dans les variables serveur de Vercel.</td></tr>
+    <tr><td>Paiement</td><td>Le client paie sur la page de PayDunya : aucune donnée de carte ni code Wave ou Orange Money ne passe par le site. Une notification n'est prise en compte qu'après vérification de sa signature et relecture du statut dans l'API PayDunya ; un paiement n'est compté qu'une fois.</td></tr>
     <tr><td>Mots de passe</td><td>Gérés par Supabase Auth, chiffrés de façon irréversible.</td></tr>
     <tr><td>Données personnelles</td><td>Page Confidentialité conforme à la loi sénégalaise n° 2008-12 ; aucune donnée de navigation nominative.</td></tr>
     <tr><td>Sauvegardes</td><td>Sauvegarde quotidienne de la base par Supabase (les photos du Storage n'y sont pas incluses).</td></tr>
@@ -429,9 +449,11 @@
     <thead><tr><th>Variable</th><th>Usage</th></tr></thead>
     <tr><td><code>NEXT_PUBLIC_SITE_URL</code></td><td>Adresse publique ; tant qu'elle est vide, le site est servi sans indexation.</td></tr>
     <tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code></td><td>Connexion publique à Supabase.</td></tr>
-    <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Lecture de la commande complète par le webhook (serveur uniquement).</td></tr>
+    <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Accès serveur à la base : e-mails de commande et paiements (serveur uniquement).</td></tr>
     <tr><td><code>ORDER_WEBHOOK_SECRET</code></td><td>Secret partagé avec le webhook Supabase.</td></tr>
-    <tr><td><code>RESEND_API_KEY</code>, <code>ORDER_NOTIFICATION_EMAILS</code></td><td>Envoi de l'e-mail « Nouvelle commande » et destinataires.</td></tr>
+    <tr><td><code>RESEND_API_KEY</code>, <code>ORDER_NOTIFICATION_EMAILS</code></td><td>Envoi des e-mails de commande et destinataires.</td></tr>
+    <tr><td><code>PAYDUNYA_MASTER_KEY</code>, <code>PAYDUNYA_PRIVATE_KEY</code>, <code>PAYDUNYA_TOKEN</code></td><td>Clés de l'application PayDunya (la clé privée et le token changent entre test et production).</td></tr>
+    <tr><td><code>PAYDUNYA_MODE</code></td><td><code>test</code> (paiements fictifs) ou <code>live</code> (vrais paiements).</td></tr>
   </table>
 
   <!-- 10 -->
@@ -453,19 +475,19 @@
     <tr><td>29 sept. 2026</td><td>Coordonnées publiques réduites à la demande de la propriétaire : ni e-mail ni quartier sur le site, plus de carte ; contact par téléphone, WhatsApp ou formulaire.</td></tr>
     <tr><td>29 sept. 2026</td><td>Livraison 7j/7 au Sénégal et partout dans le monde ; retours limités aux articles défectueux (échange ou remboursement) ; paiement Wave, Orange Money, Visa, Mastercard ; catégorie « Tenues africaines » et tissus africains proposés dans « Matières » ; accroche « Le style qui vous ressemble ».</td></tr>
     <tr><td>29 sept. 2026</td><td>Bloc « Couture africaine » de l'accueil (grand boubou, taille basse, ndokette, kaftan), photo et textes modifiables par la gérante dans Paramètres.</td></tr>
+    <tr><td>29 sept. 2026</td><td>Paiement en ligne avec PayDunya (Wave, Orange Money, carte) : page de paiement, notification signée, paiement compté une seule fois, e-mails « Commande payée » et « Paiement à vérifier », suivi des paiements dans l'administration.</td></tr>
   </table>
 
   <!-- 11 -->
   <h2>11. Reste à faire avant le lancement</h2>
   <div class="todo avoid">
-    <p><b>Paiement en ligne.</b> Choix retenu : Wave, Orange Money et carte bancaire via un prestataire sénégalais (PayTech ou PayDunya),
-      sans paiement à la livraison. À faire : ouvrir le compte marchand, intégrer le paiement, vérifier la signature des
-      notifications du prestataire et rendre l'encaissement d'une commande impossible à compter deux fois. D'ici là, les commandes restent
-      « En attente de paiement ».</p>
+    <p><b>Paiement en ligne.</b> Intégré avec PayDunya (compte marchand ouvert). À faire : exécuter
+      <code>20260929200000_paiement_paydunya.sql</code>, renseigner les clés PayDunya de test dans Vercel, payer une commande de test
+      de bout en bout, puis passer <code>PAYDUNYA_MODE</code> à <code>live</code> avec les clés de production.</p>
   </div>
   <ul>
-    <li>Confirmer la réception de l'e-mail « Nouvelle commande » lors d'une vraie commande de test.</li>
-    <li>Remplacer les produits de départ (<code>seed.sql</code>, photos d'illustration Unsplash) par le vrai catalogue, s'ils sont encore en ligne.</li>
+    <li>Confirmer la réception des e-mails « Nouvelle commande » et « Commande payée » lors de la commande de test.</li>
+    <li>Retirer les 21 produits de départ encore en vente au 29 septembre (<code>seed.sql</code>, photos d'illustration) : seuls 3 produits ont de vraies photos.</li>
     <li>Prévoir une copie des photos du Storage, non incluses dans les sauvegardes Supabase.</li>
   </ul>
 
