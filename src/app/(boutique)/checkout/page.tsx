@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatPrice } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { discountAmount, shippingCost, SHIPPING_COSTS, type ShippingMethod } from "@/lib/pricing";
-import { LAST_ORDER_KEY, type LastOrder } from "@/lib/last-order";
+import { requestPaymentUrl } from "@/lib/payment-client";
 
 const STEPS = ["Informations", "Livraison", "Paiement"];
 
@@ -22,7 +22,17 @@ const STEPS = ["Informations", "Livraison", "Paiement"];
 const KNOWN_ORDER_ERRORS =
   /^(Stock insuffisant|Taille invalide|Couleur invalide|Produit introuvable|Code promo invalide|Coordonnées|Le panier est vide|Quantité invalide|Trop de commandes)/;
 
-type ContactForm = LastOrder["contact"];
+type ContactForm = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  address: string;
+  addressComplement: string;
+  postalCode: string;
+  city: string;
+  country: string;
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -120,7 +130,7 @@ export default function CheckoutPage() {
       p_promo_code: promo?.code ?? null,
     });
 
-    const created = (data as { order_number: string; total: number }[] | null)?.[0];
+    const created = (data as { order_id: string; order_number: string; total: number }[] | null)?.[0];
     if (error || !created) {
       const message = error?.message ?? "";
       if (message.startsWith("Code promo invalide")) setPromo(null);
@@ -133,27 +143,24 @@ export default function CheckoutPage() {
       return;
     }
 
-    const order: LastOrder = {
-      orderNumber: created.order_number,
-      date: new Date().toISOString(),
-      items,
-      subtotal,
-      discount,
-      promoCode: promo?.code,
-      shipping,
-      total: created.total,
-      contact,
-    };
-    try {
-      sessionStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order));
-    } catch {}
+    // La commande est enregistrée et le stock réservé : le panier est vidé. Si
+    // la page PayDunya ne s'ouvre pas, la page de la commande propose de réessayer.
     setPlaced(true);
     clear();
-    router.push("/checkout/confirmation");
+    const paymentUrl = await requestPaymentUrl(created.order_id);
+    if (paymentUrl) {
+      window.location.assign(paymentUrl);
+    } else {
+      router.push(`/checkout/paiement/${created.order_id}?erreur=1`);
+    }
   }
 
   if (placed) {
-    return <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-28" />;
+    return (
+      <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-28 text-center">
+        <p className="text-sm text-stone-light">Redirection vers la page de paiement…</p>
+      </div>
+    );
   }
 
   if (items.length === 0) {
@@ -314,8 +321,9 @@ export default function CheckoutPage() {
               <div className="border border-line p-5">
                 <p className="text-sm text-ink mb-1">Wave, Orange Money ou carte bancaire</p>
                 <p className="text-xs text-stone-light leading-relaxed">
-                  Le paiement en ligne est en cours de mise en place. Votre commande est enregistrée et reste en
-                  attente de paiement.
+                  Le paiement se fait sur la page sécurisée de PayDunya, notre prestataire de paiement. Racha Store
+                  ne voit jamais vos données de carte ni vos codes Wave ou Orange Money. La commande est confirmée
+                  dès réception du paiement.
                 </p>
               </div>
               <div className="text-sm text-stone leading-relaxed">
@@ -335,7 +343,7 @@ export default function CheckoutPage() {
                   Retour
                 </Button>
                 <Button type="submit" variant="primary" size="lg" disabled={submitting}>
-                  {submitting ? "Enregistrement…" : `Valider la commande (${formatPrice(total)})`}
+                  {submitting ? "Enregistrement…" : `Payer ${formatPrice(total)}`}
                 </Button>
               </div>
             </form>

@@ -1,7 +1,38 @@
 import { formatPrice, whatsappNumber } from "@/lib/utils";
 
-// E-mail « Nouvelle commande » envoyé à la boutique. Les champs saisis par le
-// client (nom, adresse…) sont échappés : ils ne doivent pas injecter de HTML.
+// E-mails envoyés à la boutique : nouvelle commande, commande payée, paiement
+// à vérifier. Les champs saisis par le client (nom, adresse…) sont échappés :
+// ils ne doivent pas injecter de HTML.
+
+export type OrderEmailKind = "new" | "paid" | "order_cancelled" | "duplicate" | "amount_mismatch";
+
+const KINDS: Record<OrderEmailKind, { title: string; status: string; footer: string }> = {
+  new: {
+    title: "Nouvelle commande",
+    status: "en attente de paiement",
+    footer: "e-mail automatique envoyé à chaque commande",
+  },
+  paid: {
+    title: "Commande payée",
+    status: "payée en ligne (PayDunya), à préparer",
+    footer: "e-mail automatique envoyé à chaque paiement",
+  },
+  order_cancelled: {
+    title: "Paiement à vérifier",
+    status: "paiement reçu sur une commande annulée : à rembourser ou à traiter à la main",
+    footer: "e-mail automatique envoyé quand un paiement demande une vérification",
+  },
+  duplicate: {
+    title: "Paiement à vérifier",
+    status: "deuxième paiement reçu pour une commande déjà payée : à rembourser",
+    footer: "e-mail automatique envoyé quand un paiement demande une vérification",
+  },
+  amount_mismatch: {
+    title: "Paiement à vérifier",
+    status: "montant payé différent du total : la commande est restée en attente",
+    footer: "e-mail automatique envoyé quand un paiement demande une vérification",
+  },
+};
 
 export type NotificationOrder = {
   id: string;
@@ -40,7 +71,15 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#39;");
 }
 
-export function buildOrderNotification(order: NotificationOrder, adminUrl: string) {
+export function buildOrderNotification(
+  order: NotificationOrder,
+  adminUrl: string,
+  kind: OrderEmailKind = "new",
+  // Paiement fait avec les clés de test PayDunya.
+  testPayment = false
+) {
+  const { title, footer } = KINDS[kind];
+  const status = `${KINDS[kind].status}${testPayment ? " (paiement de test, aucun argent reçu)" : ""}`;
   const name = `${order.first_name} ${order.last_name}`;
   const address = [
     order.address,
@@ -67,10 +106,11 @@ export function buildOrderNotification(order: NotificationOrder, adminUrl: strin
     [shipping, order.shipping_cost === 0 ? "Offerte" : formatPrice(order.shipping_cost)],
   ];
 
-  const subject = `Nouvelle commande ${order.order_number} · ${formatPrice(order.total)}`;
+  const subject = `${title} ${order.order_number} · ${formatPrice(order.total)}${testPayment ? " (test)" : ""}`;
 
   const text = [
-    `Nouvelle commande ${order.order_number}`,
+    `${title} ${order.order_number}`,
+    `Statut : ${status}`,
     "",
     `Client : ${name}`,
     `Téléphone : ${order.phone}`,
@@ -88,8 +128,8 @@ export function buildOrderNotification(order: NotificationOrder, adminUrl: strin
 
   const cell = "padding: 8px 0; border-bottom: 1px solid #e4dcc9; font-size: 14px; vertical-align: top;";
   const html = `<div style="font-family: Arial, Helvetica, sans-serif; color: #242c27; max-width: 560px; margin: 0 auto; padding: 32px 24px;">
-  <p style="font-family: Georgia, 'Times New Roman', serif; font-size: 24px; margin: 0 0 8px;">Nouvelle commande</p>
-  <p style="font-size: 14px; color: #8c897c; margin: 0 0 24px;">${escapeHtml(order.order_number)} · en attente de paiement</p>
+  <p style="font-family: Georgia, 'Times New Roman', serif; font-size: 24px; margin: 0 0 8px;">${title}</p>
+  <p style="font-size: 14px; color: #8c897c; margin: 0 0 24px;">${escapeHtml(order.order_number)} · ${status}</p>
 
   <p style="font-size: 15px; line-height: 1.6; margin: 0 0 4px;"><strong>${escapeHtml(name)}</strong></p>
   <p style="font-size: 14px; line-height: 1.6; margin: 0 0 4px;">${escapeHtml(order.phone)} · ${escapeHtml(order.email)}</p>
@@ -124,7 +164,7 @@ export function buildOrderNotification(order: NotificationOrder, adminUrl: strin
   <p style="margin: 0 0 32px;">
     <a href="${whatsappUrl}" style="font-size: 14px; color: #242c27;">Écrire au client sur WhatsApp</a>
   </p>
-  <p style="font-size: 12px; color: #8c897c; margin: 0;">Racha Store · e-mail automatique envoyé à chaque commande</p>
+  <p style="font-size: 12px; color: #8c897c; margin: 0;">Racha Store · ${footer}</p>
 </div>`;
 
   return { subject, html, text };

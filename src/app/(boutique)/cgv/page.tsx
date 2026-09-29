@@ -19,7 +19,7 @@ const sections = [
   },
   {
     title: "4. Paiement",
-    body: `Le paiement est exigible immédiatement à la commande. Le site utilise un système de paiement sécurisé. Le paiement s'effectue par Wave, Orange Money ou carte bancaire (Visa, Mastercard).`,
+    body: `Le paiement est exigible immédiatement à la commande. Il s'effectue en ligne, sur la page sécurisée de PayDunya, prestataire de paiement, par Wave, Orange Money ou carte bancaire (Visa, Mastercard). Racha Store n'a jamais accès aux données de carte bancaire ni aux codes Wave ou Orange Money du Client. La commande est confirmée dès réception du paiement.`,
   },
   {
     title: "5. Livraison",
@@ -43,7 +43,7 @@ export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">Conditions générales de vente</h1>
-      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : Janvier 2026</p>
+      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : septembre 2026</p>
 
       <div className="flex flex-col gap-10">
         {sections.map((s) => (

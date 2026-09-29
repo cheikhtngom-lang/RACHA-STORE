@@ -18,7 +18,7 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
     title: "2. Données collectées",
     paragraphs: [
       "Compte client : prénom, nom, adresse e-mail, mot de passe, adresses de livraison et téléphone. Le mot de passe est chiffré de façon irréversible : personne, y compris Racha Store, ne peut le lire.",
-      "Commandes : coordonnées de livraison, articles achetés, montants et code promo utilisé.",
+      "Commandes : coordonnées de livraison, articles achetés, montants, code promo utilisé et statut du paiement.",
       "Formulaire de contact : nom, adresse e-mail, sujet et message.",
       "Newsletter : adresse e-mail.",
       "Mesure d'audience : pages consultées, site de provenance (Instagram, Google…) et type d'appareil (mobile ou ordinateur), comptés de façon anonyme, sans cookie ni adresse IP.",
@@ -35,6 +35,7 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
     paragraphs: [
       "Vos données sont accessibles à l'équipe de Racha Store. Le livreur reçoit le nom, le téléphone et l'adresse nécessaires à la livraison.",
       "Le site s'appuie sur des prestataires techniques : Supabase (base de données et comptes clients), Vercel (hébergement du site), Resend (envoi des e-mails de confirmation et de mot de passe) et ImprovMX (réception des e-mails adressés à la boutique). Ces prestataires peuvent héberger les données hors du Sénégal.",
+      "Le paiement est traité par PayDunya, qui reçoit votre nom, votre e-mail, votre téléphone et le montant de la commande. Vos données de carte bancaire et vos codes Wave ou Orange Money sont saisis chez PayDunya : Racha Store n'y a jamais accès.",
     ],
   },
   {

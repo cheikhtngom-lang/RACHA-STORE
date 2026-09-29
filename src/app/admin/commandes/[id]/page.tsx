@@ -50,6 +50,25 @@ type Order = {
   }[];
 };
 
+// Factures PayDunya de la commande (table payments).
+type Payment = {
+  token: string;
+  mode: "test" | "live";
+  status: "pending" | "completed" | "cancelled" | "failed";
+  amount: number;
+  amount_paid: number | null;
+  receipt_url: string | null;
+  created_at: string;
+  completed_at: string | null;
+};
+
+const paymentStatusLabels: Record<Payment["status"], string> = {
+  pending: "Page de paiement ouverte",
+  completed: "Paiement reçu",
+  cancelled: "Abandonné par le client",
+  failed: "Refusé ou expiré",
+};
+
 // Étapes normales d'une commande ; l'annulation est un bouton à part.
 const STEPS: OrderStatus[] = ["pending", "paid", "shipped", "delivered"];
 
@@ -61,6 +80,7 @@ const shippingLabels = {
 export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[id]">) {
   const { id } = use(params);
   const [order, setOrder] = useState<Order | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [failed, setFailed] = useState(false);
   const [note, setNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
@@ -81,6 +101,13 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
         setOrder(data as Order);
         setNote(data.notes ?? "");
       });
+    // Requête à part : la page reste utilisable si la table n'existe pas encore.
+    createClient()
+      .from("payments")
+      .select("token, mode, status, amount, amount_paid, receipt_url, created_at, completed_at")
+      .eq("order_id", id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setPayments((data as Payment[] | null) ?? []));
   }, [id]);
 
   async function setStatus(status: OrderStatus) {
@@ -124,6 +151,13 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
   if (!order) return <Loading />;
 
   const whatsappText = `Bonjour ${order.first_name}, merci pour votre commande ${order.order_number} sur Racha Store (${formatPrice(order.total)}).`;
+
+  const received = payments.filter((p) => p.status === "completed");
+  const paymentWarnings = [
+    received.length > 1 && "Plusieurs paiements reçus pour cette commande : remboursez le paiement en trop depuis PayDunya.",
+    received.length > 0 && order.status === "cancelled" && "Paiement reçu sur une commande annulée : à rembourser depuis PayDunya.",
+    received.some((p) => p.amount_paid !== order.total) && "Montant payé différent du total de la commande.",
+  ].filter((w): w is string => Boolean(w));
 
   return (
     <>
@@ -170,6 +204,44 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
                   </button>
                 </>
               )}
+            </div>
+          </Panel>
+
+          <Panel title="Paiement">
+            <div className="p-5 sm:p-6 text-sm flex flex-col gap-4">
+              {payments.length === 0 ? (
+                <p className="text-stone">Aucun paiement en ligne pour cette commande.</p>
+              ) : (
+                <ul className="flex flex-col gap-4">
+                  {payments.map((p) => (
+                    <li key={p.token}>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-ink">
+                          {paymentStatusLabels[p.status]}
+                          {p.mode === "test" ? " (test, aucun argent reçu)" : ""}
+                        </span>
+                        <span className="tabular-nums shrink-0">{formatPrice(p.amount_paid ?? p.amount)}</span>
+                      </div>
+                      <p className="text-xs text-stone-light mt-1">
+                        PayDunya · {formatDateTime(p.completed_at ?? p.created_at)}
+                        {p.receipt_url && (
+                          <>
+                            {" · "}
+                            <a href={p.receipt_url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+                              Voir le reçu
+                            </a>
+                          </>
+                        )}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {paymentWarnings.map((w) => (
+                <p key={w} className="text-xs text-danger border border-danger/30 p-3">
+                  {w}
+                </p>
+              ))}
             </div>
           </Panel>
 
@@ -303,6 +375,7 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
         Les articles seront remis en stock
         {order.promo_code ? ` et le code ${order.promo_code} pourra de nouveau être utilisé` : ""}. Une commande annulée ne
         peut plus changer de statut.
+        {received.length > 0 && " Le paiement reçu n'est pas remboursé automatiquement : remboursez le client depuis PayDunya."}
       </ConfirmDialog>
     </>
   );
