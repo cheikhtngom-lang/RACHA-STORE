@@ -15,6 +15,8 @@ import { formatPrice } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { discountAmount, shippingCost, SHIPPING_COSTS, type ShippingMethod } from "@/lib/pricing";
 import { requestPaymentUrl } from "@/lib/payment-client";
+import { saveLastOrder } from "@/lib/last-order";
+import { LastOrderNotice } from "@/components/checkout/last-order-notice";
 
 const STEPS = ["Informations", "Livraison", "Paiement"];
 
@@ -147,6 +149,7 @@ export default function CheckoutPage() {
     // la page PayDunya ne s'ouvre pas, la page de la commande propose de réessayer.
     setPlaced(true);
     clear();
+    saveLastOrder(created.order_id, created.order_number);
     const paymentUrl = await requestPaymentUrl(created.order_id);
     if (paymentUrl) {
       window.location.assign(paymentUrl);
@@ -172,6 +175,7 @@ export default function CheckoutPage() {
         <Button asChild variant="primary" size="lg">
           <Link href="/boutique">Découvrir la boutique</Link>
         </Button>
+        <LastOrderNotice className="mt-4" />
       </div>
     );
   }
@@ -324,6 +328,10 @@ export default function CheckoutPage() {
                   Le paiement se fait sur la page sécurisée de PayDunya, notre prestataire de paiement. Racha Store
                   ne voit jamais vos données de carte ni vos codes Wave ou Orange Money. La commande est confirmée
                   dès réception du paiement.
+                </p>
+                <p className="text-xs text-stone-light leading-relaxed mt-2">
+                  Après le paiement, vous revenez sur la page de votre commande : vous pourrez y envoyer son
+                  récapitulatif à la boutique sur WhatsApp.
                 </p>
               </div>
               <div className="text-sm text-stone leading-relaxed">

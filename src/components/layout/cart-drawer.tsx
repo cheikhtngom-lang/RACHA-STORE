@@ -10,6 +10,7 @@ import { useCartStore } from "@/store/cart-store";
 import { useUiStore } from "@/store/ui-store";
 import { formatPrice } from "@/lib/utils";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/pricing";
+import { LastOrderNotice } from "@/components/checkout/last-order-notice";
 
 export function CartDrawer() {
   const isCartOpen = useUiStore((s) => s.isCartOpen);
@@ -65,6 +66,7 @@ export function CartDrawer() {
           <Button variant="outline" onClick={closeCart} asChild>
             <Link href="/boutique">Découvrir la boutique</Link>
           </Button>
+          <LastOrderNotice onNavigate={closeCart} className="mt-4" />
         </div>
       ) : (
         <ul className="divide-y divide-line">

@@ -105,13 +105,14 @@ function OrdersList() {
               <span className="font-sans-wide text-xs uppercase text-ink">Total</span>
               <span className="font-display text-xl text-ink tabular-nums">{formatPrice(order.total)}</span>
             </div>
-            {order.status === "pending" && (
+            {/* La page de la commande permet aussi d'en envoyer le récapitulatif sur WhatsApp. */}
+            {order.status !== "cancelled" && (
               <div className="px-6 pb-6 flex justify-end">
                 <Link
                   href={`/checkout/paiement/${order.id}`}
                   className="text-xs font-sans-wide uppercase underline underline-offset-4 text-ink"
                 >
-                  Payer la commande
+                  {order.status === "pending" ? "Payer la commande" : "Voir la commande"}
                 </Link>
               </div>
             )}

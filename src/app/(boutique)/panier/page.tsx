@@ -16,6 +16,7 @@ import { useCatalog } from "@/components/catalog-provider";
 import { getBestSellers } from "@/lib/catalog-selectors";
 import { discountAmount, shippingCost } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/client";
+import { LastOrderNotice } from "@/components/checkout/last-order-notice";
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
@@ -60,6 +61,7 @@ export default function CartPage() {
         <Button asChild variant="primary" size="lg">
           <Link href="/boutique">Découvrir la boutique</Link>
         </Button>
+        <LastOrderNotice className="mt-4" />
       </div>
     );
   }
