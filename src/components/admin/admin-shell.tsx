@@ -186,15 +186,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="theme-dashboard flex-1 bg-canvas text-ink lg:grid lg:grid-cols-[264px_1fr]">
-      <aside className="hidden lg:flex flex-col justify-between sticky top-0 h-screen py-8 px-4 border-r border-line bg-cream/60 backdrop-blur-xl z-10">
-        <div>
-          <Link href="/admin" className="block px-4 mb-10">
-            <span className="fx-shine block font-display text-2xl tracking-[0.12em]">RACHA STORE</span>
-            <span className="eyebrow text-stone-light">Administration</span>
-          </Link>
-          {nav()}
-        </div>
-        {footerLinks()}
+      <aside className="hidden lg:flex flex-col sticky top-0 h-screen py-8 px-4 border-r border-line bg-cream/60 backdrop-blur-xl z-10">
+        <Link href="/admin" className="block px-4 mb-10 shrink-0">
+          <span className="fx-shine block font-display text-2xl tracking-[0.12em]">RACHA STORE</span>
+          <span className="eyebrow text-stone-light">Administration</span>
+        </Link>
+        {/* Sur un écran peu haut, seul le menu défile : « Se déconnecter » reste visible en dessous. */}
+        <div className="flex-1 min-h-0 overflow-y-auto -mx-4 px-4">{nav()}</div>
+        <div className="shrink-0 border-t border-line pt-4 mt-4">{footerLinks()}</div>
       </aside>
 
       <header className="lg:hidden sticky top-0 z-30 h-16 bg-cream/80 backdrop-blur-xl border-b border-line flex items-center gap-4 px-5">
@@ -204,18 +203,35 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <Link href="/admin" className="fx-shine font-display text-xl tracking-[0.12em]">
           RACHA STORE
         </Link>
-        {counts.orders > 0 && (
-          <Link href="/admin/commandes" className="ml-auto text-xs text-gold-light">
-            {counts.orders} commande{counts.orders > 1 ? "s" : ""} à traiter
-          </Link>
-        )}
+        <div className="ml-auto flex items-center gap-4">
+          {counts.orders > 0 && (
+            <Link href="/admin/commandes" className="text-xs text-gold-light whitespace-nowrap">
+              {counts.orders}
+              <span className="hidden sm:inline"> commande{counts.orders > 1 ? "s" : ""}</span> à traiter
+            </Link>
+          )}
+          <button
+            type="button"
+            onClick={signOut}
+            aria-label="Se déconnecter"
+            className="flex items-center gap-2 text-xs text-stone-light hover:text-ink transition-colors cursor-pointer"
+          >
+            <LogOut size={18} strokeWidth={1.5} />
+            <span className="hidden sm:inline">Se déconnecter</span>
+          </button>
+        </div>
       </header>
 
-      <Sheet open={menuOpen} onOpenChange={setMenuOpen} side="left" title="Administration" widthClassName="w-[85vw] max-w-[320px]">
-        <div className="flex flex-col justify-between h-full py-4 px-2">
-          {nav()}
-          <div className="border-t border-line pt-4 mt-6">{footerLinks()}</div>
-        </div>
+      {/* Pied du menu fixe : « Se déconnecter » reste visible même si la liste défile. */}
+      <Sheet
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        side="left"
+        title="Administration"
+        widthClassName="w-[85vw] max-w-[320px]"
+        footer={<div className="py-4 px-2">{footerLinks()}</div>}
+      >
+        <div className="py-4 px-2">{nav()}</div>
       </Sheet>
 
       <main className="relative min-w-0 px-5 sm:px-8 lg:px-12 py-8 lg:py-12">
