@@ -27,7 +27,7 @@ async function resizeImage(file: File): Promise<Blob> {
 }
 
 // Envoie une photo dans Supabase Storage et renvoie son adresse publique.
-export async function uploadImage(file: File, folder: "produits" | "categories" | "accueil") {
+export async function uploadImage(file: File, folder: "produits" | "categories" | "accueil" | "pages") {
   let blob: Blob;
   try {
     blob = await resizeImage(file);

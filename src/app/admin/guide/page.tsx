@@ -316,6 +316,12 @@ export default function AdminGuidePage() {
               texte de 400 caractères au plus et un bouton avec la page qu&apos;il ouvre (ex. /boutique/tenues-africaines).
               « Remettre la photo par défaut » revient à la photo d&apos;origine. Pensez à cliquer sur « Enregistrer ».
             </p>
+            <Heading>Onglet Connexion et inscription</Heading>
+            <p>
+              La grande photo affichée à côté du formulaire des pages Connexion et Inscription (sur ordinateur et tablette,
+              pas sur téléphone). Pour chaque page, « Choisir une photo », de préférence en hauteur, puis « Enregistrer ».
+              « Remettre la photo par défaut » revient à la photo d&apos;origine.
+            </p>
           </Chapter>
 
           <Chapter id="problemes" title="En cas de problème">
