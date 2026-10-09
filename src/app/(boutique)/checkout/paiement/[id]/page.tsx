@@ -6,15 +6,21 @@ import { connection } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { AccountOrdersLink, PayButton } from "@/components/checkout/payment-actions";
+import { WhatsAppIcon } from "@/components/shared/social-icons";
+import { getShopInfo } from "@/lib/get-shop-info";
+import { orderWhatsappUrl } from "@/lib/order-whatsapp";
 import { getPaydunyaConfig } from "@/lib/paydunya";
 import { isUuid, refreshOrderPayments } from "@/lib/payment";
 import type { OrderStatus } from "@/lib/order-status";
+import { siteUrl } from "@/lib/site";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils";
 
 // Page de retour de PayDunya (paiement fait ou abandonné), et lien « Payer »
 // des commandes en attente. L'identifiant de la commande, aléatoire, n'est
 // connu que du client : la page n'affiche ni téléphone, ni e-mail, ni adresse.
+// Le client peut envoyer le récapitulatif à la boutique sur WhatsApp, avec le
+// lien de cette page, qui permet à la gérante de vérifier le paiement.
 
 export const metadata: Metadata = {
   title: "Paiement",
@@ -78,6 +84,11 @@ export default async function PaymentPage({ params, searchParams }: PageProps<"/
 
   const isPaid = order.status === "paid" || order.status === "shipped" || order.status === "delivered";
   const isCancelled = order.status === "cancelled";
+  const shopPhone = (await getShopInfo()).phones[0];
+  const whatsappUrl =
+    shopPhone && !isCancelled
+      ? orderWhatsappUrl(shopPhone.tel, order, isPaid, `${siteUrl ?? "https://www.rachamarket.com"}/checkout/paiement/${order.id}`)
+      : null;
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-20 sm:py-28 text-center">
@@ -103,6 +114,22 @@ export default async function PaymentPage({ params, searchParams }: PageProps<"/
             <p className="text-sm text-danger">Le paiement en ligne est momentanément indisponible. Réessayez plus tard.</p>
           )}
           <p className="text-xs text-stone-light mt-4">Wave, Orange Money ou carte bancaire, sur la page sécurisée de PayDunya.</p>
+        </div>
+      )}
+
+      {whatsappUrl && (
+        <div className="mb-10 flex flex-col items-center gap-4">
+          <p className="text-sm text-stone max-w-md">
+            {isPaid
+              ? "Envoyez le récapitulatif de votre commande à la boutique sur WhatsApp : le message est déjà rédigé, il ne reste qu'à l'envoyer."
+              : "Une question sur cette commande ou sur son paiement ? Envoyez-en le récapitulatif à la boutique sur WhatsApp."}
+          </p>
+          <Button asChild variant={isPaid ? "primary" : "outline"} size="lg">
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <WhatsAppIcon size={18} />
+              Envoyer sur WhatsApp
+            </a>
+          </Button>
         </div>
       )}
 
@@ -152,7 +179,7 @@ export default async function PaymentPage({ params, searchParams }: PageProps<"/
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button asChild variant={isPaid ? "primary" : "outline"} size="lg">
+        <Button asChild variant={isPaid && !whatsappUrl ? "primary" : "outline"} size="lg">
           <Link href="/boutique">Poursuivre mes achats</Link>
         </Button>
         {isCancelled && (

@@ -175,7 +175,7 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
         </Field>
         <ListField
           label="Téléphones"
-          hint="Tels qu'ils seront affichés, avec l'indicatif pour l'étranger (+33…). Chaque numéro propose l'appel et WhatsApp ; le premier est le numéro principal."
+          hint="Tels qu'ils seront affichés, avec l'indicatif pour l'étranger (+33…). Chaque numéro propose l'appel et WhatsApp ; le premier est le numéro principal, celui qui reçoit les commandes envoyées sur WhatsApp par les clients."
           values={phones}
           onChange={setPhones}
           type="tel"
