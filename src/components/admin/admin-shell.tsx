@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Megaphone, Mail, Users, Settings, Store, LogOut, Menu } from "lucide-react";
+import { LayoutGrid, ChartLine, Package, Shirt, Layers, Ticket, Megaphone, Mail, Users, Settings, BookOpen, Store, LogOut, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
@@ -25,6 +25,7 @@ const navItems: { label: string; href: string; icon: typeof LayoutGrid; count?: 
   { label: "Messages", href: "/admin/messages", icon: Mail, count: "messages" },
   { label: "Newsletter", href: "/admin/newsletter", icon: Users },
   { label: "Paramètres", href: "/admin/parametres", icon: Settings },
+  { label: "Guide", href: "/admin/guide", icon: BookOpen },
 ];
 
 function isActive(pathname: string, href: string) {
