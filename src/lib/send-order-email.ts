@@ -25,7 +25,7 @@ export async function sendOrderEmail(
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      "id, order_number, email, first_name, last_name, phone, address, address_complement, postal_code, city, country, shipping_method, subtotal, discount, shipping_cost, total, promo_code, order_items (product_name, color, size, unit_price, quantity, line_total)"
+      "id, order_number, email, first_name, last_name, phone, address, address_complement, postal_code, city, country, shipping_method, subtotal, discount, shipping_cost, total, promo_code, payment_method, transaction_ref, order_items (product_name, color, size, unit_price, quantity, line_total)"
     )
     .eq("id", orderId)
     .maybeSingle();
@@ -54,7 +54,8 @@ export async function sendOrderEmail(
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to: recipients, reply_to: order.email, subject, html, text }),
+    // Sans e-mail du client (facultatif), pas d'adresse de réponse.
+    body: JSON.stringify({ from: FROM, to: recipients, ...(order.email ? { reply_to: order.email } : {}), subject, html, text }),
   });
   if (!response.ok) {
     console.error("E-mail commande : envoi Resend refusé", response.status, await response.text());

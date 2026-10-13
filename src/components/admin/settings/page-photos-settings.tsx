@@ -11,7 +11,8 @@ import { dbErrorMessage, notifyCatalogChanged } from "@/lib/admin/utils";
 import { removeImages } from "@/lib/admin/images";
 import { DEFAULT_PAGE_PHOTOS, type PagePhotosRow } from "@/lib/page-photos";
 
-// Photos des pages Connexion et Inscription (table page_photos).
+// Photo de la page Connexion, réservée à la gérante (table page_photos). La
+// colonne signup_image_url reste en base : la page Inscription n'existe plus.
 export function PagePhotosSettings() {
   const [row, setRow] = useState<PagePhotosRow | null>(null);
   const [failure, setFailure] = useState<"migration" | "error" | null>(null);
@@ -46,7 +47,7 @@ export function PagePhotosSettings() {
 
 function PagePhotosForm({ initial }: { initial: PagePhotosRow }) {
   const [login, setLogin] = useState<string[]>(initial.login_image_url ? [initial.login_image_url] : []);
-  const [signup, setSignup] = useState<string[]>(initial.signup_image_url ? [initial.signup_image_url] : []);
+  const signup = initial.signup_image_url;
   const [saved, setSaved] = useState(initial);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -56,7 +57,7 @@ function PagePhotosForm({ initial }: { initial: PagePhotosRow }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const values: PagePhotosRow = { login_image_url: login[0] ?? null, signup_image_url: signup[0] ?? null };
+    const values: PagePhotosRow = { login_image_url: login[0] ?? null, signup_image_url: signup };
 
     setSaving(true);
     const { error: saveError } = await createClient().from("page_photos").update(values).eq("id", true);
@@ -79,7 +80,8 @@ function PagePhotosForm({ initial }: { initial: PagePhotosRow }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <p className="text-xs text-stone-light -mt-2">
-        Grande photo affichée à côté du formulaire, sur ordinateur et tablette (elle est masquée sur téléphone).
+        Grande photo affichée à côté du formulaire de connexion de l&apos;Espace gérante, sur ordinateur et tablette (elle est masquée
+        sur téléphone).
       </p>
       <div className="grid lg:grid-cols-2 gap-6 items-start">
         <PhotoPanel
@@ -87,13 +89,6 @@ function PagePhotosForm({ initial }: { initial: PagePhotosRow }) {
           images={login}
           setImages={setLogin}
           fallback={DEFAULT_PAGE_PHOTOS.login}
-          onUploaded={(url) => uploadedRef.current.push(url)}
-        />
-        <PhotoPanel
-          title="Page Inscription"
-          images={signup}
-          setImages={setSignup}
-          fallback={DEFAULT_PAGE_PHOTOS.signup}
           onUploaded={(url) => uploadedRef.current.push(url)}
         />
       </div>

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Mes commandes",
+  // Objet avec modèle : un simple texte ferait perdre « | Racha Store » aux pages enfants.
+  title: { default: "Suivre ma commande", template: "%s | Racha Store" },
   robots: { index: false, follow: false },
 };
 

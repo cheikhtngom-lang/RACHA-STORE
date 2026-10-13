@@ -10,14 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/order-status";
 import { formatDateTime } from "@/lib/admin/utils";
+import { paymentMethodLabel } from "@/lib/payment-methods";
 import { formatPrice, cn } from "@/lib/utils";
 
 const PAGE_SIZE = 30;
 
 const filters: { value: OrderStatus | "all"; label: string }[] = [
   { value: "all", label: "Toutes" },
-  { value: "pending", label: "En attente" },
-  { value: "paid", label: "Payées" },
+  { value: "pending", label: "À valider" },
+  { value: "paid", label: "Validées" },
   { value: "shipped", label: "Expédiées" },
   { value: "delivered", label: "Livrées" },
   { value: "cancelled", label: "Annulées" },
@@ -31,6 +32,7 @@ type OrderRow = {
   last_name: string;
   city: string;
   total: number;
+  payment_method: string | null;
   created_at: string;
 };
 
@@ -93,7 +95,7 @@ function OrdersResults({ status, search }: { status: OrderStatus | "all"; search
     // Une ligne de plus que la page, pour savoir s'il en reste.
     let request = createClient()
       .from("orders")
-      .select("id, order_number, status, first_name, last_name, city, total, created_at")
+      .select("id, order_number, status, first_name, last_name, city, total, payment_method, created_at")
       .order("created_at", { ascending: false })
       .range(0, limit);
     if (status !== "all") request = request.eq("status", status);
@@ -136,7 +138,7 @@ function OrdersResults({ status, search }: { status: OrderStatus | "all"; search
                   {o.first_name} {o.last_name}
                 </p>
                 <p className="text-xs text-stone-light mt-1">
-                  {o.order_number} · {formatDateTime(o.created_at)} · {o.city}
+                  {o.order_number} · {formatDateTime(o.created_at)} · {o.city} · {paymentMethodLabel(o.payment_method)}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-2 shrink-0">

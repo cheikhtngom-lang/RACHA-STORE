@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="mx-auto max-w-sm px-6 py-16 sm:py-24 min-h-[70vh]">
       <BackToShop />
-      <p className="eyebrow text-gold mb-3">Mon compte</p>
+      <p className="eyebrow text-gold mb-3">Espace gérante</p>
       <h1 className="font-display text-3xl sm:text-4xl text-ink mb-4">Mot de passe oublié</h1>
 
       {sent ? (

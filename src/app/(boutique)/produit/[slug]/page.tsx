@@ -11,6 +11,7 @@ import { RecentlyViewed } from "@/components/product/recently-viewed";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { ProductCarousel } from "@/components/product/product-carousel";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { paymentMethodsText } from "@/lib/payment-methods";
 
 async function getProductBySlug(slug: string) {
   const { products } = await getCatalog();
@@ -82,7 +83,7 @@ export default async function ProductPage({
           </div>
 
           <p className="mt-8 pt-6 border-t border-line text-xs text-stone-light">
-            Livraison 7j/7, au Sénégal et partout dans le monde. Paiement sécurisé par Wave, Orange Money ou carte bancaire.
+            Livraison 7j/7, au Sénégal et partout dans le monde. Commande sans compte : {paymentMethodsText()}.
           </p>
 
           <div className="mt-8">

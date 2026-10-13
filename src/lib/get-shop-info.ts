@@ -8,7 +8,7 @@ import { DEFAULT_SHOP_INFO, toShopInfo, type ShopInfo, type ShopSettingsRow } fr
 export const getShopInfo = cache(async (): Promise<ShopInfo> => {
   const { data, error } = await createPublicClient()
     .from("shop_settings")
-    .select("contact_email, phones, address, opening_hours, instagram_url, tiktok_url")
+    .select("contact_email, phones, payment_phone, address, opening_hours, instagram_url, tiktok_url")
     .maybeSingle();
   if (error || !data) return DEFAULT_SHOP_INFO;
   return toShopInfo(data as ShopSettingsRow);

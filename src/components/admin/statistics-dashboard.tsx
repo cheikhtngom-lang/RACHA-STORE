@@ -138,8 +138,8 @@ export function StatisticsDashboard({ data, categoryOrder }: { data: Analytics; 
     <>
       {/* Le chiffre principal de la page. */}
       <ChartCard
-        title="Chiffre d'affaires encaissé"
-        description="Commandes payées, expédiées ou livrées"
+        title="Chiffre d'affaires validé"
+        description="Commandes validées, expédiées ou livrées"
         table={{ columns: ["Période", "Chiffre d'affaires"], rows: revenuePoints.map((p) => [p.label, money(p.value)]) }}
       >
         <div className="flex flex-wrap items-end gap-x-6 gap-y-2 mb-4">
@@ -148,7 +148,7 @@ export function StatisticsDashboard({ data, categoryOrder }: { data: Analytics; 
             <Delta current={k.revenue} previous={k.revenue_prev} higherIsBetter />
           </div>
         </div>
-        <AreaChart data={revenuePoints} name="Chiffre d'affaires encaissé" color={MEASURE.revenue} formatValue={money} formatAxis={moneyAxis} />
+        <AreaChart data={revenuePoints} name="Chiffre d'affaires validé" color={MEASURE.revenue} formatValue={money} formatAxis={moneyAxis} />
       </ChartCard>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -220,13 +220,13 @@ export function StatisticsDashboard({ data, categoryOrder }: { data: Analytics; 
           )}
         </ChartCard>
 
-        <ChartCard title="Commandes encaissées" description="Part des commandes passées qui sont payées">
+        <ChartCard title="Commandes validées" description="Part des commandes passées qui sont validées">
           <div className="flex flex-col items-center gap-6">
             <Gauge
               ratio={ratio(k.collected, placed)}
               color={MEASURE.revenue}
               label={`${formatInt(k.collected)} sur ${formatInt(placed)} commande${placed > 1 ? "s" : ""}`}
-              detail="Les autres attendent encore leur paiement"
+              detail="Les autres attendent encore leur validation"
             />
             <div className="w-full grid grid-cols-2 border-t border-line pt-4 text-center">
               <div>
@@ -330,7 +330,7 @@ export function StatisticsDashboard({ data, categoryOrder }: { data: Analytics; 
             href="/admin/commandes?statut=pending"
             className="inline-block mt-5 text-xs text-stone hover:text-ink underline underline-offset-2"
           >
-            Voir les commandes en attente
+            Voir les commandes à valider
           </Link>
         </ChartCard>
 

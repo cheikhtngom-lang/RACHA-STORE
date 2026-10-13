@@ -11,7 +11,7 @@ const sections = [
   },
   {
     title: "2. Commandes",
-    body: `Toute commande passée sur le site suppose l'acceptation sans réserve des présentes conditions générales de vente. La confirmation de commande est envoyée par e-mail à l'adresse renseignée par le Client.`,
+    body: `Toute commande passée sur le site suppose l'acceptation sans réserve des présentes conditions générales de vente. Le Client commande sans créer de compte, avec ses nom, téléphone et adresse de livraison. Il reçoit un numéro de commande et un lien de suivi, et peut envoyer le récapitulatif de sa commande à Racha Store sur WhatsApp. La commande est confirmée par Racha Store après vérification du paiement ou, pour un paiement à la livraison, après un échange avec le Client.`,
   },
   {
     title: "3. Prix",
@@ -19,7 +19,7 @@ const sections = [
   },
   {
     title: "4. Paiement",
-    body: `Le paiement est exigible immédiatement à la commande. Il s'effectue en ligne, sur la page sécurisée de PayDunya, prestataire de paiement, par Wave, Orange Money ou carte bancaire (Visa, Mastercard). Racha Store n'a jamais accès aux données de carte bancaire ni aux codes Wave ou Orange Money du Client. La commande est confirmée dès réception du paiement.`,
+    body: `Le Client choisit à la commande entre Wave, Orange Money et le paiement à la livraison. Par Wave ou Orange Money, il envoie le montant total au numéro indiqué au moment de la commande ; la commande est validée dès réception du paiement. À la livraison, il règle le montant total au livreur, en espèces, à la remise du colis. Racha Store ne demande jamais les codes secrets Wave ou Orange Money du Client.`,
   },
   {
     title: "5. Livraison",
@@ -43,7 +43,7 @@ export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">Conditions générales de vente</h1>
-      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : septembre 2026</p>
+      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : octobre 2026</p>
 
       <div className="flex flex-col gap-10">
         {sections.map((s) => (

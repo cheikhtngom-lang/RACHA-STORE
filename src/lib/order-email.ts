@@ -1,7 +1,9 @@
+import { isMobileMoney, paymentMethodLabel } from "@/lib/payment-methods";
 import { formatPrice, whatsappNumber } from "@/lib/utils";
 
-// E-mails envoyés à la boutique : nouvelle commande, commande payée, paiement
-// à vérifier. Les champs saisis par le client (nom, adresse…) sont échappés :
+// E-mails envoyés à la boutique : nouvelle commande (à valider), et pour les
+// anciennes commandes PayDunya encore ouvertes : commande payée, paiement à
+// vérifier. Les champs saisis par le client (nom, adresse…) sont échappés :
 // ils ne doivent pas injecter de HTML.
 
 export type OrderEmailKind = "new" | "paid" | "order_cancelled" | "duplicate" | "amount_mismatch";
@@ -9,7 +11,7 @@ export type OrderEmailKind = "new" | "paid" | "order_cancelled" | "duplicate" | 
 const KINDS: Record<OrderEmailKind, { title: string; status: string; footer: string }> = {
   new: {
     title: "Nouvelle commande",
-    status: "en attente de paiement",
+    status: "à valider",
     footer: "e-mail automatique envoyé à chaque commande",
   },
   paid: {
@@ -37,7 +39,7 @@ const KINDS: Record<OrderEmailKind, { title: string; status: string; footer: str
 export type NotificationOrder = {
   id: string;
   order_number: string;
-  email: string;
+  email: string | null;
   first_name: string;
   last_name: string;
   phone: string;
@@ -52,6 +54,8 @@ export type NotificationOrder = {
   shipping_cost: number;
   total: number;
   promo_code: string | null;
+  payment_method: string | null;
+  transaction_ref: string | null;
   order_items: {
     product_name: string;
     color: string | null;
@@ -90,6 +94,13 @@ export function buildOrderNotification(
     .filter(Boolean)
     .join(", ");
   const shipping = order.shipping_method === "express" ? "Livraison express" : "Livraison standard";
+  const payment = [
+    paymentMethodLabel(order.payment_method),
+    order.transaction_ref ? `transaction ${order.transaction_ref}` : isMobileMoney(order.payment_method) ? "sans numéro de transaction" : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const contactLine = [order.phone, order.email].filter(Boolean).join(" · ");
   const orderUrl = `${adminUrl}/admin/commandes/${order.id}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber(order.phone)}`;
 
@@ -114,8 +125,9 @@ export function buildOrderNotification(
     "",
     `Client : ${name}`,
     `Téléphone : ${order.phone}`,
-    `E-mail : ${order.email}`,
+    ...(order.email ? [`E-mail : ${order.email}`] : []),
     `Livraison : ${address} (${shipping.toLowerCase()})`,
+    `Paiement : ${payment}`,
     "",
     ...itemLines.map((l) => `- ${l.label}${l.options ? ` (${l.options})` : ""} : ${l.detail} = ${l.total}`),
     "",
@@ -132,8 +144,9 @@ export function buildOrderNotification(
   <p style="font-size: 14px; color: #8c897c; margin: 0 0 24px;">${escapeHtml(order.order_number)} · ${status}</p>
 
   <p style="font-size: 15px; line-height: 1.6; margin: 0 0 4px;"><strong>${escapeHtml(name)}</strong></p>
-  <p style="font-size: 14px; line-height: 1.6; margin: 0 0 4px;">${escapeHtml(order.phone)} · ${escapeHtml(order.email)}</p>
-  <p style="font-size: 14px; line-height: 1.6; margin: 0 0 24px;">${escapeHtml(address)}<br />${shipping}</p>
+  <p style="font-size: 14px; line-height: 1.6; margin: 0 0 4px;">${escapeHtml(contactLine)}</p>
+  <p style="font-size: 14px; line-height: 1.6; margin: 0 0 4px;">${escapeHtml(address)}<br />${shipping}</p>
+  <p style="font-size: 14px; line-height: 1.6; margin: 0 0 24px;">Paiement : ${escapeHtml(payment)}</p>
 
   <table style="width: 100%; border-collapse: collapse; margin: 0 0 16px;">
     ${itemLines

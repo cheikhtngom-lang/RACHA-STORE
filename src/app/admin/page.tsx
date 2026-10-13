@@ -116,9 +116,9 @@ export default function AdminDashboardPage() {
             <Stat
               href="/admin/commandes?statut=pending"
               icon={Clock}
-              label="À encaisser"
+              label="À valider"
               value={data.toCollect}
-              detail="en attente de paiement"
+              detail={plural(data.toCollect, "commande à vérifier", "commandes à vérifier")}
               urgent={data.toCollect > 0}
             />
             <Stat
@@ -126,7 +126,7 @@ export default function AdminDashboardPage() {
               icon={Truck}
               label="À expédier"
               value={data.toShip}
-              detail={plural(data.toShip, "commande payée", "commandes payées")}
+              detail={plural(data.toShip, "commande validée", "commandes validées")}
               urgent={data.toShip > 0}
             />
             <Stat
@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
               value={data.monthSales}
               format={formatInt}
               unit="F CFA"
-              detail={`${data.monthOrders} ${plural(data.monthOrders, "commande payée", "commandes payées")}`}
+              detail={`${data.monthOrders} ${plural(data.monthOrders, "commande validée", "commandes validées")}`}
             />
             <Stat
               href="/admin/messages"
@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
 
           <div className="grid lg:grid-cols-2 gap-6">
             <Panel
-              title="En attente de paiement"
+              title="À valider"
               action={
                 <Link href="/admin/commandes?statut=pending" className="text-xs text-stone-light hover:text-gold-light transition-colors">
                   Tout voir
@@ -159,7 +159,7 @@ export default function AdminDashboardPage() {
               }
             >
               {data.recentOrders.length === 0 ? (
-                <p className="px-6 py-10 text-sm text-stone-light">Aucune commande en attente.</p>
+                <p className="px-6 py-10 text-sm text-stone-light">Aucune commande à valider.</p>
               ) : (
                 <ul className="divide-y divide-line">
                   {data.recentOrders.map((o) => (
@@ -326,8 +326,8 @@ function Last30Days({ data }: { data: Analytics }) {
   return (
     <div className="grid lg:grid-cols-[1.75fr_1fr] gap-6">
       <ChartCard
-        title="Chiffre d'affaires encaissé"
-        description="30 derniers jours : commandes payées, expédiées ou livrées"
+        title="Chiffre d'affaires validé"
+        description="30 derniers jours : commandes validées, expédiées ou livrées"
         table={{ columns: ["Jour", "Chiffre d'affaires"], rows: points.map((p) => [p.label, formatPrice(p.value)]) }}
       >
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 mb-5">

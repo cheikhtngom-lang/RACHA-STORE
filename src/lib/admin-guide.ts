@@ -21,7 +21,7 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
     blocks: [
       {
         type: "p",
-        text: "L'administration se trouve à l'adresse www.rachamarket.com/admin. Connectez-vous avec votre compte habituel du site : il n'y a pas de mot de passe à part. Depuis la boutique, le bouton « Administration » de l'en-tête (ou du menu sur téléphone) vous ramène ici, et « Voir la boutique », en bas du menu, vous renvoie sur le site.",
+        text: "L'administration se trouve à l'adresse www.rachamarket.com/admin, ou par le lien « Espace gérante » tout en bas du site. Connectez-vous avec votre adresse e-mail et votre mot de passe : les clients, eux, n'ont pas de compte. Une fois connectée, le bouton « Administration » de l'en-tête (ou du menu sur téléphone) vous ramène ici, et « Voir la boutique », en bas du menu, vous renvoie sur le site.",
       },
       {
         type: "p",
@@ -29,14 +29,15 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
       },
       {
         type: "p",
-        text: "Les pastilles dorées du menu comptent ce qui reste à traiter : les commandes en attente ou payées à côté de « Commandes », les messages non lus à côté de « Messages ».",
+        text: "Les pastilles dorées du menu comptent ce qui reste à traiter : les commandes à valider ou validées à côté de « Commandes », les messages non lus à côté de « Messages ».",
       },
       { type: "heading", text: "La routine conseillée" },
       {
         type: "steps",
         items: [
-          "Ouvrez le Tableau de bord : les cartes « À expédier », « À encaisser » et « Messages » montrent ce qui attend.",
-          "Préparez les commandes payées. Passez-les en « Expédiée » quand le colis part, puis en « Livrée » à la remise.",
+          "Ouvrez le Tableau de bord : les cartes « À valider », « À expédier » et « Messages » montrent ce qui attend.",
+          "Validez les nouvelles commandes : pour Wave ou Orange Money, vérifiez sur votre téléphone que l'argent est arrivé ; pour un paiement à la livraison, appelez le client. Cliquez ensuite sur « Validée ».",
+          "Préparez les commandes validées. Passez-les en « Expédiée » quand le colis part, puis en « Livrée » à la remise.",
           "Répondez aux messages de la page Contact.",
           "Regardez la liste « Stock faible » et mettez à jour le stock des produits réapprovisionnés.",
         ],
@@ -54,15 +55,14 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
       {
         type: "points",
         items: [
-          "**« Nouvelle commande »** : envoyé dès qu'un client valide son panier, avant le paiement. La commande est « En attente de paiement ».",
-          "**« Commande payée »** : PayDunya a confirmé le paiement. C'est le signal pour préparer le colis.",
-          "**« Paiement à vérifier »** : paiement reçu deux fois, paiement sur une commande annulée, ou montant différent du total. Ouvrez la commande et suivez l'avertissement en rouge du panneau « Paiement ».",
-          "**Message WhatsApp d'un client** : après son achat, le client peut vous envoyer le récapitulatif de sa commande sur WhatsApp, au numéro principal de la boutique (le premier numéro dans Paramètres, onglet Boutique). Le message donne le numéro de commande, les articles, le total et la ville de livraison.",
+          "**« Nouvelle commande »** : envoyé dès qu'un client valide sa commande. Elle est « À valider ». L'e-mail donne le moyen de paiement choisi (Wave, Orange Money ou à la livraison) et le numéro de transaction si le client l'a indiqué.",
+          "**Message WhatsApp d'un client** : juste après sa commande, WhatsApp s'ouvre chez le client avec le récapitulatif déjà rédigé ; il vous l'envoie au numéro principal de la boutique (le premier numéro dans Paramètres, onglet Boutique). Le message donne le numéro de commande, les articles, le total, le moyen de paiement et la ville de livraison. Le client peut y joindre la capture de son paiement.",
+          "**« Commande payée »** et **« Paiement à vérifier »** : ces e-mails ne concernent plus que d'anciennes commandes payées en ligne avec PayDunya.",
         ],
       },
       {
         type: "note",
-        text: "Le client peut modifier le message WhatsApp avant de l'envoyer : ne vous fiez pas à la ligne « Paiement : reçu ». Ouvrez le lien « Suivi de la commande » à la fin du message. Cette page affiche le vrai statut, sans connexion : « Paiement reçu » veut dire que l'argent est arrivé. Vous pouvez aussi chercher le numéro de commande dans l'onglet Commandes.",
+        text: "Le client peut modifier le message WhatsApp avant de l'envoyer : vérifiez toujours la commande dans l'onglet Commandes (cherchez son numéro RS-…). Pour Wave et Orange Money, ne validez qu'après avoir vu l'argent arriver sur votre téléphone.",
       },
     ],
   },
@@ -75,18 +75,18 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
       {
         type: "points",
         items: [
-          "**À encaisser** : commandes enregistrées dont le paiement n'est pas encore arrivé.",
-          "**À expédier** : commandes payées, à préparer et à envoyer.",
-          "**Ventes du mois** : total des commandes payées, expédiées ou livrées depuis le 1er du mois.",
+          "**À valider** : commandes reçues, à vérifier (paiement Wave ou Orange Money à contrôler, ou client à appeler pour un paiement à la livraison).",
+          "**À expédier** : commandes validées, à préparer et à envoyer.",
+          "**Ventes du mois** : total des commandes validées, expédiées ou livrées depuis le 1er du mois.",
           "**Messages** : messages de la page Contact pas encore lus.",
-          "**30 derniers jours** : chiffre d'affaires encaissé, commandes, visites et panier moyen, comparés aux 30 jours d'avant.",
-          "**En attente de paiement** : les 5 dernières commandes non payées. Cliquez pour ouvrir la commande.",
+          "**30 derniers jours** : chiffre d'affaires validé, commandes, visites et panier moyen, comparés aux 30 jours d'avant.",
+          "**À valider** (liste) : les 5 dernières commandes pas encore validées. Cliquez pour ouvrir la commande.",
           "**Stock faible** : produits en vente avec 3 pièces ou moins. Cliquez sur un produit pour corriger son stock.",
         ],
       },
       {
         type: "p",
-        text: "Les cartes « À encaisser », « À expédier » et « Messages » ouvrent la liste correspondante. Le bouton « Nouveau produit » ouvre la fiche d'ajout.",
+        text: "Les cartes « À valider », « À expédier » et « Messages » ouvrent la liste correspondante. Le bouton « Nouveau produit » ouvre la fiche d'ajout.",
       },
     ],
   },
@@ -102,7 +102,7 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
       {
         type: "points",
         items: [
-          "**Chiffre d'affaires encaissé** : commandes payées, expédiées ou livrées. Les commandes annulées ne comptent pas.",
+          "**Chiffre d'affaires validé** : commandes validées, expédiées ou livrées. Les commandes à valider et les commandes annulées ne comptent pas.",
           "**Panier moyen** et **taux de conversion** : montant moyen d'une commande, et nombre de commandes pour 100 visites.",
           "**D'où viennent les visiteurs** : WhatsApp, Instagram, TikTok, Google, accès direct… Utile pour savoir quelles publications marchent.",
           "**Ventes par catégorie**, **produits les plus vendus** et **les plus consultés** : un produit très vu mais peu vendu mérite un meilleur prix, de meilleures photos ou plus de stock.",
@@ -125,10 +125,10 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
       {
         type: "points",
         items: [
-          "**En attente de paiement** : la commande est enregistrée et les articles sont réservés dans le stock, mais l'argent n'est pas encore arrivé.",
-          "**Payée** : PayDunya a confirmé le paiement. Le statut change tout seul, vous n'avez rien à faire.",
+          "**À valider** : la commande est enregistrée et les articles sont réservés dans le stock. Le paiement Wave ou Orange Money est à vérifier, ou le client est à appeler pour un paiement à la livraison.",
+          "**Validée** : à choisir quand l'argent Wave ou Orange Money est arrivé sur votre téléphone, ou quand le client a confirmé une commande payée à la livraison.",
           "**Expédiée** : à choisir quand le colis part chez le livreur.",
-          "**Livrée** : à choisir quand le client a reçu son colis.",
+          "**Livrée** : à choisir quand le client a reçu son colis (et payé le livreur pour un paiement à la livraison).",
           "**Annulée** : les articles reviennent dans le stock et le code promo éventuel peut resservir. C'est définitif.",
         ],
       },
@@ -137,20 +137,22 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
         type: "steps",
         items: [
           "Ouvrez la commande depuis la liste. Le panneau « Articles » donne chaque pièce avec sa couleur, sa taille et sa référence (SKU).",
+          "Regardez le panneau « Paiement » : le moyen choisi et, pour Wave ou Orange Money, le numéro de transaction indiqué par le client. Vérifiez sur votre téléphone que le montant est arrivé ; pour un paiement à la livraison, appelez le client.",
+          "Sous le nom du client, une étiquette indique « Nouveau client » ou ses commandes passées avec le même numéro (livrées, en cours, annulées). Un nouveau client mérite un appel avant d'envoyer le livreur.",
           "Vérifiez l'adresse et le mode de livraison (standard ou express, à traiter en priorité) dans le panneau « Livraison ».",
-          "Contactez le client si besoin avec les boutons « Écrire sur WhatsApp » (message déjà rédigé), « Appeler » ou « Envoyer un e-mail ».",
-          "Dans le panneau « Statut », cliquez sur « Expédiée » quand le colis part, puis sur « Livrée » à la remise.",
+          "Dans le panneau « Statut », cliquez sur « Validée », puis sur « Expédiée » quand le colis part, et sur « Livrée » à la remise.",
+          "« Écrire sur WhatsApp » ouvre un message adapté à l'étape de la commande, avec le lien de suivi du client. « Appeler » et « Envoyer un e-mail » (si le client a donné son e-mail) sont juste en dessous.",
           "Notez ce qui doit être retenu dans « Note interne » (livreur, date de remise…), puis « Enregistrer la note ». Le client ne la voit jamais.",
         ],
       },
       { type: "heading", text: "Le panneau Paiement" },
       {
         type: "p",
-        text: "Il liste les paiements PayDunya de la commande, avec un lien « Voir le reçu ». La mention « test, aucun argent reçu » signale un paiement d'essai. Un message en rouge apparaît si un paiement est en double, arrive sur une commande annulée ou ne correspond pas au total.",
+        text: "Il indique le moyen choisi par le client : Wave, Orange Money ou à la livraison, avec le numéro de transaction s'il l'a indiqué. Les anciennes commandes payées en ligne affichent aussi leurs paiements PayDunya, avec un lien « Voir le reçu ».",
       },
       {
         type: "note",
-        text: "Annuler une commande ne rembourse pas le client : faites le remboursement depuis votre compte PayDunya. Ne passez une commande en « Payée » à la main que si l'argent est bien arrivé sur votre compte PayDunya.",
+        text: "Ne validez jamais une commande Wave ou Orange Money avant d'avoir vu l'argent arriver. Une commande à valider garde ses articles réservés : si le client ne répond pas sous 48 h, annulez-la pour remettre les articles en vente. Annuler ne rembourse pas : si le client avait déjà payé, renvoyez-lui l'argent depuis votre téléphone.",
       },
     ],
   },
@@ -310,7 +312,8 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
         type: "points",
         items: [
           "**Coordonnées affichées sur le site** : l'e-mail de contact (laissé vide, aucun e-mail n'est affiché), les téléphones, l'adresse, les horaires, Instagram et TikTok. Le premier téléphone est le numéro principal : c'est lui qui reçoit les commandes envoyées sur WhatsApp par les clients.",
-          "**E-mail « Nouvelle commande »** : les adresses qui reçoivent les e-mails de commande et de paiement (5 au plus). Elles ne sont pas affichées sur le site.",
+          "**Numéro Wave et Orange Money** : le numéro auquel les clients envoient leur paiement, affiché au moment de la commande et sur la page de suivi. Laissé vide, c'est le numéro principal.",
+          "**E-mail « Nouvelle commande »** : les adresses qui reçoivent les e-mails de commande (5 au plus). Elles ne sont pas affichées sur le site.",
         ],
       },
       { type: "heading", text: "Onglet Page d'accueil" },
@@ -318,10 +321,10 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
         type: "p",
         text: "Le bloc mis en avant sur l'accueil : une photo (en hauteur de préférence), un petit titre doré, un titre, un texte de 400 caractères au plus et un bouton avec la page qu'il ouvre (ex. /boutique/tenues-africaines). « Remettre la photo par défaut » revient à la photo d'origine. Pensez à cliquer sur « Enregistrer ».",
       },
-      { type: "heading", text: "Onglet Connexion et inscription" },
+      { type: "heading", text: "Onglet Page de connexion" },
       {
         type: "p",
-        text: "La grande photo affichée à côté du formulaire des pages Connexion et Inscription (sur ordinateur et tablette, pas sur téléphone). Pour chaque page, « Choisir une photo », de préférence en hauteur, puis « Enregistrer ». « Remettre la photo par défaut » revient à la photo d'origine.",
+        text: "La grande photo affichée à côté du formulaire de connexion de l'Espace gérante (sur ordinateur et tablette, pas sur téléphone). « Choisir une photo », de préférence en hauteur, puis « Enregistrer ». « Remettre la photo par défaut » revient à la photo d'origine.",
       },
     ],
   },
@@ -333,8 +336,9 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
         type: "points",
         items: [
           "**Une page affiche une erreur ou reste sur « Chargement… »** : vérifiez la connexion internet et actualisez la page.",
-          "**Un client dit avoir payé mais la commande est « En attente de paiement »** : la confirmation de PayDunya peut prendre une minute. Ouvrez la commande et regardez le panneau « Paiement », puis vérifiez dans votre compte PayDunya avant de changer le statut à la main.",
-          "**Un client veut annuler** : ouvrez sa commande, « Annuler la commande », puis remboursez-le depuis PayDunya s'il avait déjà payé.",
+          "**Un client dit avoir payé mais vous ne voyez rien** : demandez-lui la capture du paiement sur WhatsApp et vérifiez l'historique Wave ou Orange Money de votre téléphone avant de valider.",
+          "**Un client veut annuler** : ouvrez sa commande, « Annuler la commande ». S'il avait déjà payé par Wave ou Orange Money, renvoyez-lui l'argent depuis votre téléphone.",
+          "**Une commande semble fausse** (numéro qui ne répond pas, client injoignable) : annulez-la, les articles reviennent en stock. Le site limite déjà un même numéro à 3 commandes par jour.",
           "**Une modification n'apparaît pas sur le site** : vérifiez que vous avez bien cliqué sur « Enregistrer » (un message de confirmation s'affiche en bas de l'écran), puis actualisez la page de la boutique.",
         ],
       },

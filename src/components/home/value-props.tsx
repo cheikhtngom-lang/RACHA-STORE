@@ -1,3 +1,5 @@
+import { paymentMethodsText } from "@/lib/payment-methods";
+
 const props = [
   {
     title: "Livraison 7j/7",
@@ -8,8 +10,8 @@ const props = [
     description: "Échangé ou remboursé après vérification.",
   },
   {
-    title: "Paiement sécurisé",
-    description: "Wave, Orange Money, Visa et Mastercard.",
+    title: "Commande sans compte",
+    description: `${paymentMethodsText()}.`,
   },
   {
     title: "Service client",

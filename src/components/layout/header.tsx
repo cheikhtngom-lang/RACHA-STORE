@@ -31,13 +31,9 @@ export function Header() {
   const openCart = useUiStore((s) => s.openCart);
   const cartCount = useCartStore((s) => s.totalItems());
   const wishlistCount = useWishlistStore((s) => s.ids.length);
-  const isLoggedIn = useAuthStore((s) => s.status === "authenticated");
+  // Les clients commandent sans compte : seul le lien vers l'administration
+  // apparaît, pour la gérante connectée (accès discret en bas de page sinon).
   const isAdmin = useAuthStore((s) => s.isAdmin);
-  const account = isAdmin
-    ? { href: "/admin", label: "Administration" }
-    : isLoggedIn
-      ? { href: "/compte", label: "Mon compte" }
-      : { href: "/compte/connexion", label: "Connexion" };
 
   useEffect(() => {
     if (!isHome) return;
@@ -90,14 +86,12 @@ export function Header() {
           <button aria-label="Rechercher" onClick={openSearch} className="hidden sm:flex cursor-pointer hover:text-gold transition-colors">
             <Search size={19} strokeWidth={1.5} />
           </button>
-          <Link
-            href={account.href}
-            aria-label={account.label}
-            className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors"
-          >
-            <User size={19} strokeWidth={1.5} />
-            <span className="hidden sm:inline font-sans-wide text-[0.72rem] uppercase">{account.label}</span>
-          </Link>
+          {isAdmin && (
+            <Link href="/admin" aria-label="Administration" className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+              <User size={19} strokeWidth={1.5} />
+              <span className="hidden sm:inline font-sans-wide text-[0.72rem] uppercase">Administration</span>
+            </Link>
+          )}
           <Link href="/liste-de-souhaits" aria-label="Liste de souhaits" className="relative cursor-pointer hover:text-gold transition-colors">
             <Heart size={19} strokeWidth={1.5} />
             {wishlistCount > 0 && (

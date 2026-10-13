@@ -17,8 +17,7 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
   {
     title: "2. Données collectées",
     paragraphs: [
-      "Compte client : prénom, nom, adresse e-mail, mot de passe, adresses de livraison et téléphone. Le mot de passe est chiffré de façon irréversible : personne, y compris Racha Store, ne peut le lire.",
-      "Commandes : coordonnées de livraison, articles achetés, montants, code promo utilisé et statut du paiement.",
+      "Commandes, sans compte client : prénom, nom, téléphone, adresse de livraison, adresse e-mail si vous l'indiquez, articles achetés, montants, code promo utilisé, moyen de paiement choisi (Wave, Orange Money ou à la livraison) et numéro de transaction si vous l'indiquez.",
       "Formulaire de contact : nom, adresse e-mail, sujet et message.",
       "Newsletter : adresse e-mail.",
       "Mesure d'audience : pages consultées, site de provenance (Instagram, Google…) et type d'appareil (mobile ou ordinateur), comptés de façon anonyme, sans cookie ni adresse IP.",
@@ -27,21 +26,20 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
   {
     title: "3. Utilisation",
     paragraphs: [
-      "Ces données servent uniquement à préparer et livrer vos commandes, gérer votre compte, répondre à vos messages et, si vous vous y êtes inscrit·e, vous envoyer la newsletter. Elles ne sont ni vendues ni louées.",
+      "Ces données servent uniquement à vérifier, préparer et livrer vos commandes, vous joindre à leur sujet, répondre à vos messages et, si vous vous y êtes inscrit·e, vous envoyer la newsletter. Elles ne sont ni vendues ni louées.",
     ],
   },
   {
     title: "4. Destinataires",
     paragraphs: [
       "Vos données sont accessibles à l'équipe de Racha Store. Le livreur reçoit le nom, le téléphone et l'adresse nécessaires à la livraison.",
-      "Le site s'appuie sur des prestataires techniques : Supabase (base de données et comptes clients), Vercel (hébergement du site), Resend (envoi des e-mails de confirmation et de mot de passe) et ImprovMX (réception des e-mails adressés à la boutique). Ces prestataires peuvent héberger les données hors du Sénégal.",
-      "Le paiement est traité par PayDunya, qui reçoit votre nom, votre e-mail, votre téléphone et le montant de la commande. Vos données de carte bancaire et vos codes Wave ou Orange Money sont saisis chez PayDunya : Racha Store n'y a jamais accès.",
+      "Le site s'appuie sur des prestataires techniques : Supabase (base de données), Vercel (hébergement du site), Resend (envoi à la boutique des e-mails de commande) et ImprovMX (réception des e-mails adressés à la boutique). Ces prestataires peuvent héberger les données hors du Sénégal.",
+      "Si vous envoyez le récapitulatif de votre commande sur WhatsApp, le message passe par WhatsApp (Meta), selon ses propres conditions. Les paiements Wave et Orange Money sont traités par ces opérateurs : Racha Store ne voit que le montant reçu et le numéro de transaction, jamais vos codes secrets.",
     ],
   },
   {
     title: "5. Durée de conservation",
     paragraphs: [
-      "Compte client : tant que le compte existe. Vous pouvez demander sa suppression à tout moment.",
       "Commandes : pendant la durée exigée par les obligations comptables.",
       "Messages : le temps de traiter votre demande.",
       "Newsletter : jusqu'à votre désinscription.",
@@ -50,7 +48,7 @@ const sections = (shop: ShopInfo): { title: string; paragraphs: string[] }[] => 
   {
     title: "6. Cookies et stockage dans le navigateur",
     paragraphs: [
-      "Le site n'utilise que les cookies nécessaires à son fonctionnement : ceux qui gardent votre session ouverte quand vous êtes connecté·e. Votre panier, votre liste de souhaits et les produits consultés récemment sont gardés dans votre navigateur. Aucun cookie publicitaire n'est déposé.",
+      "Le site ne dépose aucun cookie chez les clients : seul l'espace de la gérante utilise un cookie de session. Votre panier, votre liste de souhaits, les produits consultés récemment et les liens de suivi de vos commandes sont gardés dans votre navigateur. Aucun cookie publicitaire n'est déposé.",
     ],
   },
   {
@@ -73,7 +71,7 @@ export default async function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">Politique de confidentialité</h1>
-      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : septembre 2026</p>
+      <p className="text-xs text-stone-light mb-16">Dernière mise à jour : octobre 2026</p>
 
       <div className="flex flex-col gap-10">
         {sections(shop).map((s) => (

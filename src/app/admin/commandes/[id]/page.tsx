@@ -11,6 +11,7 @@ import { WhatsAppIcon } from "@/components/shared/social-icons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { orderStatusLabels, type OrderStatus } from "@/lib/order-status";
+import { isMobileMoney, paymentMethodLabel } from "@/lib/payment-methods";
 import { dbErrorMessage, formatDateTime } from "@/lib/admin/utils";
 import { formatPrice, cn, whatsappNumber } from "@/lib/utils";
 
@@ -18,10 +19,14 @@ type Order = {
   id: string;
   order_number: string;
   status: OrderStatus;
-  email: string;
+  email: string | null;
   first_name: string;
   last_name: string;
   phone: string;
+  // 9 derniers chiffres du téléphone (migration 20261013120000_commande_sans_compte.sql).
+  phone_key: string | null;
+  payment_method: string | null;
+  transaction_ref: string | null;
   address: string;
   address_complement: string | null;
   postal_code: string | null;
@@ -50,7 +55,10 @@ type Order = {
   }[];
 };
 
-// Factures PayDunya de la commande (table payments).
+// Autres commandes passées avec le même téléphone.
+type ClientHistory = { delivered: number; cancelled: number; open: number };
+
+// Factures PayDunya des anciennes commandes payées en ligne (table payments).
 type Payment = {
   token: string;
   mode: "test" | "live";
@@ -77,10 +85,52 @@ const shippingLabels = {
   express: "Livraison express (en priorité)",
 };
 
+// Message WhatsApp proposé à la gérante selon l'étape, avec le lien de suivi.
+function clientMessage(order: Order) {
+  const first = order.first_name;
+  const total = formatPrice(order.total);
+  const cash = order.payment_method === "cash";
+  const lines: Record<OrderStatus, string[]> = {
+    pending: [
+      `Bonjour ${first}, Racha Store a bien reçu votre commande ${order.order_number} (${total}).`,
+      cash ? "Pouvez-vous nous confirmer l'adresse et l'heure de livraison qui vous arrangent ?" : "Nous vérifions votre paiement et revenons vers vous très vite.",
+    ],
+    paid: [
+      `Bonjour ${first}, votre commande ${order.order_number} est validée. Nous préparons votre colis.`,
+      cash ? `Montant à régler au livreur : ${total}.` : "",
+    ],
+    shipped: [`Bonjour ${first}, votre commande ${order.order_number} est en route.`, cash ? `Montant à régler à la réception : ${total}.` : ""],
+    delivered: [`Bonjour ${first}, votre commande ${order.order_number} est livrée. Merci pour votre confiance et à bientôt chez Racha Store.`],
+    cancelled: [`Bonjour ${first}, votre commande ${order.order_number} a été annulée. Pour toute question, répondez simplement à ce message.`],
+  };
+  const link = order.status === "delivered" ? "" : `Suivi de votre commande : ${window.location.origin}/suivi/${order.id}`;
+  return [...lines[order.status], link].filter(Boolean).join("\n");
+}
+
+// « Nouveau client » ou ses commandes passées (livrées, en cours, annulées).
+function HistoryBadges({ history: h }: { history: ClientHistory }) {
+  const s = (n: number) => (n > 1 ? "s" : "");
+  const badges: [string, string][] = [];
+  if (!h.delivered && !h.cancelled && !h.open) badges.push(["Nouveau client : appelez avant d'envoyer le livreur", "border-gold/50 text-gold-light"]);
+  if (h.delivered) badges.push([`${h.delivered} commande${s(h.delivered)} déjà livrée${s(h.delivered)}`, "border-line text-ink"]);
+  if (h.open) badges.push([`${h.open} autre${s(h.open)} commande${s(h.open)} en cours`, "border-line text-stone"]);
+  if (h.cancelled) badges.push([`${h.cancelled} annulée${s(h.cancelled)}`, "border-danger/40 text-danger"]);
+  return (
+    <ul className="flex flex-wrap gap-1.5 mt-2" aria-label="Commandes passées avec ce numéro">
+      {badges.map(([label, color]) => (
+        <li key={label} className={cn("border px-2 py-1 text-[0.68rem] leading-none", color)}>
+          {label}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[id]">) {
   const { id } = use(params);
   const [order, setOrder] = useState<Order | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [history, setHistory] = useState<ClientHistory | null>(null);
   const [failed, setFailed] = useState(false);
   const [note, setNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
@@ -100,6 +150,19 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
         }
         setOrder(data as Order);
         setNote(data.notes ?? "");
+        // Passé du client : un nouveau client mérite un appel avant d'envoyer le livreur.
+        if (!data.phone_key) return;
+        createClient()
+          .from("orders")
+          .select("status")
+          .eq("phone_key", data.phone_key)
+          .neq("id", id)
+          .then(({ data: others }) => {
+            const statuses = ((others ?? []) as { status: OrderStatus }[]).map((o) => o.status);
+            const delivered = statuses.filter((s) => s === "delivered").length;
+            const cancelled = statuses.filter((s) => s === "cancelled").length;
+            setHistory({ delivered, cancelled, open: statuses.length - delivered - cancelled });
+          });
       });
     // Requête à part : la page reste utilisable si la table n'existe pas encore.
     createClient()
@@ -150,7 +213,8 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
   }
   if (!order) return <Loading />;
 
-  const whatsappText = `Bonjour ${order.first_name}, merci pour votre commande ${order.order_number} sur Racha Store (${formatPrice(order.total)}).`;
+  const whatsappText = clientMessage(order);
+  const mobileMoney = isMobileMoney(order.payment_method);
 
   const received = payments.filter((p) => p.status === "completed");
   const paymentWarnings = [
@@ -209,10 +273,27 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
 
           <Panel title="Paiement">
             <div className="p-5 sm:p-6 text-sm flex flex-col gap-4">
-              {payments.length === 0 ? (
-                <p className="text-stone">Aucun paiement en ligne pour cette commande.</p>
-              ) : (
-                <ul className="flex flex-col gap-4">
+              <div>
+                <p className="text-ink">{paymentMethodLabel(order.payment_method)}</p>
+                {mobileMoney &&
+                  (order.transaction_ref ? (
+                    <p className="text-stone mt-1 break-all">Transaction indiquée par le client : {order.transaction_ref}</p>
+                  ) : (
+                    <p className="text-xs text-stone-light mt-1">Pas de numéro de transaction : le client peut envoyer la capture sur WhatsApp.</p>
+                  ))}
+                {order.status === "pending" && mobileMoney && (
+                  <p className="text-xs text-stone-light mt-3 leading-relaxed">
+                    Vérifiez sur votre téléphone que {formatPrice(order.total)} est bien arrivé, puis cliquez sur « Validée ».
+                  </p>
+                )}
+                {order.status === "pending" && order.payment_method === "cash" && (
+                  <p className="text-xs text-stone-light mt-3 leading-relaxed">
+                    {formatPrice(order.total)} à encaisser à la livraison. Appelez le client pour confirmer, puis cliquez sur « Validée ».
+                  </p>
+                )}
+              </div>
+              {payments.length > 0 && (
+                <ul className="flex flex-col gap-4 border-t border-line pt-4">
                   {payments.map((p) => (
                     <li key={p.token}>
                       <div className="flex justify-between gap-3">
@@ -322,7 +403,8 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
                 <p className="text-ink">
                   {order.first_name} {order.last_name}
                 </p>
-                <p className="text-stone mt-1 break-all">{order.email}</p>
+                {history && <HistoryBadges history={history} />}
+                {order.email && <p className="text-stone mt-1 break-all">{order.email}</p>}
                 <p className="text-stone mt-1">{order.phone}</p>
               </div>
               <div className="flex flex-col gap-2">
@@ -339,13 +421,15 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
                   <Phone size={15} strokeWidth={1.5} className="text-gold" />
                   Appeler
                 </a>
-                <a
-                  href={`mailto:${order.email}?subject=${encodeURIComponent(`Votre commande ${order.order_number}`)}`}
-                  className="flex items-center gap-3 h-11 px-4 border border-line hover:border-ink transition-colors"
-                >
-                  <Mail size={15} strokeWidth={1.5} className="text-gold" />
-                  Envoyer un e-mail
-                </a>
+                {order.email && (
+                  <a
+                    href={`mailto:${order.email}?subject=${encodeURIComponent(`Votre commande ${order.order_number}`)}`}
+                    className="flex items-center gap-3 h-11 px-4 border border-line hover:border-ink transition-colors"
+                  >
+                    <Mail size={15} strokeWidth={1.5} className="text-gold" />
+                    Envoyer un e-mail
+                  </a>
+                )}
               </div>
             </div>
           </Panel>

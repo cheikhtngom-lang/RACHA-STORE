@@ -1,7 +1,6 @@
-import { RegisterView } from "@/components/account/register-view";
-import { getPagePhotos } from "@/lib/get-page-photos";
+import { permanentRedirect } from "next/navigation";
 
-export default async function RegisterPage() {
-  const { signup } = await getPagePhotos();
-  return <RegisterView photo={signup} />;
+// Plus de création de compte client : seule la gérante se connecte.
+export default function RegisterPage() {
+  permanentRedirect("/compte/connexion");
 }

@@ -20,7 +20,7 @@ const staticColumns = [
       { label: "FAQ", href: "/faq" },
       { label: "Livraison & retours", href: "/livraison-retours" },
       { label: "Guide des tailles", href: "/faq#tailles" },
-      { label: "Suivre ma commande", href: "/compte/commandes" },
+      { label: "Suivre ma commande", href: "/suivi" },
     ],
   },
   {
@@ -194,6 +194,10 @@ export function Footer() {
           </div>
           <p className="text-xs text-cream/50 text-center sm:text-right">
             © {new Date().getFullYear()} Racha Store. Tous droits réservés.
+            {/* Accès de la gérante : les clients n'ont pas de compte. */}
+            <Link href="/admin" className="ml-3 text-cream/40 hover:text-cream/70 transition-colors">
+              Espace gérante
+            </Link>
           </p>
         </div>
       </div>

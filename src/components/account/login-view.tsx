@@ -25,8 +25,9 @@ function LoginForm() {
   const [submitting, setSubmitting] = useState(false);
   const redirected = useRef(false);
 
-  // Une fois connecté : la page demandée (ex. retour au paiement), sinon
-  // l'administration pour un compte administrateur, sinon « Mon compte ».
+  // Une fois connecté : la page demandée (ex. une page de l'administration),
+  // sinon l'administration pour un compte administrateur, sinon /compte (qui
+  // mène au suivi des commandes : les clients n'ont plus de compte).
   useEffect(() => {
     if (status !== "authenticated" || redirected.current) return;
     redirected.current = true;
@@ -57,9 +58,15 @@ function LoginForm() {
   return (
     <div className="w-full max-w-sm">
       <BackToShop />
-      <p className="eyebrow text-gold mb-3">Bienvenue</p>
+      <p className="eyebrow text-gold mb-3">Espace gérante</p>
       <h1 className="font-display text-3xl sm:text-4xl text-ink mb-2">Connexion</h1>
-      <p className="text-sm text-stone-light mb-10">Accédez à votre compte pour suivre vos commandes.</p>
+      <p className="text-sm text-stone-light mb-10">
+        Réservé à l&apos;équipe de la boutique. Pour commander, aucun compte n&apos;est nécessaire ; pour suivre une commande, ouvrez{" "}
+        <Link href="/suivi" className="text-ink underline underline-offset-2">
+          Suivre ma commande
+        </Link>
+        .
+      </p>
 
       {linkError && (
         <p className="text-sm text-danger border border-danger/30 p-4 mb-6">
@@ -91,13 +98,6 @@ function LoginForm() {
           {submitting ? "Connexion…" : "Se connecter"}
         </Button>
       </form>
-
-      <p className="text-sm text-stone-light mt-8 text-center">
-        Pas encore de compte ?{" "}
-        <Link href="/compte/inscription" className="text-ink underline underline-offset-2">
-          Créer un compte
-        </Link>
-      </p>
     </div>
   );
 }

@@ -12,8 +12,12 @@ const groups = (phone: string) => [
     title: "Commandes",
     items: [
       {
+        q: "Dois-je créer un compte pour commander ?",
+        a: "Non. Vous indiquez seulement vos nom, téléphone et adresse de livraison ; l'e-mail est facultatif.",
+      },
+      {
         q: "Comment suivre ma commande ?",
-        a: "Une fois votre commande expédiée, vous recevez un e-mail de confirmation avec un lien de suivi. Vous pouvez également consulter l'état de vos commandes depuis votre espace « Mon compte ».",
+        a: "Après la commande, vous arrivez sur sa page de suivi, mise à jour à chaque étape : reçue, validée, expédiée, livrée. Retrouvez-la depuis « Suivre ma commande » en bas du site, ou avec le lien à la fin du message WhatsApp envoyé à la boutique.",
       },
       {
         q: "Puis-je modifier ou annuler ma commande ?",
@@ -21,7 +25,7 @@ const groups = (phone: string) => [
       },
       {
         q: "Quels moyens de paiement acceptez-vous ?",
-        a: "Nous acceptons Wave, Orange Money et les cartes bancaires Visa et Mastercard.",
+        a: `Wave, Orange Money ou paiement à la livraison. Par Wave ou Orange Money, vous envoyez le montant au numéro indiqué au moment de la commande ; à la livraison, vous payez le livreur à la remise du colis.`,
       },
     ],
   },
@@ -51,7 +55,7 @@ const groups = (phone: string) => [
       },
       {
         q: "Que faire si mon article est défectueux ?",
-        a: `Contactez-nous dès réception par téléphone ou WhatsApp${phone ? ` au ${phone}` : ""}, ou depuis « Mon compte » > « Commandes », avec une photo de l'article. Nous vous indiquons ensuite comment nous le remettre.`,
+        a: `Contactez-nous dès réception par téléphone ou WhatsApp${phone ? ` au ${phone}` : ""}, avec votre numéro de commande et une photo de l'article. Nous vous indiquons ensuite comment nous le remettre.`,
       },
       {
         q: "Sous quel délai suis-je remboursé·e ?",

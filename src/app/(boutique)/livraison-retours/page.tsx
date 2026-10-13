@@ -13,7 +13,7 @@ const shippingOptions: { title: string; delay: string; price?: string }[] = [
 ];
 
 const returnSteps = [
-  { step: "1", title: "Contactez-nous dès réception", description: "Par téléphone ou WhatsApp, ou depuis « Mon compte » > « Commandes », avec une photo de l'article." },
+  { step: "1", title: "Contactez-nous dès réception", description: "Par téléphone ou WhatsApp, avec votre numéro de commande et une photo de l'article." },
   { step: "2", title: "Vérification", description: "Nous examinons l'article et vous confirmons l'échange ou le remboursement." },
   { step: "3", title: "Remettez-nous l'article", description: "Non lavé, avec ses étiquettes d'origine. Nous vous indiquons où le déposer." },
   { step: "4", title: "Échange ou remboursement", description: "Un remboursement éventuel est effectué sous 5 à 10 jours ouvrés après vérification." },

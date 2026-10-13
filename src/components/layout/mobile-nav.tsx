@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { User, UserPlus, Heart, MapPin, Settings } from "lucide-react";
+import { Heart, MapPin, Package, Settings } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { PhoneLink } from "@/components/shared/phone-link";
@@ -15,7 +15,6 @@ export function MobileNav() {
   const isOpen = useUiStore((s) => s.isMobileNavOpen);
   const close = useUiStore((s) => s.closeMobileNav);
   const { categories } = useCatalog();
-  const isLoggedIn = useAuthStore((s) => s.status === "authenticated");
   const isAdmin = useAuthStore((s) => s.isAdmin);
 
   return (
@@ -59,27 +58,14 @@ export function MobileNav() {
         </div>
 
         <div className="flex flex-col px-6 py-6 gap-5 border-t border-line">
-          {isLoggedIn ? (
-            <>
-              {isAdmin && (
-                <Link href="/admin" onClick={close} className="flex items-center gap-3 text-sm text-stone">
-                  <Settings size={17} strokeWidth={1.5} /> Administration
-                </Link>
-              )}
-              <Link href="/compte" onClick={close} className="flex items-center gap-3 text-sm text-stone">
-                <User size={17} strokeWidth={1.5} /> Mon compte
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/compte/connexion" onClick={close} className="flex items-center gap-3 text-sm text-stone">
-                <User size={17} strokeWidth={1.5} /> Se connecter
-              </Link>
-              <Link href="/compte/inscription" onClick={close} className="flex items-center gap-3 text-sm text-stone">
-                <UserPlus size={17} strokeWidth={1.5} /> Créer un compte
-              </Link>
-            </>
+          {isAdmin && (
+            <Link href="/admin" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+              <Settings size={17} strokeWidth={1.5} /> Administration
+            </Link>
           )}
+          <Link href="/suivi" onClick={close} className="flex items-center gap-3 text-sm text-stone">
+            <Package size={17} strokeWidth={1.5} /> Suivre ma commande
+          </Link>
           <Link href="/liste-de-souhaits" onClick={close} className="flex items-center gap-3 text-sm text-stone">
             <Heart size={17} strokeWidth={1.5} /> Liste de souhaits
           </Link>

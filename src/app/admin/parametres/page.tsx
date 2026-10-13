@@ -20,7 +20,7 @@ export default function AdminSettingsPage() {
           <TabsTrigger value="compte" className="whitespace-nowrap">Mon compte</TabsTrigger>
           <TabsTrigger value="boutique" className="whitespace-nowrap">Boutique</TabsTrigger>
           <TabsTrigger value="accueil" className="whitespace-nowrap">Page d&apos;accueil</TabsTrigger>
-          <TabsTrigger value="connexion" className="whitespace-nowrap">Connexion et inscription</TabsTrigger>
+          <TabsTrigger value="connexion" className="whitespace-nowrap">Page de connexion</TabsTrigger>
         </TabsList>
         <TabsContent value="compte">
           <AccountSettings />

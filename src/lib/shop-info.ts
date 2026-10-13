@@ -11,6 +11,8 @@ export type ShopInfo = {
   contactEmail: string | null;
   // Le premier est le numéro principal (en-tête, page Contact, Google).
   phones: PhoneNumber[];
+  // Reçoit les paiements Wave et Orange Money ; à défaut, le numéro principal.
+  paymentPhone: PhoneNumber | null;
   address: string;
   openingHours: string;
   instagramUrl: string | null;
@@ -20,6 +22,7 @@ export type ShopInfo = {
 export type ShopSettingsRow = {
   contact_email: string | null;
   phones: string[];
+  payment_phone: string | null;
   address: string;
   opening_hours: string;
   instagram_url: string | null;
@@ -31,6 +34,7 @@ export type ShopSettingsRow = {
 export const DEFAULT_SHOP_SETTINGS: ShopSettingsRow = {
   contact_email: null,
   phones: ["+221 76 630 52 62", "+33 7 51 22 66 11"],
+  payment_phone: "+221 76 630 52 62",
   address: "Dakar, Sénégal",
   opening_hours: "Du lundi au samedi, de 10h à 19h",
   instagram_url: "https://www.instagram.com/racha_store_221",
@@ -43,9 +47,11 @@ export function toPhoneNumber(display: string): PhoneNumber {
 }
 
 export function toShopInfo(row: ShopSettingsRow): ShopInfo {
+  const phones = row.phones.map(toPhoneNumber);
   return {
     contactEmail: row.contact_email,
-    phones: row.phones.map(toPhoneNumber),
+    phones,
+    paymentPhone: row.payment_phone?.trim() ? toPhoneNumber(row.payment_phone.trim()) : (phones[0] ?? null),
     address: row.address,
     openingHours: row.opening_hours,
     instagramUrl: row.instagram_url,

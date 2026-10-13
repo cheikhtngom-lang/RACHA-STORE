@@ -19,18 +19,24 @@ const MAX_ITEMS = 5;
 export function ShopSettings() {
   const [shop, setShop] = useState<ShopSettingsRow | null>(null);
   const [orderEmails, setOrderEmails] = useState<string[] | null>(null);
-  const [failure, setFailure] = useState<"migration" | "error" | null>(null);
+  const [failure, setFailure] = useState<"migration" | "payment-migration" | "error" | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
     Promise.all([
-      supabase.from("shop_settings").select("contact_email, phones, address, opening_hours, instagram_url, tiktok_url").maybeSingle(),
+      supabase.from("shop_settings").select("contact_email, phones, payment_phone, address, opening_hours, instagram_url, tiktok_url").maybeSingle(),
       supabase.from("admin_settings").select("order_emails").maybeSingle(),
     ]).then(([shopResult, adminResult]) => {
       const error = shopResult.error ?? adminResult.error;
       if (error || !shopResult.data || !adminResult.data) {
-        // Tables absentes : la migration n'a pas été exécutée.
-        setFailure(error?.code === "PGRST205" || error?.code === "42P01" || !error ? "migration" : "error");
+        // Tables absentes : la migration n'a pas été exécutée. Colonne payment_phone absente : celle d'octobre 2026.
+        setFailure(
+          error?.code === "PGRST205" || error?.code === "42P01" || !error
+            ? "migration"
+            : error.code === "42703"
+              ? "payment-migration"
+              : "error"
+        );
         return;
       }
       setShop(shopResult.data as ShopSettingsRow);
@@ -43,6 +49,14 @@ export function ShopSettings() {
       <LoadError>
         Les paramètres de la boutique ne sont pas encore activés : exécutez le fichier
         supabase/migrations/20260929090000_settings.sql dans Supabase → SQL Editor, puis rechargez la page.
+      </LoadError>
+    );
+  }
+  if (failure === "payment-migration") {
+    return (
+      <LoadError>
+        Le numéro Wave et Orange Money n&apos;est pas encore activé : exécutez le fichier
+        supabase/migrations/20261013120000_commande_sans_compte.sql dans Supabase → SQL Editor, puis rechargez la page.
       </LoadError>
     );
   }
@@ -120,6 +134,7 @@ function ListField({
 function ContactForm({ initial }: { initial: ShopSettingsRow }) {
   const [email, setEmail] = useState(initial.contact_email ?? "");
   const [phones, setPhones] = useState(initial.phones.length ? initial.phones : [""]);
+  const [paymentPhone, setPaymentPhone] = useState(initial.payment_phone ?? "");
   const [address, setAddress] = useState(initial.address);
   const [hours, setHours] = useState(initial.opening_hours);
   const [instagram, setInstagram] = useState(initial.instagram_url ?? "");
@@ -133,6 +148,7 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
     const values = {
       contact_email: email.trim().toLowerCase() || null,
       phones: phones.map((p) => p.trim()).filter(Boolean),
+      payment_phone: paymentPhone.trim() || null,
       address: address.trim(),
       opening_hours: hours.trim(),
       instagram_url: instagram.trim() || null,
@@ -142,6 +158,9 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
     if (values.contact_email && !EMAIL_PATTERN.test(values.contact_email)) return setError("L'e-mail de contact est invalide.");
     const badPhone = values.phones.find((p) => whatsappNumber(p).length < 8);
     if (badPhone) return setError(`Numéro incomplet : ${badPhone}. Indiquez l'indicatif pour un numéro étranger (+33…).`);
+    if (values.payment_phone && whatsappNumber(values.payment_phone).length < 8) {
+      return setError(`Numéro Wave et Orange Money incomplet : ${values.payment_phone}.`);
+    }
     if (values.address.length < 3) return setError("Indiquez l'adresse de la boutique.");
     for (const [name, url] of [
       ["Instagram", values.instagram_url],
@@ -182,6 +201,20 @@ function ContactForm({ initial }: { initial: ShopSettingsRow }) {
           addLabel="Ajouter un numéro"
           firstNote="Principal"
         />
+        <Field
+          label="Numéro Wave et Orange Money"
+          htmlFor="shop-payment-phone"
+          hint="Le numéro auquel les clients envoient leur paiement, affiché au moment de la commande. Laissé vide, c'est le numéro principal."
+        >
+          <Input
+            id="shop-payment-phone"
+            type="tel"
+            maxLength={30}
+            value={paymentPhone}
+            onChange={(e) => setPaymentPhone(e.target.value)}
+            placeholder={phones[0] || "+221 77 000 00 00"}
+          />
+        </Field>
         <Field label="Adresse" htmlFor="shop-address" hint="Affichée telle quelle. Indiquez seulement la ville pour ne pas montrer le quartier.">
           <Input id="shop-address" required maxLength={200} value={address} onChange={(e) => setAddress(e.target.value)} />
         </Field>
