@@ -60,6 +60,6 @@ La boutique se gère depuis le tableau de bord Supabase (Table Editor) : produit
 
 Variables d'environnement : voir `.env.example`. Le site n'a besoin d'aucune clé secrète.
 
-Branché : catalogue (`src/lib/catalog.ts`, cache 60 s), comptes clients (`@supabase/ssr`, e-mails dans `supabase/templates/`), commandes via `create_order`, adresses, favoris, newsletter et contact.
+Branché : catalogue (`src/lib/catalog.ts`, cache 1 h), comptes clients (`@supabase/ssr`, e-mails dans `supabase/templates/`), commandes via `create_order`, adresses, favoris, newsletter et contact.
 
 Reste à brancher : le paiement en ligne (Wave, Orange Money, carte) et les notifications de nouvelle commande. D'ici là, les commandes sont enregistrées au statut `pending`.

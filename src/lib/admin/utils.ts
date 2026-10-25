@@ -40,7 +40,7 @@ export function dbErrorMessage(error: PostgrestError, fallback: string) {
   return fallback;
 }
 
-// La boutique relit le catalogue au plus tard 60 s après une modification ;
+// La boutique relit le catalogue au plus tard 1 h après une modification ;
 // ceci l'oblige à le relire tout de suite. Un échec n'a donc rien de grave.
 export function notifyCatalogChanged() {
   refreshCatalog().catch(() => {});

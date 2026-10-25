@@ -12,7 +12,7 @@ const FALLBACK: Announcement[] = [
 
 // Annonces du bandeau, écrites dans /admin/annonces. La base ne renvoie que
 // celles qui sont actives et dans leurs dates. Même cache que le catalogue
-// (60 s, vidé à chaque modification dans l'administration).
+// (1 h, vidé à chaque modification dans l'administration).
 export const getAnnouncements = cache(async (): Promise<Announcement[]> => {
   const { data, error } = await createPublicClient()
     .from("announcements")

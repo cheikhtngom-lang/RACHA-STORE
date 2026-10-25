@@ -1,9 +1,11 @@
 import { timingSafeEqual } from "node:crypto";
+import { revalidateTag } from "next/cache";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { sendOrderEmail } from "@/lib/send-order-email";
 
 // Appelé par Supabase (Database > Webhooks) à chaque nouvelle commande :
-// envoie l'e-mail « Nouvelle commande » à la boutique via Resend.
+// envoie l'e-mail « Nouvelle commande » à la boutique via Resend, et fait
+// relire le catalogue pour que le site affiche le stock diminué.
 //
 // Variables Vercel (serveur uniquement, jamais NEXT_PUBLIC_) :
 // ORDER_WEBHOOK_SECRET, SUPABASE_SECRET_KEY, RESEND_API_KEY, ORDER_NOTIFICATION_EMAILS.
@@ -36,6 +38,9 @@ export async function POST(request: Request) {
   if (payload?.type !== "INSERT" || payload?.table !== "orders" || typeof orderId !== "string") {
     return Response.json({ skipped: true });
   }
+
+  // create_order a déjà retiré les quantités du stock.
+  revalidateTag("catalog", "max");
 
   const result = await sendOrderEmail(createAdminSupabase(), orderId, "new");
   if (result === "sent") return Response.json({ sent: true });
