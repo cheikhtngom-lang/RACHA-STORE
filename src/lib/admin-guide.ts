@@ -256,6 +256,35 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
     ],
   },
   {
+    id: "videos",
+    title: "Vidéos",
+    href: "/admin/videos",
+    blocks: [
+      {
+        type: "p",
+        text: "Les vidéos de la page d'accueil, sous « Les meilleures ventes » : présentation d'un produit, motion design, publicité. Elles passent l'une après l'autre, sans le son tant que le visiteur ne l'active pas, et seulement quand la section est à l'écran. Sans vidéo en ligne, la section n'apparaît pas.",
+      },
+      {
+        type: "steps",
+        items: [
+          "« Ajouter une vidéo » et choisissez un fichier **MP4** de 50 Mo au plus. Gardez la page ouverte pendant l'envoi : la barre montre l'avancement.",
+          "La vidéo est en ligne dès la fin de l'envoi, et une fenêtre s'ouvre pour ses textes.",
+          "Un titre (60 caractères au plus) et un texte court, facultatifs.",
+          "Un bouton, facultatif : son libellé (ex. « Voir la robe ») et la page qu'il ouvre (ex. /produit/robe-wax, ou une adresse complète en https://).",
+          "Enregistrez.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Les flèches changent l'ordre de passage, « Masquer » retire une vidéo de l'accueil sans la supprimer, « Supprimer » efface aussi son fichier. 5 vidéos au plus.",
+      },
+      {
+        type: "note",
+        text: "Chaque vidéo regardée consomme le trafic mensuel de Supabase. Exportez vos vidéos en 720p, de 10 à 15 Mo, de préférence en moins d'une minute : elles démarrent plus vite et coûtent moins de données aux visiteurs.",
+      },
+    ],
+  },
+  {
     id: "messages",
     title: "Messages",
     href: "/admin/messages",

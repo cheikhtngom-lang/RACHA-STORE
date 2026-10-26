@@ -13,6 +13,8 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co",
   "font-src 'self'",
+  // Vidéos de l'accueil (bucket « videos ») ; blob: pour l'aperçu avant envoi dans l'administration.
+  "media-src 'self' blob: https://*.supabase.co",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "frame-ancestors 'none'",
   "object-src 'none'",

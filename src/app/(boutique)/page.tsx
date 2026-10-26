@@ -1,27 +1,29 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Hero } from "@/components/home/hero";
 import { ValueProps } from "@/components/home/value-props";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { EditorialBanner } from "@/components/home/editorial-banner";
 import { InstagramGallery } from "@/components/home/instagram-gallery";
+import { VideoShowcase } from "@/components/home/video-showcase";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { StoreJsonLd } from "@/components/shared/json-ld";
 import { ProductCarousel } from "@/components/product/product-carousel";
-import { Button } from "@/components/ui/button";
-import { img, pools } from "@/data/images";
 import { getCatalog } from "@/lib/catalog";
-import { getNewArrivals, getBestSellers, getLimitedEditions } from "@/lib/catalog-selectors";
+import { getNewArrivals, getBestSellers } from "@/lib/catalog-selectors";
 import { getShopInfo } from "@/lib/get-shop-info";
 import { getHomeEditorial } from "@/lib/get-home-editorial";
+import { getHomeVideos } from "@/lib/get-home-videos";
 import { socialHandle } from "@/lib/shop-info";
 
 export default async function Home() {
-  const [{ products, categories }, shop, editorial] = await Promise.all([getCatalog(), getShopInfo(), getHomeEditorial()]);
+  const [{ products, categories }, shop, editorial, videos] = await Promise.all([
+    getCatalog(),
+    getShopInfo(),
+    getHomeEditorial(),
+    getHomeVideos(),
+  ]);
   const instagramHandle = socialHandle(shop.instagramUrl);
   const newArrivals = getNewArrivals(products);
   const bestSellers = getBestSellers(products);
-  const limited = getLimitedEditions(products);
 
   return (
     <>
@@ -78,31 +80,7 @@ export default async function Home() {
         </section>
       )}
 
-      {limited.length > 0 && (
-        <section className="relative py-24 sm:py-32 bg-ink-dark overflow-hidden">
-          <Image
-            src={img(pools.apparel[10], 2000, 1200)}
-            alt="Édition limitée Racha Store"
-            fill
-            sizes="100vw"
-            className="object-cover opacity-30"
-          />
-          <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8 flex flex-col items-center text-center">
-            <p className="eyebrow text-gold-light mb-5">Édition limitée</p>
-            <h2 className="font-display text-3xl sm:text-5xl text-cream max-w-2xl leading-tight mb-6">
-              {limited.length === 1
-                ? "Une pièce produite en petite série"
-                : `${limited.length} pièces produites en petite série`}
-            </h2>
-            <p className="text-cream/70 text-sm max-w-md mb-9">
-              {limited.map((p) => p.name).join(", ")}. Pas de réassort prévu.
-            </p>
-            <Button asChild variant="gold" size="lg">
-              <Link href="/boutique?filter=edition-limitee">Découvrir l&apos;édition limitée</Link>
-            </Button>
-          </div>
-        </section>
-      )}
+      {videos.length > 0 && <VideoShowcase videos={videos} />}
 
       {shop.instagramUrl && (
         <section className="py-20 sm:py-28">
