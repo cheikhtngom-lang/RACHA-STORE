@@ -26,7 +26,9 @@ export function EditorialBanner({ content, categorySlugs }: { content: HomeEdito
           <h2 className="font-display text-3xl sm:text-4xl text-cream leading-tight mb-6">{content.title}</h2>
           {content.body && <p className="text-cream/70 text-sm leading-relaxed mb-8">{content.body}</p>}
           {content.button_label && href && (
-            <Button asChild variant="outlineLight" size="lg">
+            // Libellé choisi dans l'administration : il passe à la ligne
+            // plutôt que d'élargir la page sur téléphone.
+            <Button asChild variant="outlineLight" size="lg" className="h-auto min-h-14 py-4 whitespace-normal text-center">
               {href.startsWith("/") ? (
                 <Link href={href}>{content.button_label}</Link>
               ) : (

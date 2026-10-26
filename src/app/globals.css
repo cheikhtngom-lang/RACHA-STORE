@@ -190,6 +190,35 @@ body {
   }
 }
 
+/* Titre de l'accueil (KineticTitle) : chaque lettre monte depuis le bas de
+   son mot, une seule fois au chargement. Le décalage est posé sur chaque
+   lettre. Moins d'animations demandé : simple fondu, sans mouvement. */
+.hero-letter {
+  display: inline-block;
+  animation: hero-letter-in 0.7s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+@keyframes hero-letter-in {
+  from {
+    transform: translate3d(0, 110%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes hero-letter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-letter {
+    animation-name: hero-letter-fade;
+  }
+}
+
 /* ------------------------------------------------------------------------
    Tableaux de bord : effets (inspirés de reactbits.dev), sans bibliothèque.
    Tous s'arrêtent si le visiteur a demandé moins d'animations.

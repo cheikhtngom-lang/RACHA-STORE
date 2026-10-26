@@ -4,13 +4,13 @@ import { ShopPage } from "@/components/shop/shop-page";
 
 export const metadata: Metadata = {
   title: "Boutique",
-  description: "Découvrez toute la collection Racha Store : prêt-à-porter, maroquinerie, chaussures, bijoux et parfums.",
+  description: "Découvrez toute la boutique Racha Store : vide dressing, tenues africaines, sacs, chaussures, bijoux et parfums.",
 };
 
 export default function Boutique() {
   return (
     <Suspense>
-      <ShopPage title="Toute la boutique" description="Prêt-à-porter, sacs, chaussures, bijoux et beauté." />
+      <ShopPage title="Toute la boutique" description="Vide dressing, tenues africaines, sacs, chaussures, bijoux et beauté." />
     </Suspense>
   );
 }

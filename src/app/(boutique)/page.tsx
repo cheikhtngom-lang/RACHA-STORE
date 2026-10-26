@@ -38,7 +38,7 @@ export default async function Home() {
         <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
           <SectionHeading
             eyebrow="Nos univers"
-            title="Explorez la collection"
+            title="Explorez notre boutique"
             cta={{ label: "Toute la boutique", href: "/boutique" }}
             className="mb-10 sm:mb-14"
           />

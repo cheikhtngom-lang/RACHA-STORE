@@ -50,6 +50,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // Catégories renommées (supabase/migrations/20261026120000_vide_dressing.sql) :
+  // les liens déjà partagés mènent à la nouvelle adresse.
+  async redirects() {
+    return [
+      { source: "/boutique/pret-a-porter", destination: "/boutique/vide-dressing", permanent: true },
+      { source: "/boutique/sacs-maroquinerie", destination: "/boutique/sacs", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
