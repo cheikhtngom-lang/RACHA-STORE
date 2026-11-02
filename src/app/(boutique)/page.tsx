@@ -24,6 +24,10 @@ export default async function Home() {
   const instagramHandle = socialHandle(shop.instagramUrl);
   const newArrivals = getNewArrivals(products);
   const bestSellers = getBestSellers(products);
+  // Bas de page : 6 pièces en stock pas encore montrées plus haut (sinon les premières du catalogue).
+  const shown = new Set([...newArrivals, ...bestSellers].map((p) => p.id));
+  const available = products.filter((p) => p.images[0] && p.stock > 0);
+  const morePieces = [...available.filter((p) => !shown.has(p.id)), ...available.filter((p) => shown.has(p.id))].slice(0, 6);
 
   return (
     <>
@@ -87,11 +91,12 @@ export default async function Home() {
           <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
             <SectionHeading
               eyebrow={instagramHandle ?? "Instagram"}
-              title="Suivez-nous sur Instagram"
+              title="Suivez nos arrivages"
+              description="Chaque nouvelle pièce passe d'abord sur Instagram. En voici quelques-unes, disponibles dès maintenant."
               align="center"
               className="mb-10 sm:mb-14 mx-auto"
             />
-            <InstagramGallery url={shop.instagramUrl} handle={instagramHandle} />
+            <InstagramGallery url={shop.instagramUrl} handle={instagramHandle} products={morePieces} />
           </div>
         </section>
       )}
