@@ -1,10 +1,21 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { confirmInvoice, createInvoice, type PaydunyaConfig } from "@/lib/paydunya";
+import { confirmInvoice, createInvoice, getPaydunyaConfig, type PaydunyaConfig } from "@/lib/paydunya";
 import type { OrderEmailKind } from "@/lib/order-email";
 import { sendOrderEmail } from "@/lib/send-order-email";
 
 // Paiement des commandes avec PayDunya, côté serveur (clé secrète Supabase).
 // Voir supabase/migrations/20260929200000_paiement_paydunya.sql.
+//
+// Le paiement en ligne est un choix parmi d'autres : le client crée sa commande
+// (create_order, sans moyen de paiement), puis /api/paiement la marque
+// « PayDunya » et ouvre la facture. Au retour, la page de suivi (/suivi/[id])
+// relit la facture et propose d'envoyer le récapitulatif sur WhatsApp.
+
+// Paiement en ligne possible : clés PayDunya et clé secrète Supabase dans Vercel.
+// Sinon le choix « Payer en ligne » n'est pas proposé à la commande.
+export function getOnlinePaymentConfig(): PaydunyaConfig | null {
+  return process.env.SUPABASE_SECRET_KEY ? getPaydunyaConfig() : null;
+}
 
 // Réponses de record_paydunya_payment.
 type RecordResult =
@@ -94,11 +105,24 @@ export async function startPayment(
 ): Promise<string | null> {
   const { data: order, error: orderError } = await supabase
     .from("orders")
-    .select("id, order_number, status, total, email, first_name, last_name, phone")
+    .select("id, order_number, status, total, email, first_name, last_name, phone, payment_method")
     .eq("id", orderId)
     .maybeSingle();
   if (orderError) throw new Error(`Commande illisible : ${orderError.message}`);
   if (!order || order.status !== "pending") return null;
+  // Commande payée par Wave, Orange Money ou à la livraison : pas de facture en ligne.
+  if (order.payment_method && order.payment_method !== "PayDunya") return null;
+
+  // Moyen choisi, visible dans l'administration même si le client n'achève pas le paiement.
+  if (!order.payment_method) {
+    const { error: methodError } = await supabase
+      .from("orders")
+      .update({ payment_method: "PayDunya" })
+      .eq("id", order.id)
+      .eq("status", "pending")
+      .is("payment_method", null);
+    if (methodError) console.error("Paiement : moyen non enregistré", methodError.message);
+  }
 
   // Une facture encore ouverte est réutilisée : deux factures payables pour
   // la même commande pourraient être payées toutes les deux.
@@ -120,7 +144,8 @@ export async function startPayment(
     return null;
   }
 
-  const pageUrl = `${baseUrl}/checkout/paiement/${order.id}`;
+  // Retour sur la page de suivi : elle relit la facture et propose WhatsApp.
+  const pageUrl = `${baseUrl}/suivi/${order.id}?retour=paydunya`;
   const invoice = await createInvoice(config, {
     amount: order.total,
     description: `Commande ${order.order_number} · Racha Store`,

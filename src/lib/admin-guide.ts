@@ -57,7 +57,7 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
         items: [
           "**« Nouvelle commande »** : envoyé dès qu'un client valide sa commande. Elle est « À valider ». L'e-mail donne le moyen de paiement choisi (Wave, Orange Money ou à la livraison) et le numéro de transaction si le client l'a indiqué.",
           "**Message WhatsApp d'un client** : juste après sa commande, WhatsApp s'ouvre chez le client avec le récapitulatif déjà rédigé ; il vous l'envoie au numéro principal de la boutique (le premier numéro dans Paramètres, onglet Boutique). Le message donne le numéro de commande, les articles, le total, le moyen de paiement et la ville de livraison. Le client peut y joindre la capture de son paiement.",
-          "**« Commande payée »** et **« Paiement à vérifier »** : ces e-mails ne concernent plus que d'anciennes commandes payées en ligne avec PayDunya.",
+          "**« Commande payée »** et **« Paiement à vérifier »** : envoyés pour les commandes payées en ligne avec PayDunya. Après le paiement, le client vous envoie aussi sa commande sur WhatsApp, marquée « payé ».",
         ],
       },
       {
@@ -126,7 +126,7 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
         type: "points",
         items: [
           "**À valider** : la commande est enregistrée et les articles sont réservés dans le stock. Le paiement Wave ou Orange Money est à vérifier, ou le client est à appeler pour un paiement à la livraison.",
-          "**Validée** : à choisir quand l'argent Wave ou Orange Money est arrivé sur votre téléphone, ou quand le client a confirmé une commande payée à la livraison.",
+          "**Validée** : à choisir quand l'argent Wave ou Orange Money est arrivé sur votre téléphone, ou quand le client a confirmé une commande payée à la livraison. Une commande payée en ligne (PayDunya) passe seule en « Validée ».",
           "**Expédiée** : à choisir quand le colis part chez le livreur.",
           "**Livrée** : à choisir quand le client a reçu son colis (et payé le livreur pour un paiement à la livraison).",
           "**Annulée** : les articles reviennent dans le stock et le code promo éventuel peut resservir. C'est définitif.",
@@ -148,7 +148,7 @@ export const GUIDE_CHAPTERS: GuideChapter[] = [
       { type: "heading", text: "Le panneau Paiement" },
       {
         type: "p",
-        text: "Il indique le moyen choisi par le client : Wave, Orange Money ou à la livraison, avec le numéro de transaction s'il l'a indiqué. Les anciennes commandes payées en ligne affichent aussi leurs paiements PayDunya, avec un lien « Voir le reçu ».",
+        text: "Il indique le moyen choisi par le client : en ligne (PayDunya), Wave, Orange Money ou à la livraison, avec le numéro de transaction s'il l'a indiqué. Les commandes payées en ligne affichent aussi leurs paiements PayDunya, avec un lien « Voir le reçu ». Le choix « Payer en ligne » n'apparaît chez le client que si les clés PayDunya sont renseignées dans Vercel.",
       },
       {
         type: "note",

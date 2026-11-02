@@ -19,6 +19,8 @@ export type WhatsappOrder = {
   total: number;
   payment_method: string | null;
   transaction_ref: string | null;
+  // Facture PayDunya réglée (page de suivi) : la gérante voit que c'est payé.
+  paid_online?: boolean;
   order_items: { product_name: string; color: string | null; size: string | null; quantity: number; line_total: number }[];
 };
 
@@ -28,7 +30,8 @@ export function orderWhatsappUrl(shopPhone: string, order: WhatsappOrder, orderU
     return `- ${item.product_name}${options ? ` (${options})` : ""} x${item.quantity} : ${formatPrice(item.line_total)}`;
   });
   const shipping = order.shipping_method === "express" ? "Livraison express" : "Livraison standard";
-  const payment = `${paymentMethodLabel(order.payment_method)}${order.transaction_ref ? ` (transaction ${order.transaction_ref})` : ""}`;
+  const online = order.payment_method === "PayDunya" ? (order.paid_online ? ", payé" : ", pas encore payé") : "";
+  const payment = `${paymentMethodLabel(order.payment_method)}${online}${order.transaction_ref ? ` (transaction ${order.transaction_ref})` : ""}`;
 
   const text = [
     `Bonjour Racha Store, je suis ${order.first_name}.`,

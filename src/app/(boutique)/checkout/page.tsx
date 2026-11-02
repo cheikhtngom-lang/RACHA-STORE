@@ -15,9 +15,11 @@ import { formatPrice } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { discountAmount, shippingCost, SHIPPING_COSTS, type ShippingMethod } from "@/lib/pricing";
 import { saveLastOrder } from "@/lib/last-order";
-import { isMobileMoney, PAYMENT_METHODS, type PaymentMethod } from "@/lib/payment-methods";
+import { isMobileMoney, ONLINE_PAYMENT, PAYMENT_METHODS, type PaymentMethod } from "@/lib/payment-methods";
 import { orderWhatsappUrl } from "@/lib/order-whatsapp";
+import { requestPaymentUrl } from "@/lib/payment-client";
 import { LastOrderNotice } from "@/components/checkout/last-order-notice";
+import { useOnlinePayment } from "@/components/checkout/online-payment";
 
 const STEPS = ["Informations", "Livraison", "Paiement"];
 
@@ -41,9 +43,12 @@ type ContactForm = {
 // ou Orange Money (envoi au numéro de la boutique) ou à la livraison. La
 // commande arrive « À valider » dans l'administration ; le client l'envoie
 // aussi sur WhatsApp et garde un lien de suivi (/suivi/[id]).
+// Paiement en ligne (si PayDunya est configuré) : le client part sur la page
+// PayDunya, puis revient sur le suivi, d'où il envoie la commande sur WhatsApp.
 export default function CheckoutPage() {
   const router = useRouter();
   const shop = useShopInfo();
+  const onlinePayment = useOnlinePayment();
   const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal());
   const promo = useCartStore((s) => s.promo);
@@ -52,7 +57,7 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState(1);
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | typeof ONLINE_PAYMENT.id | "">("");
   const [transaction, setTransaction] = useState("");
   // Champ invisible : seuls les robots le remplissent.
   const [website, setWebsite] = useState("");
@@ -76,6 +81,7 @@ export default function CheckoutPage() {
   const total = subtotal - discount + shipping;
   const paymentPhone = shop.paymentPhone;
   const whatsappPhone = shop.phones[0];
+  const payOnline = paymentMethod === ONLINE_PAYMENT.id;
 
   function update<K extends keyof ContactForm>(key: K, value: ContactForm[K]) {
     setContact((c) => ({ ...c, [key]: value }));
@@ -97,7 +103,8 @@ export default function CheckoutPage() {
     setSubmitting(true);
 
     // L'onglet WhatsApp s'ouvre dans le clic : après l'attente de la base, le navigateur le bloquerait.
-    const whatsappTab = whatsappPhone ? window.open("", "_blank") : null;
+    // Paiement en ligne : WhatsApp vient après, depuis la page de suivi.
+    const whatsappTab = whatsappPhone && !payOnline ? window.open("", "_blank") : null;
     if (whatsappTab) {
       whatsappTab.opener = null;
       try {
@@ -129,7 +136,8 @@ export default function CheckoutPage() {
       })),
       p_shipping_method: shippingMethod,
       p_promo_code: promo?.code ?? null,
-      p_payment_method: paymentMethod,
+      // En ligne : /api/paiement marque la commande « PayDunya » en ouvrant la facture.
+      p_payment_method: payOnline ? null : paymentMethod,
       p_transaction_ref: transactionRef || null,
       p_website: website || null,
     });
@@ -148,9 +156,24 @@ export default function CheckoutPage() {
       return;
     }
 
+    const trackingPath = `/suivi/${created.order_id}`;
+    if (payOnline) {
+      // Commande enregistrée, stock réservé : panier vidé, puis la page PayDunya.
+      // Si elle ne s'ouvre pas, la page de suivi propose de réessayer ou WhatsApp.
+      setPlaced(true);
+      saveLastOrder(created.order_id, created.order_number);
+      clear();
+      const payment = await requestPaymentUrl(created.order_id);
+      if (payment.url) {
+        window.location.assign(payment.url);
+        return;
+      }
+      router.push(`${trackingPath}?nouvelle=1&paiement=echec`);
+      return;
+    }
+
     // Commande enregistrée, stock réservé : récapitulatif sur WhatsApp, panier
     // vidé, puis la page de suivi (qui propose aussi l'envoi sur WhatsApp).
-    const trackingPath = `/suivi/${created.order_id}`;
     if (whatsappTab && whatsappPhone) {
       whatsappTab.location.href = orderWhatsappUrl(
         whatsappPhone.tel,
@@ -186,7 +209,9 @@ export default function CheckoutPage() {
   if (placed) {
     return (
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8 py-28 text-center">
-        <p className="text-sm text-stone-light">Commande enregistrée, ouverture du suivi…</p>
+        <p className="text-sm text-stone-light">
+          {payOnline ? "Commande enregistrée, ouverture de la page de paiement…" : "Commande enregistrée, ouverture du suivi…"}
+        </p>
       </div>
     );
   }
@@ -338,13 +363,13 @@ export default function CheckoutPage() {
               <RadioGroup
                 value={paymentMethod}
                 onValueChange={(v) => {
-                  setPaymentMethod(v as PaymentMethod);
+                  setPaymentMethod(v as PaymentMethod | typeof ONLINE_PAYMENT.id);
                   setError(null);
                 }}
                 className="flex flex-col gap-4"
                 aria-label="Moyen de paiement"
               >
-                {PAYMENT_METHODS.map((m) => (
+                {[...(onlinePayment ? [ONLINE_PAYMENT] : []), ...PAYMENT_METHODS].map((m) => (
                   <label
                     key={m.id}
                     className="flex items-center gap-4 border border-line p-5 cursor-pointer has-[[data-state=checked]]:border-ink"
@@ -389,6 +414,13 @@ export default function CheckoutPage() {
                 </div>
               )}
 
+              {payOnline && (
+                <p className="border border-line bg-sand/40 p-5 text-sm text-ink leading-relaxed">
+                  Vous réglez <strong className="font-medium tabular-nums">{formatPrice(total)}</strong> sur la page sécurisée PayDunya.
+                  Au retour sur le site, envoyez le récapitulatif à la boutique sur WhatsApp : le message est déjà rédigé.
+                </p>
+              )}
+
               {paymentMethod === "cash" && (
                 <p className="border border-line bg-sand/40 p-5 text-sm text-ink leading-relaxed">
                   Vous payez <strong className="font-medium tabular-nums">{formatPrice(total)}</strong> au livreur à la réception. La
@@ -413,17 +445,23 @@ export default function CheckoutPage() {
                   {[contact.postalCode, contact.city].filter(Boolean).join(" ")}, {contact.country}
                 </p>
               </div>
-              <p className="text-xs text-stone-light leading-relaxed">
-                Après la commande, WhatsApp s&apos;ouvre avec votre récapitulatif déjà rédigé : envoyez-le à la boutique. Vous
-                gardez aussi un lien pour suivre votre commande.
-              </p>
+              {!payOnline && (
+                <p className="text-xs text-stone-light leading-relaxed">
+                  Après la commande, WhatsApp s&apos;ouvre avec votre récapitulatif déjà rédigé : envoyez-le à la boutique. Vous
+                  gardez aussi un lien pour suivre votre commande.
+                </p>
+              )}
               {error && <p className="text-sm text-danger border border-danger/30 p-4">{error}</p>}
               <div className="flex gap-4 mt-2">
                 <Button type="button" variant="outline" size="lg" onClick={() => goToStep(2)} disabled={submitting}>
                   Retour
                 </Button>
                 <Button type="submit" variant="primary" size="lg" disabled={submitting}>
-                  {submitting ? "Enregistrement…" : `Valider la commande · ${formatPrice(total)}`}
+                  {submitting
+                    ? "Enregistrement…"
+                    : payOnline
+                      ? `Payer ${formatPrice(total)} en ligne`
+                      : `Valider la commande · ${formatPrice(total)}`}
                 </Button>
               </div>
             </form>

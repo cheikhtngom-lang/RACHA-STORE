@@ -5,10 +5,11 @@ import { connection } from "next/server";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/components/shared/social-icons";
+import { PayButton } from "@/components/checkout/pay-button";
 import { getShopInfo } from "@/lib/get-shop-info";
 import { orderWhatsappUrl } from "@/lib/order-whatsapp";
 import { isMobileMoney, paymentMethodLabel } from "@/lib/payment-methods";
-import { isUuid } from "@/lib/payment";
+import { getOnlinePaymentConfig, isUuid, refreshOrderPayments } from "@/lib/payment";
 import { TRACKING_STEPS, type OrderStatus } from "@/lib/order-status";
 import { siteUrl } from "@/lib/site";
 import { createAdminSupabase } from "@/lib/supabase/admin";
@@ -18,6 +19,8 @@ import { cn, formatPrice } from "@/lib/utils";
 // aléatoire, n'est connu que du client (lien gardé dans son navigateur et dans
 // son message WhatsApp). La page n'affiche ni téléphone, ni e-mail, ni adresse.
 // Le client peut renvoyer le récapitulatif à la boutique sur WhatsApp.
+// C'est aussi la page de retour de PayDunya (?retour=paydunya) : la facture y
+// est relue, puis le client envoie sa commande payée sur WhatsApp.
 
 type Order = {
   id: string;
@@ -49,13 +52,8 @@ type Order = {
 const dateTime = (iso: string) =>
   new Date(iso).toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Africa/Dakar" });
 
-export default async function TrackingPage({ params, searchParams }: PageProps<"/suivi/[id]">) {
-  await connection();
-  const { id } = await params;
-  const { nouvelle } = await searchParams;
-  if (!isUuid(id)) notFound();
-
-  const { data, error } = await createAdminSupabase()
+async function loadOrder(supabase: ReturnType<typeof createAdminSupabase>, id: string) {
+  const { data, error } = await supabase
     .from("orders")
     .select(
       "id, order_number, status, first_name, city, country, shipping_method, subtotal, discount, promo_code, shipping_cost, total, payment_method, transaction_ref, created_at, order_items (id, product_name, image_url, color, size, quantity, line_total)"
@@ -64,30 +62,66 @@ export default async function TrackingPage({ params, searchParams }: PageProps<"
     .maybeSingle();
   // Erreur passagère : la page d'erreur propose de réessayer, plutôt qu'un « introuvable ».
   if (error) throw new Error(`Commande illisible : ${error.message}`);
-  const order = data as Order | null;
+  return data as Order | null;
+}
+
+export default async function TrackingPage({ params, searchParams }: PageProps<"/suivi/[id]">) {
+  await connection();
+  const { id } = await params;
+  const { nouvelle, retour, paiement } = await searchParams;
+  if (!isUuid(id)) notFound();
+
+  const supabase = createAdminSupabase();
+  let order = await loadOrder(supabase, id);
   if (!order) notFound();
+
+  // Paiement en ligne pas encore enregistré (retour de PayDunya avant sa
+  // notification) : la facture est relue chez PayDunya avant d'afficher la page.
+  const paymentConfig = getOnlinePaymentConfig();
+  const online = order.payment_method === "PayDunya";
+  if (online && order.status === "pending" && paymentConfig) {
+    await refreshOrderPayments(supabase, paymentConfig, order.id);
+    order = (await loadOrder(supabase, id)) ?? order;
+  }
+  // « Validée » par la gérante ne veut pas dire payée en ligne : seule une facture réglée le prouve.
+  let paidOnline = false;
+  if (online && order.status !== "pending" && order.status !== "cancelled") {
+    const { count } = await supabase
+      .from("payments")
+      .select("id", { count: "exact", head: true })
+      .eq("order_id", order.id)
+      .eq("status", "completed");
+    paidOnline = (count ?? 0) > 0;
+  }
 
   const shop = await getShopInfo();
   const isCancelled = order.status === "cancelled";
   const isNew = nouvelle === "1" && order.status === "pending";
+  // PayDunya ajoute parfois ses propres paramètres à l'adresse de retour.
+  const backFromPaydunya = typeof retour === "string" && retour.startsWith("paydunya");
+  const justPaid = backFromPaydunya && paidOnline && order.status === "paid";
+  const awaitingOnlinePayment = online && order.status === "pending";
   const currentStep = TRACKING_STEPS.findIndex((s) => s.status === order.status);
   const orderUrl = `${siteUrl ?? "https://www.rachamarket.com"}/suivi/${order.id}`;
-  const whatsappUrl = shop.phones[0] && !isCancelled ? orderWhatsappUrl(shop.phones[0].tel, order, orderUrl) : null;
+  const whatsappUrl =
+    shop.phones[0] && !isCancelled ? orderWhatsappUrl(shop.phones[0].tel, { ...order, paid_online: paidOnline }, orderUrl) : null;
   const awaitingMobileMoney = order.status === "pending" && isMobileMoney(order.payment_method);
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-20 sm:py-28">
       <div className="text-center">
-        <p className="eyebrow text-gold mb-4">{isNew ? "Commande enregistrée" : "Suivi de commande"}</p>
+        <p className="eyebrow text-gold mb-4">{justPaid ? "Paiement reçu" : isNew ? "Commande enregistrée" : "Suivi de commande"}</p>
         <h1 className="font-display text-3xl sm:text-5xl text-ink leading-tight mb-4">
-          {isNew ? `Merci ${order.first_name}` : `Commande n° ${order.order_number}`}
+          {isNew || justPaid ? `Merci ${order.first_name}` : `Commande n° ${order.order_number}`}
         </h1>
         <p className="text-sm text-stone-light max-w-md mx-auto mb-12">
           {isCancelled
             ? "Cette commande a été annulée. Pour toute question, écrivez-nous depuis la page Contact."
-            : isNew
-              ? `Votre commande n° ${order.order_number} est bien reçue. Gardez cette page : elle se met à jour à chaque étape.`
-              : `Passée le ${dateTime(order.created_at)}.`}
+            : justPaid
+              ? `Votre paiement de ${formatPrice(order.total)} est confirmé : la commande n° ${order.order_number} est validée. Envoyez-la maintenant à la boutique sur WhatsApp pour organiser la livraison.`
+              : isNew
+                ? `Votre commande n° ${order.order_number} est bien reçue. Gardez cette page : elle se met à jour à chaque étape.`
+                : `Passée le ${dateTime(order.created_at)}.`}
         </p>
       </div>
 
@@ -138,6 +172,22 @@ export default async function TrackingPage({ params, searchParams }: PageProps<"
         </div>
       )}
 
+      {awaitingOnlinePayment && (
+        <div className="border border-line p-5 sm:p-6 mb-10 text-sm text-stone leading-relaxed flex flex-col gap-5">
+          <div>
+            <p className="text-ink mb-1">Paiement en ligne à finaliser</p>
+            <p>
+              {backFromPaydunya &&
+                "PayDunya n'a pas encore confirmé le paiement. Si vous venez de le valider sur votre téléphone, actualisez cette page dans un instant. "}
+              Réglez <span className="text-ink tabular-nums">{formatPrice(order.total)}</span> sur la page sécurisée PayDunya : la commande
+              est validée dès réception. Vous préférez Wave, Orange Money ou le paiement à la livraison ? Envoyez la commande sur
+              WhatsApp, la boutique s&apos;en occupe.
+            </p>
+          </div>
+          {paymentConfig && <PayButton orderId={order.id} total={order.total} initialError={paiement === "echec"} />}
+        </div>
+      )}
+
       {order.status === "pending" && order.payment_method === "cash" && (
         <p className="border border-line p-5 sm:p-6 mb-10 text-sm text-stone leading-relaxed">
           Paiement à la livraison : <span className="text-ink tabular-nums">{formatPrice(order.total)}</span> à régler au livreur. La
@@ -148,11 +198,15 @@ export default async function TrackingPage({ params, searchParams }: PageProps<"
       {whatsappUrl && (
         <div className="mb-10 flex flex-col items-center gap-4 text-center">
           <p className="text-sm text-stone max-w-md">
-            {isNew
-              ? "WhatsApp ne s'est pas ouvert ? Envoyez le récapitulatif de votre commande à la boutique : le message est déjà rédigé."
-              : "Une question sur cette commande ? Envoyez-en le récapitulatif à la boutique sur WhatsApp."}
+            {justPaid
+              ? "Le message est déjà rédigé : votre commande, son paiement et son lien de suivi."
+              : awaitingOnlinePayment
+                ? "Payer autrement ? Envoyez la commande à la boutique sur WhatsApp : le message est déjà rédigé."
+                : isNew
+                  ? "WhatsApp ne s'est pas ouvert ? Envoyez le récapitulatif de votre commande à la boutique : le message est déjà rédigé."
+                  : "Une question sur cette commande ? Envoyez-en le récapitulatif à la boutique sur WhatsApp."}
           </p>
-          <Button asChild variant={isNew ? "primary" : "outline"} size="lg">
+          <Button asChild variant={justPaid || (isNew && !awaitingOnlinePayment) ? "primary" : "outline"} size="lg">
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
               <WhatsAppIcon size={18} />
               Envoyer sur WhatsApp
@@ -207,7 +261,10 @@ export default async function TrackingPage({ params, searchParams }: PageProps<"
           </div>
           <div>
             <p className="text-ink text-xs font-sans-wide uppercase mb-2">Paiement</p>
-            <p>{paymentMethodLabel(order.payment_method)}</p>
+            <p>
+              {paymentMethodLabel(order.payment_method)}
+              {paidOnline && ", payé"}
+            </p>
           </div>
         </div>
       </div>

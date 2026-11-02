@@ -58,7 +58,7 @@ type Order = {
 // Autres commandes passées avec le même téléphone.
 type ClientHistory = { delivered: number; cancelled: number; open: number };
 
-// Factures PayDunya des anciennes commandes payées en ligne (table payments).
+// Factures PayDunya des commandes payées en ligne (table payments).
 type Payment = {
   token: string;
   mode: "test" | "live";
@@ -291,6 +291,13 @@ export default function AdminOrderPage({ params }: PageProps<"/admin/commandes/[
                 {order.status === "pending" && order.payment_method === "cash" && (
                   <p className="text-xs text-stone-light mt-3 leading-relaxed">
                     {formatPrice(order.total)} à encaisser à la livraison. Appelez le client pour confirmer, puis cliquez sur « Validée ».
+                  </p>
+                )}
+                {order.status === "pending" && order.payment_method === "PayDunya" && (
+                  <p className="text-xs text-stone-light mt-3 leading-relaxed">
+                    Le client a choisi le paiement en ligne : la commande passe seule en « Validée » quand PayDunya confirme le paiement.
+                    Toujours à valider ? Le client n&apos;a pas fini de payer : appelez-le, il peut aussi régler par Wave, Orange Money ou à la
+                    livraison.
                   </p>
                 )}
               </div>
